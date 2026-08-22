@@ -1,8 +1,7 @@
 import { useState, useContext, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { collection, addDoc, query, where, getDocs, serverTimestamp } from '@firebase/firestore';
-import { db } from '../firebase/config';
 import { AuthContext } from '../AuthContext';
+import { loadJSON, saveJSON } from '../utils/localStore';
 import { useToast } from '../components/Toast';
 import PageTransition from '../components/PageTransition';
 import {
@@ -101,15 +100,18 @@ function BMITab({ currentUser }) {
     if (!result) return;
     setSaving(true);
     try {
-      await addDoc(collection(db, 'bmiHistory'), {
-        userId: currentUser.uid,
+      const key = `jc_bmi_history_${currentUser.id}`;
+      const existing = loadJSON(key, []);
+      existing.unshift({
+        id: `${Date.now()}`,
         bmi: result.bmi,
         category: result.band.label,
         height: parseFloat(height),
         weight: parseFloat(weight),
         unit,
-        recordedAt: serverTimestamp(),
+        recordedAt: new Date().toISOString(),
       });
+      saveJSON(key, existing);
       toast.success('Saved!', 'BMI recorded to your history.');
     } catch {
       toast.error('Save failed', 'Please try again.');
@@ -399,17 +401,15 @@ function HistoryTab({ currentUser }) {
   useEffect(() => {
     if (!currentUser) return;
     setLoading(true);
-    getDocs(query(
-      collection(db, 'bmiHistory'),
-      where('userId', '==', currentUser.uid)
-    ))
-      .then(snap => {
-        const list = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-        list.sort((a, b) => (b.recordedAt?.seconds ?? 0) - (a.recordedAt?.seconds ?? 0));
-        setRecords(list);
-      })
-      .catch(() => toast.error('Could not load history'))
-      .finally(() => setLoading(false));
+    try {
+      const list = loadJSON(`jc_bmi_history_${currentUser.id}`, []);
+      list.sort((a, b) => new Date(b.recordedAt) - new Date(a.recordedAt));
+      setRecords(list);
+    } catch {
+      toast.error('Could not load history');
+    } finally {
+      setLoading(false);
+    }
   }, [currentUser]);
 
   const trend = (i) => {

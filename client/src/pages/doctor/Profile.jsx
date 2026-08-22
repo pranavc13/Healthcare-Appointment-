@@ -1,7 +1,10 @@
 import { useEffect, useState } from 'react';
+import { motion } from 'framer-motion';
 import * as doctorPortalService from '../../services/doctorPortalService';
 import { useToast } from '../../components/Toast';
 import { apiErrorMessage } from '../../services/api';
+
+const EASE = [0.22, 1, 0.36, 1];
 
 export default function DoctorProfile() {
   const [profile, setProfile] = useState(null);
@@ -43,12 +46,20 @@ export default function DoctorProfile() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-slate-900 pt-20 pb-16 px-4">
       <div className="max-w-xl mx-auto">
-        <h1 className="text-2xl font-black text-gray-900 dark:text-white mb-1">My Profile</h1>
-        <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">
-          {profile?.userId?.name} · {profile?.specialisation}
-        </p>
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
+          <h1 className="text-2xl font-black text-gray-900 dark:text-white mb-1">My Profile</h1>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">
+            {profile?.userId?.name} · {profile?.specialisation}
+          </p>
+        </motion.div>
 
-        <form onSubmit={handleSubmit} className="bg-white dark:bg-slate-800 rounded-3xl p-6 border border-gray-100 dark:border-slate-700 shadow-sm space-y-5">
+        <motion.form
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.45, delay: 0.1, ease: EASE }}
+          onSubmit={handleSubmit}
+          className="bg-white dark:bg-slate-800 rounded-3xl p-6 border border-gray-100 dark:border-slate-700 shadow-sm space-y-5"
+        >
           <div>
             <label className="block text-sm font-bold text-gray-700 dark:text-gray-200 mb-2">Qualifications</label>
             <input
@@ -56,7 +67,7 @@ export default function DoctorProfile() {
               value={form.qualifications}
               onChange={handleChange}
               placeholder="MBBS, MD - Cardiology"
-              className="w-full px-4 py-3 rounded-2xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm text-gray-900 dark:text-white"
+              className="w-full px-4 py-3 rounded-2xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm text-gray-900 dark:text-white transition-shadow focus:ring-2 focus:ring-blue-500 focus:outline-none"
             />
           </div>
 
@@ -68,7 +79,7 @@ export default function DoctorProfile() {
               onChange={handleChange}
               rows={4}
               placeholder="Tell patients about your experience and approach to care..."
-              className="w-full px-4 py-3 rounded-2xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm text-gray-900 dark:text-white resize-none"
+              className="w-full px-4 py-3 rounded-2xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm text-gray-900 dark:text-white resize-none transition-shadow focus:ring-2 focus:ring-blue-500 focus:outline-none"
             />
           </div>
 
@@ -79,7 +90,7 @@ export default function DoctorProfile() {
               value={form.profileImage}
               onChange={handleChange}
               placeholder="https://..."
-              className="w-full px-4 py-3 rounded-2xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm text-gray-900 dark:text-white"
+              className="w-full px-4 py-3 rounded-2xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm text-gray-900 dark:text-white transition-shadow focus:ring-2 focus:ring-blue-500 focus:outline-none"
             />
           </div>
 
@@ -87,14 +98,16 @@ export default function DoctorProfile() {
             Specialisation, working hours and slot duration are managed by your clinic admin.
           </p>
 
-          <button
+          <motion.button
+            whileHover={{ scale: 1.01 }}
+            whileTap={{ scale: 0.98 }}
             type="submit"
             disabled={saving}
-            className="w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white font-bold py-3 rounded-2xl text-sm transition-colors"
+            className="w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white font-bold py-3 rounded-2xl text-sm transition-colors shadow-lg shadow-blue-200/40 dark:shadow-none"
           >
             {saving ? 'Saving...' : 'Save Changes'}
-          </button>
-        </form>
+          </motion.button>
+        </motion.form>
       </div>
     </div>
   );

@@ -357,11 +357,12 @@ function SectionHeading({ eyebrow, title, subtitle, eyebrowColor = 'text-blue-60
 /* ═══════════════════════════════════════════════════════════════════
    Main component — routing logic is 100% unchanged
 ═══════════════════════════════════════════════════════════════════ */
-export default function App() {
-  const { currentUser, userType } = useContext(AuthContext);
+const ROLE_HOME = { patient: '/patient/dashboard', doctor: '/doctor/dashboard', admin: '/admin/dashboard' };
 
-  if (currentUser && userType === 'doctor')  return <Navigate to="/dashboard" replace />;
-  if (currentUser && userType === 'patient') return <PatientDashboard />;
+export default function App() {
+  const { currentUser, role } = useContext(AuthContext);
+
+  if (currentUser && ROLE_HOME[role]) return <Navigate to={ROLE_HOME[role]} replace />;
 
   return (
     <div className="min-h-screen bg-white dark:bg-slate-900 overflow-x-hidden">
@@ -483,7 +484,7 @@ export default function App() {
                 >
                   <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
                     <Link
-                      to="/signup"
+                      to="/register"
                       className="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold px-7 py-3.5 rounded-2xl shadow-xl shadow-blue-300/40 dark:shadow-blue-900/40 transition-all text-sm"
                     >
                       Get Started Free <ArrowRight className="w-4 h-4" />
@@ -491,7 +492,7 @@ export default function App() {
                   </motion.div>
                   <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
                     <Link
-                      to="/search"
+                      to="/patient/doctors"
                       className="inline-flex items-center justify-center gap-2 bg-white dark:bg-slate-800 text-gray-800 dark:text-white font-bold px-7 py-3.5 rounded-2xl border border-gray-200 dark:border-slate-700 shadow-sm hover:shadow-md hover:border-blue-300 dark:hover:border-blue-700 transition-all text-sm"
                     >
                       Browse Doctors
@@ -677,7 +678,7 @@ export default function App() {
                 <div className="flex flex-col sm:flex-row md:flex-col gap-3 w-full md:w-auto">
                   <motion.div whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }}>
                     <Link
-                      to="/signup"
+                      to="/register"
                       className="flex items-center justify-center gap-2 bg-white text-blue-600 font-black px-8 py-3.5 rounded-2xl hover:bg-blue-50 transition-colors shadow-xl text-sm w-full"
                     >
                       Register as a Doctor <ArrowRight className="w-4 h-4" />
@@ -735,8 +736,8 @@ export default function App() {
                   {
                     heading: 'Platform',
                     links: [
-                      { to: '/search',    label: 'Find Doctors' },
-                      { to: '/signup',    label: 'Sign Up'      },
+                      { to: '/patient/doctors', label: 'Find Doctors' },
+                      { to: '/register',  label: 'Sign Up'      },
                       { to: '/login',     label: 'Log In'       },
                     ],
                   },

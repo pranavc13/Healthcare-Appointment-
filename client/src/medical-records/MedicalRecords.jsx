@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { doc, getDoc, setDoc } from '@firebase/firestore';
-import { db } from '../firebase/config';
 import { AuthContext } from '../AuthContext';
+import { loadJSON, saveJSON } from '../utils/localStore';
 import {
   Heart, Activity, AlertCircle, Pill, User, Phone,
   Save, CheckCircle, XCircle, FileText, Loader2,
@@ -136,9 +135,8 @@ export default function MedicalRecords() {
     const load = async () => {
       if (!currentUser) return;
       try {
-        const snap = await getDoc(doc(db, 'patients', currentUser.uid));
-        if (snap.exists()) {
-          const d = snap.data();
+        const d = loadJSON(`jc_medical_records_${currentUser.id}`, null);
+        if (d) {
           setForm(prev => ({
             ...prev,
             bloodGroup: d.bloodGroup || '',
@@ -175,7 +173,7 @@ export default function MedicalRecords() {
     setError(null);
     setSaved(false);
     try {
-      await setDoc(doc(db, 'patients', currentUser.uid), { ...form, updatedAt: new Date() }, { merge: true });
+      saveJSON(`jc_medical_records_${currentUser.id}`, { ...form, updatedAt: new Date() });
       setSaved(true);
       setTimeout(() => setSaved(false), 3000);
     } catch (e) {

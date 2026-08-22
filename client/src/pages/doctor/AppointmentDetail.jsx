@@ -1,9 +1,12 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, Plus, Trash2, RefreshCw } from 'lucide-react';
 import * as doctorPortalService from '../../services/doctorPortalService';
 import { useToast } from '../../components/Toast';
 import { apiErrorMessage } from '../../services/api';
+
+const EASE = [0.22, 1, 0.36, 1];
 
 const URGENCY_COLOR = {
   Low: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300',
@@ -74,11 +77,11 @@ export default function DoctorAppointmentDetail() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-slate-900 pt-20 pb-16 px-4">
       <div className="max-w-2xl mx-auto">
-        <Link to="/doctor/dashboard" className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-blue-600 mb-4">
+        <Link to="/doctor/dashboard" className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-blue-600 mb-4 transition-colors">
           <ArrowLeft className="w-4 h-4" /> Back to dashboard
         </Link>
 
-        <div className="bg-white dark:bg-slate-800 rounded-3xl p-6 border border-gray-100 dark:border-slate-700 shadow-sm mb-5">
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, ease: EASE }} className="bg-white dark:bg-slate-800 rounded-3xl p-6 border border-gray-100 dark:border-slate-700 shadow-sm mb-5">
           <p className="font-bold text-gray-900 dark:text-white text-lg">{appointment.patientId?.name}</p>
           <p className="text-sm text-gray-500 dark:text-gray-400">{appointment.patientId?.email} {appointment.patientId?.phone && `· ${appointment.patientId.phone}`}</p>
           <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
@@ -108,15 +111,18 @@ export default function DoctorAppointmentDetail() {
                 </div>
               ) : (
                 <div className="flex items-center gap-2 text-xs text-gray-400">
-                  <RefreshCw className="w-3.5 h-3.5 animate-spin" /> AI summary unavailable — being generated
+                  <motion.span animate={{ rotate: 360 }} transition={{ duration: 1.2, repeat: Infinity, ease: 'linear' }}>
+                    <RefreshCw className="w-3.5 h-3.5" />
+                  </motion.span>
+                  AI summary unavailable — being generated
                 </div>
               )}
             </div>
           )}
-        </div>
+        </motion.div>
 
         {appointment.status === 'completed' ? (
-          <div className="bg-white dark:bg-slate-800 rounded-3xl p-6 border border-gray-100 dark:border-slate-700 shadow-sm">
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, delay: 0.1, ease: EASE }} className="bg-white dark:bg-slate-800 rounded-3xl p-6 border border-gray-100 dark:border-slate-700 shadow-sm">
             <h2 className="font-bold text-gray-900 dark:text-white mb-2">Visit Notes</h2>
             <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">{appointment.doctorNotes}</p>
             {appointment.prescription?.length > 0 && (
@@ -132,9 +138,15 @@ export default function DoctorAppointmentDetail() {
                 </div>
               </>
             )}
-          </div>
+          </motion.div>
         ) : appointment.status === 'confirmed' ? (
-          <form onSubmit={handleComplete} className="bg-white dark:bg-slate-800 rounded-3xl p-6 border border-gray-100 dark:border-slate-700 shadow-sm">
+          <motion.form
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.45, delay: 0.1, ease: EASE }}
+            onSubmit={handleComplete}
+            className="bg-white dark:bg-slate-800 rounded-3xl p-6 border border-gray-100 dark:border-slate-700 shadow-sm"
+          >
             <h2 className="font-bold text-gray-900 dark:text-white mb-3">Complete Visit</h2>
 
             <label className="block text-sm font-bold text-gray-700 dark:text-gray-200 mb-2">Clinical notes</label>
@@ -143,69 +155,82 @@ export default function DoctorAppointmentDetail() {
               onChange={(e) => setNotes(e.target.value)}
               rows={4}
               placeholder="Diagnosis, observations, treatment plan..."
-              className="w-full mb-5 px-4 py-3 rounded-2xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm text-gray-900 dark:text-white resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full mb-5 px-4 py-3 rounded-2xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm text-gray-900 dark:text-white resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 transition-shadow"
             />
 
             <label className="block text-sm font-bold text-gray-700 dark:text-gray-200 mb-2">Prescription</label>
             <div className="space-y-3 mb-3">
-              {prescription.map((row, i) => (
-                <div key={i} className="grid grid-cols-2 sm:grid-cols-5 gap-2 items-start bg-gray-50 dark:bg-slate-900 rounded-xl p-3">
-                  <input
-                    placeholder="Medication"
-                    value={row.medication}
-                    onChange={(e) => updateRow(i, 'medication', e.target.value)}
-                    className="col-span-2 sm:col-span-1 px-2.5 py-2 rounded-lg border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs text-gray-900 dark:text-white"
-                  />
-                  <input
-                    placeholder="Dosage"
-                    value={row.dosage}
-                    onChange={(e) => updateRow(i, 'dosage', e.target.value)}
-                    className="px-2.5 py-2 rounded-lg border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs text-gray-900 dark:text-white"
-                  />
-                  <input
-                    placeholder="Frequency (e.g. twice daily)"
-                    value={row.frequency}
-                    onChange={(e) => updateRow(i, 'frequency', e.target.value)}
-                    className="px-2.5 py-2 rounded-lg border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs text-gray-900 dark:text-white"
-                  />
-                  <input
-                    placeholder="Duration (e.g. 5 days)"
-                    value={row.duration}
-                    onChange={(e) => updateRow(i, 'duration', e.target.value)}
-                    className="px-2.5 py-2 rounded-lg border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs text-gray-900 dark:text-white"
-                  />
-                  <div className="flex gap-1">
+              <AnimatePresence>
+                {prescription.map((row, i) => (
+                  <motion.div
+                    key={i}
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, x: 20 }}
+                    transition={{ duration: 0.25 }}
+                    className="grid grid-cols-2 sm:grid-cols-5 gap-2 items-start bg-gray-50 dark:bg-slate-900 rounded-xl p-3"
+                  >
                     <input
-                      placeholder="Instructions"
-                      value={row.instructions}
-                      onChange={(e) => updateRow(i, 'instructions', e.target.value)}
-                      className="flex-1 px-2.5 py-2 rounded-lg border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs text-gray-900 dark:text-white"
+                      placeholder="Medication"
+                      value={row.medication}
+                      onChange={(e) => updateRow(i, 'medication', e.target.value)}
+                      className="col-span-2 sm:col-span-1 px-2.5 py-2 rounded-lg border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs text-gray-900 dark:text-white"
                     />
-                    {prescription.length > 1 && (
-                      <button type="button" onClick={() => removeRow(i)} className="text-red-400 hover:text-red-600 shrink-0">
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    )}
-                  </div>
-                </div>
-              ))}
+                    <input
+                      placeholder="Dosage"
+                      value={row.dosage}
+                      onChange={(e) => updateRow(i, 'dosage', e.target.value)}
+                      className="px-2.5 py-2 rounded-lg border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs text-gray-900 dark:text-white"
+                    />
+                    <input
+                      placeholder="Frequency (e.g. twice daily)"
+                      value={row.frequency}
+                      onChange={(e) => updateRow(i, 'frequency', e.target.value)}
+                      className="px-2.5 py-2 rounded-lg border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs text-gray-900 dark:text-white"
+                    />
+                    <input
+                      placeholder="Duration (e.g. 5 days)"
+                      value={row.duration}
+                      onChange={(e) => updateRow(i, 'duration', e.target.value)}
+                      className="px-2.5 py-2 rounded-lg border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs text-gray-900 dark:text-white"
+                    />
+                    <div className="flex gap-1">
+                      <input
+                        placeholder="Instructions"
+                        value={row.instructions}
+                        onChange={(e) => updateRow(i, 'instructions', e.target.value)}
+                        className="flex-1 px-2.5 py-2 rounded-lg border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs text-gray-900 dark:text-white"
+                      />
+                      {prescription.length > 1 && (
+                        <motion.button whileHover={{ scale: 1.15 }} whileTap={{ scale: 0.9 }} type="button" onClick={() => removeRow(i)} className="text-red-400 hover:text-red-600 shrink-0">
+                          <Trash2 className="w-4 h-4" />
+                        </motion.button>
+                      )}
+                    </div>
+                  </motion.div>
+                ))}
+              </AnimatePresence>
             </div>
-            <button
+            <motion.button
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
               type="button"
               onClick={addRow}
               className="inline-flex items-center gap-1.5 text-xs font-bold text-blue-600 hover:underline mb-5"
             >
               <Plus className="w-3.5 h-3.5" /> Add medication
-            </button>
+            </motion.button>
 
-            <button
+            <motion.button
+              whileHover={{ scale: 1.01 }}
+              whileTap={{ scale: 0.98 }}
               type="submit"
               disabled={submitting}
-              className="w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white font-bold py-3 rounded-2xl text-sm transition-colors"
+              className="w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white font-bold py-3 rounded-2xl text-sm transition-colors shadow-lg shadow-blue-200/40 dark:shadow-none"
             >
               {submitting ? 'Completing visit...' : 'Complete Visit'}
-            </button>
-          </form>
+            </motion.button>
+          </motion.form>
         ) : null}
       </div>
     </div>

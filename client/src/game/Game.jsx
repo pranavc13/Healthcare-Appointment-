@@ -1,8 +1,7 @@
 import { useState, useEffect, useContext, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { collection, addDoc, query, where, getDocs, serverTimestamp } from '@firebase/firestore';
-import { db } from '../firebase/config';
 import { AuthContext } from '../AuthContext';
+import { loadJSON, saveJSON } from '../utils/localStore';
 import { useToast } from '../components/Toast';
 import PageTransition from '../components/PageTransition';
 import {
@@ -251,14 +250,16 @@ function Leaderboard() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    getDocs(query(collection(db, 'gameScores')))
-      .then(snap => {
-        const list = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-        list.sort((a, b) => (b.score ?? 0) - (a.score ?? 0));
-        setScores(list.slice(0, 10));
-      })
-      .catch(() => toast.error('Could not load leaderboard'))
-      .finally(() => setLoading(false));
+    try {
+      const list = loadJSON('jc_game_scores', []);
+      list.sort((a, b) => (b.score ?? 0) - (a.score ?? 0));
+      setScores(list.slice(0, 10));
+    } catch {
+      toast.error('Could not load leaderboard');
+    } finally {
+      setLoading(false);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   if (loading) return <div className="space-y-3">{[1,2,3].map(i => <div key={i} className="h-16 rounded-2xl bg-gray-200 dark:bg-slate-700 animate-pulse" />)}</div>;
@@ -359,12 +360,15 @@ export default function Game() {
 
     if (currentUser) {
       try {
-        await addDoc(collection(db, 'gameScores'), {
-          userId: currentUser.uid,
-          playerName: currentUser.displayName || currentUser.email?.split('@')[0] || 'Player',
+        const list = loadJSON('jc_game_scores', []);
+        list.push({
+          id: `${Date.now()}`,
+          userId: currentUser.id,
+          playerName: currentUser.name || 'Player',
           score, total, pct, gameType,
-          playedAt: serverTimestamp(),
+          playedAt: new Date().toISOString(),
         });
+        saveJSON('jc_game_scores', list);
         toast.success('Score saved!', `You scored ${score}/${total}`);
       } catch {
         // score save failed silently — not a critical error

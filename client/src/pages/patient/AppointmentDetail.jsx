@@ -1,16 +1,32 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, RefreshCw } from 'lucide-react';
 import * as appointmentsService from '../../services/appointmentsService';
 import * as doctorsService from '../../services/doctorsService';
 import { useToast } from '../../components/Toast';
 import { apiErrorMessage } from '../../services/api';
 
+const EASE = [0.22, 1, 0.36, 1];
+
 const URGENCY_COLOR = {
   Low: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300',
   Medium: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300',
   High: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300',
 };
+
+function Section({ children, delay = 0, className = '' }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.45, delay, ease: EASE }}
+      className={`bg-white dark:bg-slate-800 rounded-3xl p-6 border border-gray-100 dark:border-slate-700 shadow-sm mb-5 ${className}`}
+    >
+      {children}
+    </motion.div>
+  );
+}
 
 export default function PatientAppointmentDetail() {
   const { id } = useParams();
@@ -87,11 +103,11 @@ export default function PatientAppointmentDetail() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-slate-900 pt-20 pb-16 px-4">
       <div className="max-w-2xl mx-auto">
-        <Link to="/patient/appointments" className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-blue-600 mb-4">
+        <Link to="/patient/appointments" className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-blue-600 mb-4 transition-colors">
           <ArrowLeft className="w-4 h-4" /> Back to appointments
         </Link>
 
-        <div className="bg-white dark:bg-slate-800 rounded-3xl p-6 border border-gray-100 dark:border-slate-700 shadow-sm mb-5">
+        <Section>
           <p className="font-bold text-gray-900 dark:text-white text-lg">Dr. {appointment.doctorId?.userId?.name}</p>
           <p className="text-sm text-blue-500 font-medium mb-2">{appointment.doctorId?.specialisation}</p>
           <p className="text-sm text-gray-500 dark:text-gray-400">
@@ -110,35 +126,45 @@ export default function PatientAppointmentDetail() {
             </div>
           )}
 
-          {rescheduling && (
-            <div className="mt-4 pt-4 border-t border-gray-100 dark:border-slate-700">
-              <input
-                type="date"
-                min={new Date().toISOString().slice(0, 10)}
-                value={newDate}
-                onChange={(e) => loadNewSlots(e.target.value)}
-                className="w-full mb-3 px-4 py-2.5 rounded-xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm text-gray-900 dark:text-white"
-              />
-              {newSlots.length > 0 && (
-                <div className="grid grid-cols-4 gap-2">
-                  {newSlots.map((s) => (
-                    <button
-                      key={s}
-                      disabled={savingReschedule}
-                      onClick={() => handleReschedule(s)}
-                      className="text-xs font-semibold py-2 rounded-lg border border-gray-200 dark:border-slate-700 hover:border-blue-500 hover:text-blue-600"
-                    >
-                      {s}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-          )}
-        </div>
+          <AnimatePresence>
+            {rescheduling && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.3, ease: EASE }}
+                className="mt-4 pt-4 border-t border-gray-100 dark:border-slate-700 overflow-hidden"
+              >
+                <input
+                  type="date"
+                  min={new Date().toISOString().slice(0, 10)}
+                  value={newDate}
+                  onChange={(e) => loadNewSlots(e.target.value)}
+                  className="w-full mb-3 px-4 py-2.5 rounded-xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm text-gray-900 dark:text-white"
+                />
+                {newSlots.length > 0 && (
+                  <div className="grid grid-cols-4 gap-2">
+                    {newSlots.map((s) => (
+                      <motion.button
+                        key={s}
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        disabled={savingReschedule}
+                        onClick={() => handleReschedule(s)}
+                        className="text-xs font-semibold py-2 rounded-lg border border-gray-200 dark:border-slate-700 hover:border-blue-500 hover:text-blue-600"
+                      >
+                        {s}
+                      </motion.button>
+                    ))}
+                  </div>
+                )}
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </Section>
 
         {appointment.symptoms && (
-          <div className="bg-white dark:bg-slate-800 rounded-3xl p-6 border border-gray-100 dark:border-slate-700 shadow-sm mb-5">
+          <Section delay={0.08}>
             <h2 className="font-bold text-gray-900 dark:text-white mb-2">Reported Symptoms</h2>
             <p className="text-sm text-gray-600 dark:text-gray-300">{appointment.symptoms}</p>
 
@@ -157,14 +183,17 @@ export default function PatientAppointmentDetail() {
               </div>
             ) : (
               <div className="flex items-center gap-2 text-xs text-gray-400">
-                <RefreshCw className="w-3.5 h-3.5 animate-spin" /> AI summary unavailable — being generated
+                <motion.span animate={{ rotate: 360 }} transition={{ duration: 1.2, repeat: Infinity, ease: 'linear' }}>
+                  <RefreshCw className="w-3.5 h-3.5" />
+                </motion.span>
+                AI summary unavailable — being generated
               </div>
             )}
-          </div>
+          </Section>
         )}
 
         {appointment.status === 'completed' && (
-          <div className="bg-white dark:bg-slate-800 rounded-3xl p-6 border border-gray-100 dark:border-slate-700 shadow-sm mb-5">
+          <Section delay={0.16}>
             <h2 className="font-bold text-gray-900 dark:text-white mb-2">Visit Summary</h2>
             {post?.patientFriendlySummary ? (
               <>
@@ -176,7 +205,10 @@ export default function PatientAppointmentDetail() {
               </>
             ) : (
               <div className="flex items-center gap-2 text-xs text-gray-400 mb-3">
-                <RefreshCw className="w-3.5 h-3.5 animate-spin" /> AI summary unavailable — being generated
+                <motion.span animate={{ rotate: 360 }} transition={{ duration: 1.2, repeat: Infinity, ease: 'linear' }}>
+                  <RefreshCw className="w-3.5 h-3.5" />
+                </motion.span>
+                AI summary unavailable — being generated
               </div>
             )}
 
@@ -192,16 +224,16 @@ export default function PatientAppointmentDetail() {
                 <h3 className="text-sm font-bold text-gray-900 dark:text-white mt-4 mb-2">Prescription</h3>
                 <div className="space-y-2">
                   {appointment.prescription.map((p, i) => (
-                    <div key={i} className="bg-gray-50 dark:bg-slate-900 rounded-xl p-3 text-sm">
+                    <motion.div key={i} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.1 + i * 0.05 }} className="bg-gray-50 dark:bg-slate-900 rounded-xl p-3 text-sm">
                       <p className="font-semibold text-gray-900 dark:text-white">{p.medication} — {p.dosage}</p>
                       <p className="text-xs text-gray-500 dark:text-gray-400">{p.frequency}, for {p.duration}</p>
                       {p.instructions && <p className="text-xs text-gray-400 mt-1">{p.instructions}</p>}
-                    </div>
+                    </motion.div>
                   ))}
                 </div>
               </>
             )}
-          </div>
+          </Section>
         )}
       </div>
     </div>

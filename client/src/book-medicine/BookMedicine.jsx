@@ -1,8 +1,7 @@
 import { useState, useContext, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { collection, addDoc, query, where, getDocs, serverTimestamp } from '@firebase/firestore';
-import { db } from '../firebase/config';
 import { AuthContext } from '../AuthContext';
+import { loadJSON, saveJSON } from '../utils/localStore';
 import { useToast } from '../components/Toast';
 import PageTransition from '../components/PageTransition';
 import {
@@ -178,15 +177,15 @@ export default function BookMedicine() {
   useEffect(() => {
     if (tab !== 'orders' || !currentUser) return;
     setLoadingOrders(true);
-    getDocs(query(collection(db, 'orders'), where('userId', '==', currentUser.uid)))
-      .then(snap => {
-        const data = snap.docs
-          .map(d => ({ id: d.id, ...d.data() }))
-          .sort((a, b) => (b.placedAt?.seconds ?? 0) - (a.placedAt?.seconds ?? 0));
-        setOrders(data);
-      })
-      .catch(() => toast.error('Could not load orders'))
-      .finally(() => setLoadingOrders(false));
+    try {
+      const data = loadJSON(`jc_orders_${currentUser.id}`, []);
+      data.sort((a, b) => new Date(b.placedAt) - new Date(a.placedAt));
+      setOrders(data);
+    } catch {
+      toast.error('Could not load orders');
+    } finally {
+      setLoadingOrders(false);
+    }
   }, [tab, currentUser]);
 
   /* Place order */
@@ -195,14 +194,17 @@ export default function BookMedicine() {
     if (cart.length === 0) return;
     setPlacing(true);
     try {
-      await addDoc(collection(db, 'orders'), {
-        userId: currentUser.uid,
+      const key = `jc_orders_${currentUser.id}`;
+      const existing = loadJSON(key, []);
+      existing.unshift({
+        id: `${Date.now()}`,
         userEmail: currentUser.email,
         items: cart.map(({ id, productname, price, qty, img }) => ({ id, productname, price, qty, img })),
         total: cartTotal,
         status: 'Placed',
-        placedAt: serverTimestamp(),
+        placedAt: new Date().toISOString(),
       });
+      saveJSON(key, existing);
       setCart([]);
       setCartOpen(false);
       setOrderSuccess(true);

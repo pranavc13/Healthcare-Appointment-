@@ -9,8 +9,8 @@ import {
 
 const TECH_STACK = [
   { name: 'React 18', desc: 'Frontend UI with hooks, context, and real-time state', color: '#61dafb', icon: '⚛️' },
-  { name: 'Firebase Auth', desc: 'Email/Password + Google OAuth authentication', color: '#ffa000', icon: '🔐' },
-  { name: 'Cloud Firestore', desc: 'Real-time NoSQL database with onSnapshot listeners', color: '#ff6f00', icon: '🔥' },
+  { name: 'JWT + bcrypt', desc: 'Role-based authentication for patients, doctors and admins', color: '#ffa000', icon: '🔐' },
+  { name: 'MongoDB + Mongoose', desc: 'Document database with atomic slot-booking guarantees', color: '#47A248', icon: '🍃' },
   { name: 'React Router v7', desc: 'Client-side routing with protected routes', color: '#ca4245', icon: '🧭' },
   { name: 'Tailwind CSS', desc: 'Utility-first styling with dark mode support', color: '#06b6d4', icon: '🎨' },
   { name: 'Vite 6', desc: 'Lightning-fast build tool and dev server', color: '#646cff', icon: '⚡' },
@@ -74,10 +74,10 @@ const FEATURES = [
 const ARCHITECTURE = [
   { layer: 'Frontend', stack: 'React 18 + Vite + React Router v7', color: 'blue' },
   { layer: 'Styling', stack: 'Tailwind CSS (dark mode, animations, responsive)', color: 'cyan' },
-  { layer: 'Auth', stack: 'Firebase Authentication (Email + Google OAuth)', color: 'orange' },
-  { layer: 'Database', stack: 'Cloud Firestore (real-time, NoSQL)', color: 'yellow' },
-  { layer: 'State', stack: 'React Context API + onSnapshot real-time listeners', color: 'purple' },
-  { layer: 'AI Layer', stack: 'Keyword pattern-matching chatbot engine (Aarohi)', color: 'green' },
+  { layer: 'Backend', stack: 'Node.js + Express REST API', color: 'orange' },
+  { layer: 'Database', stack: 'MongoDB + Mongoose', color: 'yellow' },
+  { layer: 'State', stack: 'React Context API + JWT session', color: 'purple' },
+  { layer: 'AI Layer', stack: 'Gemini API — pre/post-visit summaries', color: 'green' },
   { layer: 'Charts', stack: 'Pure SVG (no external chart library)', color: 'red' },
   { layer: 'Icons', stack: 'lucide-react + react-icons', color: 'gray' },
 ];
@@ -271,7 +271,7 @@ export default function About() {
           <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Jeevan Chakra / Jeevan Chakra</h3>
           <p className="text-gray-600 dark:text-gray-400 text-sm max-w-lg mx-auto leading-relaxed mb-6">
             A full-stack healthcare platform built as a portfolio project.
-            Features real-time Firebase integration, AI-assisted health guidance,
+            Features a JWT-secured Node/MongoDB backend, AI-assisted health guidance,
             analytics dashboards, and a complete patient-doctor ecosystem.
           </p>
           <div className="flex justify-center gap-3 flex-wrap">
