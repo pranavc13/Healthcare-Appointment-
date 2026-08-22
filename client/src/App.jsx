@@ -6,7 +6,6 @@ import {
 import { SearchBar }     from './components/SearchBar';
 import { TopSpecialties } from './components/TopSpecialties';
 import { AuthContext }   from './AuthContext';
-import PatientDashboard  from './patient-dashboard/PatientDashboard';
 import {
   Shield, Clock, Star, HeartPulse, Brain, Stethoscope,
   ArrowRight, CheckCircle, Users, CalendarDays, Award, Sparkles,

@@ -4,7 +4,7 @@ import './index.css';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import ErrorBoundary from './ErrorBoundary.jsx';
-import { AuthProvider } from './AuthContext.jsx';
+import { AuthProvider } from './context/AuthContext.jsx';
 import { ToastProvider } from './components/Toast.jsx';
 import PrivateRoute from './PrivateRoute.jsx';
 import Layout from './components/layout.jsx';
@@ -14,23 +14,36 @@ import App           from './App.jsx';
 import CustomCursor  from './components/CustomCursor.jsx';
 
 /* Lazy loaded — splits the bundle per route */
-const Dashboard      = lazy(() => import('./doc-dashboard/dashboard.jsx'));
 const SignupPage      = lazy(() => import('./signup/signup.jsx'));
-const LoginPage       = lazy(() => import('./login/login.jsx'));
+const LoginPage        = lazy(() => import('./login/login.jsx'));
 const NGO             = lazy(() => import('./NGOs/ngo.jsx'));
-const SearchPage      = lazy(() => import('./search/search.jsx'));
-const StartPage       = lazy(() => import('./doc-dashboard/start/start.jsx'));
-const View            = lazy(() => import('./search/view.jsx'));
-const Appointments    = lazy(() => import('./appointments/appointments.jsx'));
-const Settings        = lazy(() => import('./settings/settings.jsx'));
 const AIAssistant     = lazy(() => import('./ai-assistant/AIAssistant.jsx'));
 const Emergency       = lazy(() => import('./emergency/Emergency.jsx'));
 const About           = lazy(() => import('./about/About.jsx'));
-const MedicalRecords  = lazy(() => import('./medical-records/MedicalRecords.jsx'));
 const FAQ             = lazy(() => import('./faq/FAQ.jsx'));
 const HealthGame      = lazy(() => import('./game/Game.jsx'));
 const BMITracker      = lazy(() => import('./bmi-tracker/BMITracker.jsx'));
 const BookMedicine    = lazy(() => import('./book-medicine/BookMedicine.jsx'));
+const MedicalRecords  = lazy(() => import('./medical-records/MedicalRecords.jsx'));
+
+/* Patient portal */
+const PatientDashboard      = lazy(() => import('./pages/patient/Dashboard.jsx'));
+const PatientDoctors        = lazy(() => import('./pages/patient/Doctors.jsx'));
+const PatientBookAppointment = lazy(() => import('./pages/patient/BookAppointment.jsx'));
+const PatientAppointments   = lazy(() => import('./pages/patient/Appointments.jsx'));
+const PatientAppointmentDetail = lazy(() => import('./pages/patient/AppointmentDetail.jsx'));
+const PatientCalendarConnect = lazy(() => import('./pages/patient/CalendarConnect.jsx'));
+
+/* Doctor portal */
+const DoctorDashboard       = lazy(() => import('./pages/doctor/Dashboard.jsx'));
+const DoctorAppointmentDetail = lazy(() => import('./pages/doctor/AppointmentDetail.jsx'));
+const DoctorProfile         = lazy(() => import('./pages/doctor/Profile.jsx'));
+const DoctorCalendarConnect = lazy(() => import('./pages/doctor/CalendarConnect.jsx'));
+
+/* Admin portal */
+const AdminDashboard        = lazy(() => import('./pages/admin/Dashboard.jsx'));
+const AdminDoctors          = lazy(() => import('./pages/admin/Doctors.jsx'));
+const AdminDoctorEdit       = lazy(() => import('./pages/admin/DoctorEdit.jsx'));
 
 function PageLoader() {
   return (
@@ -74,8 +87,6 @@ function AnimatedRoutes() {
         <Route path="/" element={<Layout />}>
           <Route index element={<App />} />
           <Route path="help"          element={<NGO />} />
-          <Route path="search"        element={<SearchPage />} />
-          <Route path="view"          element={<View />} />
           <Route path="emergency"     element={<Emergency />} />
           <Route path="about"         element={<About />} />
           <Route path="ai-assistant"  element={<AIAssistant />} />
@@ -83,19 +94,31 @@ function AnimatedRoutes() {
           <Route path="game"          element={<HealthGame />} />
           <Route path="bmi-tracker"   element={<BMITracker />} />
           <Route path="book-medicine" element={<BookMedicine />} />
-
-          <Route path="appointments"    element={<PrivateRoute><Appointments /></PrivateRoute>} />
-          <Route path="settings"        element={<PrivateRoute><Settings /></PrivateRoute>} />
           <Route path="medical-records" element={<PrivateRoute><MedicalRecords /></PrivateRoute>} />
+
+          {/* Patient portal */}
+          <Route path="patient/dashboard"            element={<PrivateRoute roles={['patient']}><PatientDashboard /></PrivateRoute>} />
+          <Route path="patient/doctors"               element={<PrivateRoute roles={['patient']}><PatientDoctors /></PrivateRoute>} />
+          <Route path="patient/doctors/:id/book"      element={<PrivateRoute roles={['patient']}><PatientBookAppointment /></PrivateRoute>} />
+          <Route path="patient/appointments"          element={<PrivateRoute roles={['patient']}><PatientAppointments /></PrivateRoute>} />
+          <Route path="patient/appointments/:id"      element={<PrivateRoute roles={['patient']}><PatientAppointmentDetail /></PrivateRoute>} />
+          <Route path="patient/calendar-connect"      element={<PrivateRoute roles={['patient']}><PatientCalendarConnect /></PrivateRoute>} />
+
+          {/* Doctor portal */}
+          <Route path="doctor/dashboard"              element={<PrivateRoute roles={['doctor']}><DoctorDashboard /></PrivateRoute>} />
+          <Route path="doctor/appointments/:id"       element={<PrivateRoute roles={['doctor']}><DoctorAppointmentDetail /></PrivateRoute>} />
+          <Route path="doctor/profile"                element={<PrivateRoute roles={['doctor']}><DoctorProfile /></PrivateRoute>} />
+          <Route path="doctor/calendar-connect"       element={<PrivateRoute roles={['doctor']}><DoctorCalendarConnect /></PrivateRoute>} />
+
+          {/* Admin portal */}
+          <Route path="admin/dashboard"               element={<PrivateRoute roles={['admin']}><AdminDashboard /></PrivateRoute>} />
+          <Route path="admin/doctors"                 element={<PrivateRoute roles={['admin']}><AdminDoctors /></PrivateRoute>} />
+          <Route path="admin/doctors/:id"             element={<PrivateRoute roles={['admin']}><AdminDoctorEdit /></PrivateRoute>} />
         </Route>
 
         {/* Auth routes — no Layout */}
-        <Route path="/signup" element={<SignupPage />} />
-        <Route path="/login"  element={<LoginPage />} />
-
-        {/* Doctor routes — no Layout */}
-        <Route path="/dashboard"       element={<PrivateRoute><Dashboard /></PrivateRoute>} />
-        <Route path="/dashboard/start" element={<PrivateRoute><StartPage /></PrivateRoute>} />
+        <Route path="/register" element={<SignupPage />} />
+        <Route path="/login"    element={<LoginPage />} />
 
         {/* 404 */}
         <Route path="*" element={<NotFound />} />

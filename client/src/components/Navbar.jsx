@@ -1,11 +1,9 @@
 import { useState, useContext, useEffect, useRef } from 'react';
-import { Link, NavLink } from 'react-router-dom';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { FiMenu, FiX } from 'react-icons/fi';
 import { Sun, Moon, ChevronDown } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AuthContext } from '../AuthContext';
-import { signOut } from '@firebase/auth';
-import { auth } from '../firebase/config';
 import NotificationCenter from './NotificationCenter';
 
 const TOOLS = [
@@ -16,6 +14,8 @@ const TOOLS = [
   { to: '/help',          label: '🤝 NGOs'          },
   { to: '/faq',           label: '❓ FAQ'           },
 ];
+
+const ROLE_HOME = { patient: '/patient/dashboard', doctor: '/doctor/dashboard', admin: '/admin/dashboard' };
 
 function useDarkMode() {
   const [dark, setDark] = useState(() => {
@@ -31,7 +31,8 @@ function useDarkMode() {
 }
 
 export function Navbar() {
-  const { currentUser, userType } = useContext(AuthContext);
+  const { currentUser, role, logout } = useContext(AuthContext);
+  const navigate = useNavigate();
   const [mobileOpen, setMobileOpen]   = useState(false);
   const [avatarOpen, setAvatarOpen]   = useState(false);
   const [toolsOpen, setToolsOpen]     = useState(false);
@@ -39,7 +40,8 @@ export function Navbar() {
   const [dark, toggleDark]            = useDarkMode();
   const toolsRef = useRef(null);
 
-  const initial = currentUser?.email?.charAt(0).toUpperCase() ?? '?';
+  const initial = currentUser?.name?.charAt(0).toUpperCase() ?? '?';
+  const homePath = ROLE_HOME[role] || '/';
 
   /* shadow on scroll */
   useEffect(() => {
@@ -48,10 +50,11 @@ export function Navbar() {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  const handleLogout = async () => {
-    await signOut(auth);
+  const handleLogout = () => {
+    logout();
     setAvatarOpen(false);
     setMobileOpen(false);
+    navigate('/');
   };
 
   /* close dropdowns on outside click */
@@ -66,13 +69,6 @@ export function Navbar() {
     if (toolsOpen) document.addEventListener('mousedown', h);
     return () => document.removeEventListener('mousedown', h);
   }, [toolsOpen]);
-
-  const navLinkClass = ({ isActive }) =>
-    `relative text-sm font-semibold transition-all duration-200 pb-0.5 group ${
-      isActive
-        ? 'text-blue-600 dark:text-blue-400'
-        : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white'
-    }`;
 
   const dropdownVariants = {
     hidden:  { opacity: 0, y: -6, scale: 0.97 },
@@ -90,7 +86,7 @@ export function Navbar() {
         <div className="flex items-center justify-between h-[68px]">
 
           {/* ── Logo + Brand ── */}
-          <Link to="/" className="flex items-center gap-3 shrink-0 group">
+          <Link to={currentUser ? homePath : '/'} className="flex items-center gap-3 shrink-0 group">
             <motion.div
               whileHover={{ scale: 1.08, rotate: 3 }}
               transition={{ type: 'spring', stiffness: 300, damping: 18 }}
@@ -116,8 +112,10 @@ export function Navbar() {
           <div className="hidden md:flex items-center gap-1 ml-6">
             {[
               { to: '/', label: 'Home', end: true },
-              { to: '/search', label: 'Find Doctors' },
-              ...(currentUser && userType === 'patient' ? [{ to: '/appointments', label: 'Appointments' }] : []),
+              ...(role === 'patient' ? [{ to: '/patient/doctors', label: 'Find Doctors' }] : []),
+              ...(role === 'patient' ? [{ to: '/patient/appointments', label: 'Appointments' }] : []),
+              ...(role === 'doctor' ? [{ to: '/doctor/dashboard', label: 'Dashboard' }] : []),
+              ...(role === 'admin' ? [{ to: '/admin/doctors', label: 'Doctors' }] : []),
               { to: '/emergency', label: 'Emergency' },
             ].map(({ to, label, end }) => (
               <NavLink key={to} to={to} end={end} className={({ isActive }) =>
@@ -210,10 +208,7 @@ export function Navbar() {
                     onClick={() => setAvatarOpen(v => !v)}
                     className="flex items-center justify-center w-9 h-9 rounded-full overflow-hidden ring-2 ring-blue-500 ring-offset-2 dark:ring-offset-slate-900 focus:outline-none shadow-lg shadow-blue-200/50 dark:shadow-none"
                   >
-                    {currentUser.photoURL
-                      ? <img src={currentUser.photoURL} alt="Avatar" className="w-full h-full object-cover" />
-                      : <div className="w-full h-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold text-sm">{initial}</div>
-                    }
+                    <div className="w-full h-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold text-sm">{initial}</div>
                   </motion.button>
 
                   <AnimatePresence>
@@ -227,35 +222,43 @@ export function Navbar() {
                       >
                         <div className="px-4 py-3.5 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-slate-800 dark:to-slate-700 border-b border-gray-100 dark:border-slate-700">
                           <p className="text-sm font-bold text-gray-900 dark:text-white truncate">
-                            {currentUser.displayName || currentUser.email}
+                            {currentUser.name || currentUser.email}
                           </p>
-                          <p className="text-xs text-blue-500 capitalize font-semibold mt-0.5">{userType ?? 'User'}</p>
+                          <p className="text-xs text-blue-500 capitalize font-semibold mt-0.5">{role ?? 'User'}</p>
                         </div>
 
                         <div className="p-1.5">
-                          {userType === 'doctor' && (
-                            <Link to="/dashboard" onClick={() => setAvatarOpen(false)} className="flex items-center gap-2 px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-xl transition-colors font-medium">
-                              📊 My Dashboard
-                            </Link>
-                          )}
-                          {userType === 'patient' && (
+                          <Link to={homePath} onClick={() => setAvatarOpen(false)} className="flex items-center gap-2 px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-xl transition-colors font-medium">
+                            📊 My Dashboard
+                          </Link>
+                          {role === 'patient' && (
                             <>
-                              <Link to="/appointments" onClick={() => setAvatarOpen(false)} className="flex items-center gap-2 px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-xl transition-colors font-medium">
+                              <Link to="/patient/appointments" onClick={() => setAvatarOpen(false)} className="flex items-center gap-2 px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-xl transition-colors font-medium">
                                 📅 Appointments
                               </Link>
                               <Link to="/medical-records" onClick={() => setAvatarOpen(false)} className="flex items-center gap-2 px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-xl transition-colors font-medium">
                                 🩺 Medical Records
                               </Link>
+                              <Link to="/patient/calendar-connect" onClick={() => setAvatarOpen(false)} className="flex items-center gap-2 px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-xl transition-colors font-medium">
+                                🗓️ Calendar
+                              </Link>
                             </>
                           )}
-                          {TOOLS.map(t => (
+                          {role === 'doctor' && (
+                            <>
+                              <Link to="/doctor/profile" onClick={() => setAvatarOpen(false)} className="flex items-center gap-2 px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-xl transition-colors font-medium">
+                                ⚙️ Profile
+                              </Link>
+                              <Link to="/doctor/calendar-connect" onClick={() => setAvatarOpen(false)} className="flex items-center gap-2 px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-xl transition-colors font-medium">
+                                🗓️ Calendar
+                              </Link>
+                            </>
+                          )}
+                          {role !== 'admin' && TOOLS.map(t => (
                             <Link key={t.to} to={t.to} onClick={() => setAvatarOpen(false)} className="flex items-center gap-2 px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-xl transition-colors font-medium">
                               {t.label}
                             </Link>
                           ))}
-                          <Link to="/settings" onClick={() => setAvatarOpen(false)} className="flex items-center gap-2 px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-xl transition-colors font-medium">
-                            ⚙️ Settings
-                          </Link>
                           <div className="mt-1 pt-1 border-t border-gray-100 dark:border-slate-700">
                             <button onClick={handleLogout} className="w-full text-left px-3 py-2 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl transition-colors font-medium">
                               🚪 Sign Out
@@ -273,7 +276,7 @@ export function Navbar() {
                   Log in
                 </Link>
                 <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
-                  <Link to="/signup" className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-sm font-bold px-5 py-2.5 rounded-xl transition-all shadow-lg shadow-blue-200/50 dark:shadow-none">
+                  <Link to="/register" className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-sm font-bold px-5 py-2.5 rounded-xl transition-all shadow-lg shadow-blue-200/50 dark:shadow-none">
                     Get Started
                   </Link>
                 </motion.div>
@@ -314,16 +317,22 @@ export function Navbar() {
               <div className="py-3 space-y-0.5">
                 {[
                   { to: '/', label: '🏠 Home', end: true },
-                  { to: '/search', label: '🔍 Find Doctors' },
+                  ...(role === 'patient' ? [{ to: '/patient/doctors', label: '🔍 Find Doctors' }] : []),
                   { to: '/emergency', label: '🚨 Emergency' },
                   ...TOOLS,
                   { to: '/about', label: 'ℹ️ About' },
-                  ...(currentUser && userType === 'patient' ? [
-                    { to: '/appointments',    label: '📅 Appointments'    },
-                    { to: '/medical-records', label: '🩺 Medical Records' },
+                  ...(role === 'patient' ? [
+                    { to: '/patient/appointments', label: '📅 Appointments'    },
+                    { to: '/medical-records',      label: '🩺 Medical Records' },
                   ] : []),
-                  ...(currentUser && userType === 'doctor' ? [{ to: '/dashboard', label: '📊 Dashboard' }] : []),
-                  ...(currentUser ? [{ to: '/settings', label: '⚙️ Settings' }] : []),
+                  ...(role === 'doctor' ? [
+                    { to: '/doctor/dashboard', label: '📊 Dashboard' },
+                    { to: '/doctor/profile',   label: '⚙️ Profile'   },
+                  ] : []),
+                  ...(role === 'admin' ? [
+                    { to: '/admin/dashboard', label: '📊 Dashboard' },
+                    { to: '/admin/doctors',   label: '🩺 Doctors'   },
+                  ] : []),
                 ].map(({ to, label, end }, i) => (
                   <motion.div
                     key={to}
@@ -355,7 +364,7 @@ export function Navbar() {
                     <Link to="/login" onClick={() => setMobileOpen(false)} className="flex-1 text-center py-2.5 border border-gray-200 dark:border-slate-600 rounded-xl text-sm font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-slate-800 transition-colors">
                       Log in
                     </Link>
-                    <Link to="/signup" onClick={() => setMobileOpen(false)} className="flex-1 text-center py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl text-sm font-bold shadow-lg shadow-blue-200/50">
+                    <Link to="/register" onClick={() => setMobileOpen(false)} className="flex-1 text-center py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl text-sm font-bold shadow-lg shadow-blue-200/50">
                       Get Started
                     </Link>
                   </div>
