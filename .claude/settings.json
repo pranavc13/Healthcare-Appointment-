@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git remote *)",
+      "Bash(git config *)",
+      "Bash(git ls-remote *)",
+      "Bash(git ls-tree *)",
+      "Bash(cd \"c:\\\\Users\\\\prana\\\\Downloads\\\\JeevanChakra-master\" && mv _legacy_backup ../JeevanChakra-legacy-backup && ls -la)"
+    ],
+    "additionalDirectories": [
+      "c:\\Users\\prana\\Downloads"
+    ]
+  }
+}
