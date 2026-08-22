@@ -85,11 +85,13 @@ const confirmAppointment = asyncHandler(async (req, res) => {
   appointment.heldUntil = null;
   await appointment.save();
 
-  const [doctorProfile, doctorUser, patientUser] = await Promise.all([
+  const [doctorProfile, patientUser] = await Promise.all([
     DoctorProfile.findById(appointment.doctorId),
-    DoctorProfile.findById(appointment.doctorId).then((d) => (d ? User.findById(d.userId) : null)),
-    User.findById(appointment.patientId),
+    User.findById(appointment.patientId).select('+googleCalendarRefreshToken'),
   ]);
+  const doctorUser = doctorProfile
+    ? await User.findById(doctorProfile.userId).select('+googleCalendarRefreshToken')
+    : null;
 
   // Fire-and-forget: don't make the patient wait on Gemini before their booking confirms.
   if (appointment.symptoms) {
@@ -134,8 +136,10 @@ const cancelAppointment = asyncHandler(async (req, res) => {
   }
 
   const doctorProfile = await DoctorProfile.findById(appointment.doctorId);
-  const doctorUser = doctorProfile ? await User.findById(doctorProfile.userId) : null;
-  const patientUser = await User.findById(appointment.patientId);
+  const doctorUser = doctorProfile
+    ? await User.findById(doctorProfile.userId).select('+googleCalendarRefreshToken')
+    : null;
+  const patientUser = await User.findById(appointment.patientId).select('+googleCalendarRefreshToken');
 
   appointment.status = 'cancelled';
   await appointment.save();
@@ -213,8 +217,8 @@ const rescheduleAppointment = asyncHandler(async (req, res) => {
   oldAppointment.googleCalendarEventId_doctor = undefined;
   await oldAppointment.save();
 
-  const doctorUser = await User.findById(doctor.userId);
-  const patientUser = await User.findById(req.user._id);
+  const doctorUser = await User.findById(doctor.userId).select('+googleCalendarRefreshToken');
+  const patientUser = await User.findById(req.user._id).select('+googleCalendarRefreshToken');
   if (doctorUser && patientUser) {
     await updateCalendarEvents(newAppointment, patientUser, doctorUser, doctor);
     await notifyBookingConfirmation(newAppointment, patientUser, doctorUser, doctor);
