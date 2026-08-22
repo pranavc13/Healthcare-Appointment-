@@ -1,52 +1,16 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { FcGoogle } from 'react-icons/fc';
-import { SocialButton } from './SocialButton';
 import { InputField } from './InputField';
-import { auth, googleProvider, db } from '../firebase/config';
-import { createUserWithEmailAndPassword, signInWithPopup } from '@firebase/auth';
-import { doc, setDoc, serverTimestamp } from '@firebase/firestore';
+import useAuth from '../hooks/useAuth';
+import { apiErrorMessage } from '../services/api';
 
-function friendlyAuthError(code) {
-  switch (code) {
-    case 'auth/popup-blocked':
-      return 'Popup was blocked by your browser. Please allow popups for this site and try again.';
-    case 'auth/popup-closed-by-user':
-    case 'auth/cancelled-popup-request':
-      return null;
-    case 'auth/unauthorized-domain':
-      return 'This domain is not authorised for Google Sign-In. Please contact support.';
-    case 'auth/email-already-in-use':
-      return 'An account with this email already exists. Please log in instead.';
-    case 'auth/weak-password':
-      return 'Password must be at least 6 characters.';
-    case 'auth/network-request-failed':
-      return 'Network error. Check your internet connection and try again.';
-    default:
-      return null;
-  }
-}
-
-const generateSearchKeywords = (name, specialty) => {
-  const words = [...name.toLowerCase().split(' '), ...specialty.toLowerCase().split(' ')];
-  return [...new Set([name.toLowerCase(), specialty.toLowerCase(), ...words])];
-};
-
+// Public self-registration is patient-only — doctor and admin accounts are created
+// by an admin (see /admin/doctors) and the seed script, respectively.
 export default function SignupPage() {
-  const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    password: '',
-    specialty: '',
-    location: '',
-    licenseNumber: '',
-    experience: '',
-  });
+  const [formData, setFormData] = useState({ firstName: '', lastName: '', email: '', password: '', phone: '' });
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
-  const [googleLoading, setGoogleLoading] = useState(false);
-  const [userType, setUserType] = useState('patient');
+  const { register } = useAuth();
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -54,100 +18,20 @@ export default function SignupPage() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  /* Email/password signup */
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setSubmitting(true);
-    const { email, password, firstName, lastName, specialty, location, licenseNumber, experience } = formData;
     try {
-      const { user } = await createUserWithEmailAndPassword(auth, email, password);
-      const name = `${firstName} ${lastName}`.trim();
-
-      let userData = {
-        uid: user.uid,
-        firstName,
-        lastName,
-        email,
-        role: userType,
-        createdAt: serverTimestamp(),
-      };
-
-      let collectionName = 'patients';
-
-      if (userType === 'doctor') {
-        collectionName = 'doctors';
-        userData = {
-          ...userData,
-          specialty,
-          location,
-          name,
-          experience: experience ? parseInt(experience, 10) : null,
-          licenseNumber: licenseNumber || null,
-          verified: false,
-          searchKeywords: generateSearchKeywords(name, specialty),
-        };
-      }
-
-      await setDoc(doc(db, collectionName, user.uid), userData);
-      navigate(userType === 'doctor' ? '/dashboard' : '/');
+      const name = `${formData.firstName} ${formData.lastName}`.trim();
+      await register({ name, email: formData.email, password: formData.password, phone: formData.phone });
+      navigate('/patient/dashboard');
     } catch (err) {
-      const msg = friendlyAuthError(err.code);
-      setError(msg || err.message);
+      setError(apiErrorMessage(err, 'Could not create your account. Please try again.'));
     } finally {
       setSubmitting(false);
     }
   };
-
-  /* Google signup — uses merge:true so re-signing doesn't overwrite existing data */
-  const handleGoogleSignIn = async () => {
-    setGoogleLoading(true);
-    setError('');
-    try {
-      const { user } = await signInWithPopup(auth, googleProvider);
-      const displayName = user.displayName || '';
-      const nameParts = displayName.trim().split(' ');
-      const firstName = nameParts[0] || '';
-      const lastName = nameParts.slice(1).join(' ') || '';
-      const name = displayName;
-
-      let userData = {
-        uid: user.uid,
-        firstName,
-        lastName,
-        name,
-        email: user.email,
-        role: userType,
-        photoURL: user.photoURL || '',
-        createdAt: serverTimestamp(),
-      };
-
-      let collectionName = 'patients';
-
-      if (userType === 'doctor') {
-        collectionName = 'doctors';
-        userData = {
-          ...userData,
-          specialty: formData.specialty,
-          location: formData.location,
-          verified: false,
-          searchKeywords: generateSearchKeywords(name, formData.specialty || ''),
-        };
-      }
-
-      await setDoc(doc(db, collectionName, user.uid), userData, { merge: true });
-      navigate(userType === 'doctor' ? '/dashboard' : '/');
-    } catch (err) {
-      const msg = friendlyAuthError(err.code);
-      if (msg !== null) {
-        setError(msg || err.message);
-      }
-    } finally {
-      setGoogleLoading(false);
-    }
-  };
-
-  const busy = submitting || googleLoading;
 
   return (
     <div className="min-h-screen flex text-left">
@@ -165,50 +49,11 @@ export default function SignupPage() {
           </div>
 
           <h1 className="text-2xl sm:text-3xl font-bold mb-2">Create a free account</h1>
-          <p className="text-gray-500 mb-6">Sign up as a</p>
+          <p className="text-gray-500 mb-6 text-sm">
+            Sign up as a patient to book appointments. Are you a doctor?{' '}
+            <span className="text-gray-600">Ask your clinic admin to add you.</span>
+          </p>
 
-          {/* Toggle User Type */}
-          <div className="flex mb-6 rounded-lg overflow-hidden border border-gray-200">
-            <button
-              type="button"
-              disabled={busy}
-              className={`flex-1 py-3 font-medium transition-colors ${
-                userType === 'patient' ? 'bg-green-500 text-white' : 'bg-white text-gray-600 hover:bg-gray-50'
-              }`}
-              onClick={() => setUserType('patient')}
-            >
-              Patient
-            </button>
-            <button
-              type="button"
-              disabled={busy}
-              className={`flex-1 py-3 font-medium transition-colors ${
-                userType === 'doctor' ? 'bg-blue-500 text-white' : 'bg-white text-gray-600 hover:bg-gray-50'
-              }`}
-              onClick={() => setUserType('doctor')}
-            >
-              Doctor
-            </button>
-          </div>
-
-          {/* Google Sign-Up */}
-          <SocialButton
-            icon={FcGoogle}
-            provider="Google"
-            className="bg-blue-600 mb-3"
-            onClick={handleGoogleSignIn}
-            loading={googleLoading}
-            disabled={busy}
-          />
-
-          {/* Separator */}
-          <div className="my-6 flex items-center">
-            <div className="flex-1 border-t border-gray-300" />
-            <span className="px-4 text-gray-500 text-sm">OR</span>
-            <div className="flex-1 border-t border-gray-300" />
-          </div>
-
-          {/* Error Message */}
           {error && (
             <div className="flex items-start gap-2 bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg px-4 py-3 mb-4">
               <svg className="w-4 h-4 mt-0.5 shrink-0" fill="currentColor" viewBox="0 0 20 20">
@@ -218,7 +63,6 @@ export default function SignupPage() {
             </div>
           )}
 
-          {/* Sign-Up Form */}
           <form onSubmit={handleSubmit}>
             <InputField
               label="First Name"
@@ -227,7 +71,7 @@ export default function SignupPage() {
               value={formData.firstName}
               onChange={handleChange}
               required
-              disabled={busy}
+              disabled={submitting}
             />
 
             <InputField
@@ -237,7 +81,7 @@ export default function SignupPage() {
               value={formData.lastName}
               onChange={handleChange}
               required
-              disabled={busy}
+              disabled={submitting}
             />
 
             <InputField
@@ -248,7 +92,17 @@ export default function SignupPage() {
               value={formData.email}
               onChange={handleChange}
               required
-              disabled={busy}
+              disabled={submitting}
+            />
+
+            <InputField
+              label="Phone Number"
+              type="tel"
+              placeholder="+91 98765 43210"
+              name="phone"
+              value={formData.phone}
+              onChange={handleChange}
+              disabled={submitting}
             />
 
             <InputField
@@ -260,59 +114,18 @@ export default function SignupPage() {
               onChange={handleChange}
               required
               minLength={6}
-              disabled={busy}
+              disabled={submitting}
             />
-
-            {/* Doctor-only fields */}
-            {userType === 'doctor' && (
-              <>
-                <InputField
-                  label="Specialty"
-                  placeholder="Cardiologist"
-                  name="specialty"
-                  value={formData.specialty}
-                  onChange={handleChange}
-                  required
-                  disabled={busy}
-                />
-                <InputField
-                  label="Location"
-                  placeholder="Mumbai"
-                  name="location"
-                  value={formData.location}
-                  onChange={handleChange}
-                  required
-                  disabled={busy}
-                />
-                <InputField
-                  label="Years of Experience"
-                  type="number"
-                  placeholder="5"
-                  name="experience"
-                  value={formData.experience}
-                  onChange={handleChange}
-                  disabled={busy}
-                />
-                <InputField
-                  label="Medical License Number (optional)"
-                  placeholder="MCI-2024-XXXXX"
-                  name="licenseNumber"
-                  value={formData.licenseNumber}
-                  onChange={handleChange}
-                  disabled={busy}
-                />
-              </>
-            )}
 
             <button
               type="submit"
-              disabled={busy}
+              disabled={submitting}
               className="w-full bg-green-500 text-white py-3 rounded-lg font-medium hover:bg-green-600 transition-colors disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2 mb-4"
             >
               {submitting && (
                 <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
               )}
-              {submitting ? 'Creating account...' : userType === 'doctor' ? 'Sign up as Doctor' : 'Sign up as Patient'}
+              {submitting ? 'Creating account...' : 'Sign up as Patient'}
             </button>
           </form>
 
