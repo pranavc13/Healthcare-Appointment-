@@ -8,6 +8,7 @@ import { AuthProvider } from './context/AuthContext.jsx';
 import { ToastProvider } from './components/Toast.jsx';
 import PrivateRoute from './PrivateRoute.jsx';
 import Layout from './components/layout.jsx';
+import PortalLayout from './components/PortalLayout.jsx';
 
 /* Eagerly loaded (always needed) */
 import App           from './App.jsx';
@@ -95,7 +96,10 @@ function AnimatedRoutes() {
           <Route path="bmi-tracker"   element={<BMITracker />} />
           <Route path="book-medicine" element={<BookMedicine />} />
           <Route path="medical-records" element={<PrivateRoute><MedicalRecords /></PrivateRoute>} />
+        </Route>
 
+        {/* Portal routes — Sidebar + TopBar shell instead of the marketing Navbar */}
+        <Route element={<PortalLayout />}>
           {/* Patient portal */}
           <Route path="patient/dashboard"            element={<PrivateRoute roles={['patient']}><PatientDashboard /></PrivateRoute>} />
           <Route path="patient/doctors"               element={<PrivateRoute roles={['patient']}><PatientDoctors /></PrivateRoute>} />

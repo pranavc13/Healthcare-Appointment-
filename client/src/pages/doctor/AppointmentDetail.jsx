@@ -1,20 +1,22 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Plus, Trash2, RefreshCw } from 'lucide-react';
+import { ArrowLeft, Plus, Trash2, RefreshCw, Sparkles, Mail, Phone } from 'lucide-react';
 import * as doctorPortalService from '../../services/doctorPortalService';
 import { useToast } from '../../components/Toast';
 import { apiErrorMessage } from '../../services/api';
-
-const EASE = [0.22, 1, 0.36, 1];
-
-const URGENCY_COLOR = {
-  Low: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300',
-  Medium: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300',
-  High: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300',
-};
+import { Card, Badge, Button, Input, Select, Table } from '../../components/ui';
 
 const EMPTY_ROW = { medication: '', dosage: '', frequency: '', duration: '', instructions: '' };
+const FREQUENCIES = ['Once daily', 'Twice daily', 'Three times daily', 'As needed'];
+
+function AISummaryPending() {
+  return (
+    <div className="flex items-center gap-2 text-sm text-text-muted">
+      <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+      AI summary unavailable — being generated
+    </div>
+  );
+}
 
 export default function DoctorAppointmentDetail() {
   const { id } = useParams();
@@ -69,169 +71,154 @@ export default function DoctorAppointmentDetail() {
     }
   };
 
-  if (loading) return <div className="min-h-screen pt-24 text-center text-gray-400">Loading...</div>;
-  if (!appointment) return <div className="min-h-screen pt-24 text-center text-gray-400">Appointment not found.</div>;
+  if (loading) return null;
+  if (!appointment) return <Card><p className="text-center text-text-muted py-8">Appointment not found.</p></Card>;
 
   const pre = appointment.preVisitSummary;
 
-  return (
-    <div className="min-h-screen bg-gray-50 dark:bg-slate-900 pt-20 pb-16 px-4">
-      <div className="max-w-2xl mx-auto">
-        <Link to="/doctor/dashboard" className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-blue-600 mb-4 transition-colors">
-          <ArrowLeft className="w-4 h-4" /> Back to dashboard
-        </Link>
+  const prescriptionColumns = [
+    { key: 'medication', header: 'Medication' },
+    { key: 'dosage', header: 'Dosage' },
+    { key: 'frequency', header: 'Frequency' },
+    { key: 'duration', header: 'Duration' },
+  ];
 
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, ease: EASE }} className="bg-white dark:bg-slate-800 rounded-3xl p-6 border border-gray-100 dark:border-slate-700 shadow-sm mb-5">
-          <p className="font-bold text-gray-900 dark:text-white text-lg">{appointment.patientId?.name}</p>
-          <p className="text-sm text-gray-500 dark:text-gray-400">{appointment.patientId?.email} {appointment.patientId?.phone && `· ${appointment.patientId.phone}`}</p>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-            {new Date(appointment.date).toLocaleDateString('en-IN', { weekday: 'long', month: 'long', day: 'numeric' })} · {appointment.startTime}
-          </p>
+  return (
+    <div className="space-y-6">
+      <Link to="/doctor/dashboard" className="inline-flex items-center gap-1.5 text-sm text-text-secondary dark:text-slate-400 hover:text-primary transition-colors">
+        <ArrowLeft className="w-4 h-4" /> Back to dashboard
+      </Link>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+        {/* Left column — patient info */}
+        <div className="space-y-6">
+          <Card>
+            <div className="flex items-start justify-between mb-2">
+              <p className="font-semibold text-text-primary dark:text-white text-lg">{appointment.patientId?.name}</p>
+              <Badge variant={appointment.status}>{appointment.status}</Badge>
+            </div>
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-text-secondary dark:text-slate-400">
+              {appointment.patientId?.email && (
+                <span className="inline-flex items-center gap-1.5"><Mail className="w-3.5 h-3.5" /> {appointment.patientId.email}</span>
+              )}
+              {appointment.patientId?.phone && (
+                <span className="inline-flex items-center gap-1.5"><Phone className="w-3.5 h-3.5" /> {appointment.patientId.phone}</span>
+              )}
+            </div>
+            <p className="text-sm text-text-secondary dark:text-slate-400 mt-2">
+              {new Date(appointment.date).toLocaleDateString('en-IN', { weekday: 'long', month: 'long', day: 'numeric' })} · {appointment.startTime}
+            </p>
+          </Card>
 
           {appointment.symptoms && (
-            <div className="mt-4 pt-4 border-t border-gray-100 dark:border-slate-700">
-              <h3 className="text-sm font-bold text-gray-900 dark:text-white mb-1">Reported Symptoms</h3>
-              <p className="text-sm text-gray-600 dark:text-gray-300 mb-3">{appointment.symptoms}</p>
+            <Card>
+              <h3 className="text-base font-semibold text-text-primary dark:text-white mb-2">Reported Symptoms</h3>
+              <p className="text-sm text-text-secondary dark:text-slate-300 border-l-4 border-blue-200 dark:border-blue-800 bg-gray-50 dark:bg-slate-900 rounded-r-lg p-4 mb-4">
+                {appointment.symptoms}
+              </p>
 
-              <h3 className="text-sm font-bold text-gray-900 dark:text-white mb-2">AI Pre-Visit Summary</h3>
+              <h3 className="text-base font-semibold text-text-primary dark:text-white mb-3 inline-flex items-center gap-1.5">
+                <Sparkles className="w-4 h-4 text-primary" /> Pre-Visit Analysis <span className="text-xs font-normal text-text-muted">(AI-generated)</span>
+              </h3>
               {pre?.chiefComplaint ? (
                 <div>
-                  <span className={`inline-block text-[10px] font-bold px-2.5 py-1 rounded-full mb-2 ${URGENCY_COLOR[pre.urgencyLevel] || ''}`}>
-                    {pre.urgencyLevel} urgency
-                  </span>
-                  <p className="text-sm text-gray-600 dark:text-gray-300 mb-2">{pre.chiefComplaint}</p>
+                  <Badge variant={(pre.urgencyLevel || '').toLowerCase()} className="mb-3">{pre.urgencyLevel} urgency</Badge>
+                  <p className="text-sm text-text-secondary dark:text-slate-300 mb-3">{pre.chiefComplaint}</p>
                   {pre.suggestedQuestions?.length > 0 && (
                     <>
-                      <p className="text-xs font-bold text-gray-500 dark:text-gray-400 mb-1">Suggested questions to ask:</p>
-                      <ul className="list-disc list-inside text-xs text-gray-500 dark:text-gray-400 space-y-1">
+                      <p className="text-xs font-medium text-text-muted uppercase tracking-wide mb-1.5">Suggested questions to ask</p>
+                      <ol className="list-decimal list-inside text-sm text-text-secondary dark:text-slate-300 space-y-1">
                         {pre.suggestedQuestions.map((q, i) => <li key={i}>{q}</li>)}
-                      </ul>
+                      </ol>
                     </>
                   )}
                 </div>
               ) : (
-                <div className="flex items-center gap-2 text-xs text-gray-400">
-                  <motion.span animate={{ rotate: 360 }} transition={{ duration: 1.2, repeat: Infinity, ease: 'linear' }}>
-                    <RefreshCw className="w-3.5 h-3.5" />
-                  </motion.span>
-                  AI summary unavailable — being generated
-                </div>
+                <AISummaryPending />
               )}
-            </div>
+            </Card>
           )}
-        </motion.div>
+        </div>
 
-        {appointment.status === 'completed' ? (
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, delay: 0.1, ease: EASE }} className="bg-white dark:bg-slate-800 rounded-3xl p-6 border border-gray-100 dark:border-slate-700 shadow-sm">
-            <h2 className="font-bold text-gray-900 dark:text-white mb-2">Visit Notes</h2>
-            <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">{appointment.doctorNotes}</p>
-            {appointment.prescription?.length > 0 && (
-              <>
-                <h3 className="text-sm font-bold text-gray-900 dark:text-white mb-2">Prescription</h3>
-                <div className="space-y-2">
-                  {appointment.prescription.map((p, i) => (
-                    <div key={i} className="bg-gray-50 dark:bg-slate-900 rounded-xl p-3 text-sm">
-                      <p className="font-semibold text-gray-900 dark:text-white">{p.medication} — {p.dosage}</p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">{p.frequency}, for {p.duration}</p>
+        {/* Right column — doctor actions */}
+        <div>
+          {appointment.status === 'completed' ? (
+            <Card>
+              <h3 className="text-base font-semibold text-text-primary dark:text-white mb-2">Visit Notes</h3>
+              <p className="text-sm text-text-secondary dark:text-slate-300 mb-5">{appointment.doctorNotes}</p>
+              {appointment.prescription?.length > 0 && (
+                <>
+                  <p className="text-xs font-medium text-text-muted uppercase tracking-wide mb-2">Prescription</p>
+                  <Card fullBleed>
+                    <Table columns={prescriptionColumns} data={appointment.prescription} keyField="medication" />
+                  </Card>
+                </>
+              )}
+            </Card>
+          ) : appointment.status === 'confirmed' ? (
+            <Card>
+              <form onSubmit={handleComplete}>
+                <h3 className="text-base font-semibold text-text-primary dark:text-white mb-4">Complete this visit</h3>
+
+                <label className="block text-xs font-medium text-text-muted uppercase tracking-wide mb-1.5">Clinical notes</label>
+                <textarea
+                  value={notes}
+                  onChange={(e) => setNotes(e.target.value)}
+                  rows={8}
+                  placeholder="Diagnosis, observations, treatment plan..."
+                  className="w-full mb-5 px-3 py-2.5 rounded-lg border border-border dark:border-slate-700 bg-white dark:bg-slate-900 text-sm text-text-primary dark:text-white resize-none focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-primary transition"
+                />
+
+                <p className="text-sm font-semibold text-text-primary dark:text-white mb-2">Prescription</p>
+                <div className="space-y-3 mb-3">
+                  {prescription.map((row, i) => (
+                    <div key={i} className="border border-border dark:border-slate-700 rounded-lg p-4 bg-gray-50 dark:bg-slate-900 space-y-2 relative">
+                      {prescription.length > 1 && (
+                        <button
+                          type="button"
+                          onClick={() => removeRow(i)}
+                          className="absolute top-3 right-3 text-text-muted hover:text-danger transition-colors"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      )}
+                      <div className="flex gap-2 pr-6">
+                        <Input placeholder="Medication" value={row.medication} onChange={(e) => updateRow(i, 'medication', e.target.value)} containerClassName="flex-grow" />
+                        <Input placeholder="Dosage" value={row.dosage} onChange={(e) => updateRow(i, 'dosage', e.target.value)} containerClassName="w-28 shrink-0" />
+                      </div>
+                      <div className="flex gap-2">
+                        <Select value={row.frequency} onChange={(e) => updateRow(i, 'frequency', e.target.value)} containerClassName="flex-1">
+                          <option value="">Frequency</option>
+                          {FREQUENCIES.map((f) => <option key={f} value={f}>{f}</option>)}
+                        </Select>
+                        <Input placeholder="Duration (e.g. 7 days)" value={row.duration} onChange={(e) => updateRow(i, 'duration', e.target.value)} containerClassName="flex-1" />
+                      </div>
+                      <textarea
+                        placeholder="Instructions (optional)"
+                        value={row.instructions}
+                        onChange={(e) => updateRow(i, 'instructions', e.target.value)}
+                        rows={1}
+                        className="w-full px-3 py-2 rounded-lg border border-border dark:border-slate-700 bg-white dark:bg-slate-800 text-sm text-text-primary dark:text-white resize-none focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-primary transition"
+                      />
                     </div>
                   ))}
                 </div>
-              </>
-            )}
-          </motion.div>
-        ) : appointment.status === 'confirmed' ? (
-          <motion.form
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.45, delay: 0.1, ease: EASE }}
-            onSubmit={handleComplete}
-            className="bg-white dark:bg-slate-800 rounded-3xl p-6 border border-gray-100 dark:border-slate-700 shadow-sm"
-          >
-            <h2 className="font-bold text-gray-900 dark:text-white mb-3">Complete Visit</h2>
+                <button
+                  type="button"
+                  onClick={addRow}
+                  className="inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:underline mb-6"
+                >
+                  <Plus className="w-3.5 h-3.5" /> Add medication
+                </button>
 
-            <label className="block text-sm font-bold text-gray-700 dark:text-gray-200 mb-2">Clinical notes</label>
-            <textarea
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
-              rows={4}
-              placeholder="Diagnosis, observations, treatment plan..."
-              className="w-full mb-5 px-4 py-3 rounded-2xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm text-gray-900 dark:text-white resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 transition-shadow"
-            />
-
-            <label className="block text-sm font-bold text-gray-700 dark:text-gray-200 mb-2">Prescription</label>
-            <div className="space-y-3 mb-3">
-              <AnimatePresence>
-                {prescription.map((row, i) => (
-                  <motion.div
-                    key={i}
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, x: 20 }}
-                    transition={{ duration: 0.25 }}
-                    className="grid grid-cols-2 sm:grid-cols-5 gap-2 items-start bg-gray-50 dark:bg-slate-900 rounded-xl p-3"
-                  >
-                    <input
-                      placeholder="Medication"
-                      value={row.medication}
-                      onChange={(e) => updateRow(i, 'medication', e.target.value)}
-                      className="col-span-2 sm:col-span-1 px-2.5 py-2 rounded-lg border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs text-gray-900 dark:text-white"
-                    />
-                    <input
-                      placeholder="Dosage"
-                      value={row.dosage}
-                      onChange={(e) => updateRow(i, 'dosage', e.target.value)}
-                      className="px-2.5 py-2 rounded-lg border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs text-gray-900 dark:text-white"
-                    />
-                    <input
-                      placeholder="Frequency (e.g. twice daily)"
-                      value={row.frequency}
-                      onChange={(e) => updateRow(i, 'frequency', e.target.value)}
-                      className="px-2.5 py-2 rounded-lg border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs text-gray-900 dark:text-white"
-                    />
-                    <input
-                      placeholder="Duration (e.g. 5 days)"
-                      value={row.duration}
-                      onChange={(e) => updateRow(i, 'duration', e.target.value)}
-                      className="px-2.5 py-2 rounded-lg border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs text-gray-900 dark:text-white"
-                    />
-                    <div className="flex gap-1">
-                      <input
-                        placeholder="Instructions"
-                        value={row.instructions}
-                        onChange={(e) => updateRow(i, 'instructions', e.target.value)}
-                        className="flex-1 px-2.5 py-2 rounded-lg border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs text-gray-900 dark:text-white"
-                      />
-                      {prescription.length > 1 && (
-                        <motion.button whileHover={{ scale: 1.15 }} whileTap={{ scale: 0.9 }} type="button" onClick={() => removeRow(i)} className="text-red-400 hover:text-red-600 shrink-0">
-                          <Trash2 className="w-4 h-4" />
-                        </motion.button>
-                      )}
-                    </div>
-                  </motion.div>
-                ))}
-              </AnimatePresence>
-            </div>
-            <motion.button
-              whileHover={{ scale: 1.03 }}
-              whileTap={{ scale: 0.97 }}
-              type="button"
-              onClick={addRow}
-              className="inline-flex items-center gap-1.5 text-xs font-bold text-blue-600 hover:underline mb-5"
-            >
-              <Plus className="w-3.5 h-3.5" /> Add medication
-            </motion.button>
-
-            <motion.button
-              whileHover={{ scale: 1.01 }}
-              whileTap={{ scale: 0.98 }}
-              type="submit"
-              disabled={submitting}
-              className="w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white font-bold py-3 rounded-2xl text-sm transition-colors shadow-lg shadow-blue-200/40 dark:shadow-none"
-            >
-              {submitting ? 'Completing visit...' : 'Complete Visit'}
-            </motion.button>
-          </motion.form>
-        ) : null}
+                <Button type="submit" size="lg" loading={submitting} className="w-full">
+                  Complete Visit
+                </Button>
+                <p className="text-xs text-text-muted text-center mt-3">This will generate a patient summary and send it via email.</p>
+              </form>
+            </Card>
+          ) : null}
+        </div>
       </div>
     </div>
   );

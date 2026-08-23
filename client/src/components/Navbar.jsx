@@ -94,13 +94,13 @@ export function Navbar() {
             >
               <img
                 src="/logo.png"
-                alt="Jeevan Chakra"
+                alt="DocConnect"
                 className="w-11 h-11 object-contain drop-shadow-sm group-hover:drop-shadow-[0_0_8px_rgba(34,197,94,0.5)] transition-all duration-300"
               />
             </motion.div>
             <div className="flex flex-col leading-none">
               <span className="text-[19px] font-black tracking-tight bg-gradient-to-r from-green-600 via-blue-600 to-orange-500 bg-clip-text text-transparent drop-shadow-sm">
-                Jeevan Chakra
+                DocConnect
               </span>
               <span className="text-[9px] font-semibold tracking-[0.18em] text-gray-400 dark:text-slate-500 uppercase">
                 Healthcare Platform

@@ -1,20 +1,23 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import { Clock, Calendar as CalendarIcon } from 'lucide-react';
 import * as appointmentsService from '../../services/appointmentsService';
-import AppointmentTimeline from '../../components/AppointmentTimeline';
 import { useToast } from '../../components/Toast';
 import { apiErrorMessage } from '../../services/api';
-
-const STATUS_BADGE = {
-  pending: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300',
-  confirmed: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300',
-  completed: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300',
-  cancelled: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300',
-  rescheduled: 'bg-gray-100 text-gray-700 dark:bg-slate-700 dark:text-gray-300',
-};
+import { Card, Badge, Button, EmptyState } from '../../components/ui';
+import { AppointmentCardSkeleton } from '../../components/ui/Skeleton';
 
 const TABS = ['Upcoming', 'Past', 'Cancelled'];
+
+function DateBlock({ date }) {
+  const d = new Date(date);
+  return (
+    <div className="w-14 h-14 rounded-lg bg-primary-light dark:bg-blue-900/20 text-primary flex flex-col items-center justify-center shrink-0">
+      <span className="text-lg font-bold leading-none">{d.getDate()}</span>
+      <span className="text-[10px] font-medium uppercase mt-0.5">{d.toLocaleDateString('en-IN', { month: 'short' })}</span>
+    </div>
+  );
+}
 
 export default function PatientAppointments() {
   const [appointments, setAppointments] = useState([]);
@@ -59,88 +62,72 @@ export default function PatientAppointments() {
   });
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-slate-900 pt-20 pb-16 px-4">
-      <div className="max-w-3xl mx-auto">
-        <motion.h1 initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }} className="text-2xl font-black text-gray-900 dark:text-white mb-6">
-          My Appointments
-        </motion.h1>
+    <div className="space-y-6">
+      <div className="flex gap-6 border-b border-border dark:border-slate-700">
+        {TABS.map((t) => (
+          <button
+            key={t}
+            onClick={() => setTab(t)}
+            className={`pb-3 text-sm font-medium border-b-2 -mb-px transition-colors ${
+              tab === t ? 'text-primary border-primary' : 'text-text-muted border-transparent hover:text-text-secondary'
+            }`}
+          >
+            {t}
+          </button>
+        ))}
+      </div>
 
-        <div className="flex gap-2 mb-6">
-          {TABS.map((t, i) => (
-            <motion.button
-              key={t}
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.05 }}
-              whileHover={{ scale: 1.04 }}
-              whileTap={{ scale: 0.96 }}
-              onClick={() => setTab(t)}
-              className={`text-sm font-bold px-4 py-2 rounded-xl transition-colors ${
-                tab === t ? 'bg-blue-600 text-white shadow-md shadow-blue-200/50' : 'bg-white dark:bg-slate-800 text-gray-500 dark:text-gray-400 border border-gray-200 dark:border-slate-700'
-              }`}
-            >
-              {t}
-            </motion.button>
-          ))}
+      {loading ? (
+        <div className="space-y-3">
+          <AppointmentCardSkeleton /><AppointmentCardSkeleton /><AppointmentCardSkeleton />
         </div>
-
-        {loading ? (
-          <div className="space-y-4">
-            {[1, 2, 3].map((i) => <div key={i} className="h-28 rounded-3xl bg-gray-100 dark:bg-slate-800 animate-pulse" />)}
-          </div>
-        ) : filtered.length === 0 ? (
-          <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-sm text-gray-400">No appointments here yet.</motion.p>
-        ) : (
-          <div className="space-y-4">
-            <AnimatePresence mode="popLayout">
-              {filtered.map((a, i) => (
-                <motion.div
-                  key={a._id}
-                  layout
-                  initial={{ opacity: 0, y: 16 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, x: -20 }}
-                  transition={{ duration: 0.35, delay: Math.min(i * 0.05, 0.3), ease: [0.22, 1, 0.36, 1] }}
-                  whileHover={{ y: -3 }}
-                  className="bg-white dark:bg-slate-800 rounded-3xl p-5 border border-gray-100 dark:border-slate-700 shadow-sm hover:shadow-lg transition-shadow duration-300"
-                >
-                  <div className="flex items-start justify-between gap-3">
-                    <div>
-                      <p className="font-bold text-gray-900 dark:text-white">Dr. {a.doctorId?.userId?.name}</p>
-                      <p className="text-xs text-blue-500 font-medium">{a.doctorId?.specialisation}</p>
-                      <p className="text-xs text-gray-400 mt-1">
-                        {new Date(a.date).toLocaleDateString('en-IN', { weekday: 'short', month: 'short', day: 'numeric' })} · {a.startTime}
-                      </p>
-                    </div>
-                    <span className={`text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wide ${STATUS_BADGE[a.status]}`}>
-                      {a.status}
-                    </span>
-                  </div>
-
+      ) : filtered.length === 0 ? (
+        <Card>
+          <EmptyState icon={CalendarIcon} title="No appointments here" description={`You have no ${tab.toLowerCase()} appointments.`} />
+        </Card>
+      ) : (
+        <div className="space-y-3">
+          {filtered.map((a) => (
+            <Card key={a._id} className="!p-4">
+              <div className="flex items-start gap-4">
+                <DateBlock date={a.date} />
+                <div className="flex-1 min-w-0">
+                  <p className="font-semibold text-text-primary dark:text-white text-sm">Dr. {a.doctorId?.userId?.name}</p>
+                  <p className="text-sm text-text-secondary dark:text-slate-400">{a.doctorId?.specialisation}</p>
+                  <p className="text-xs text-text-muted mt-0.5 inline-flex items-center gap-1">
+                    <Clock className="w-3 h-3" /> {a.startTime}
+                  </p>
                   {a.preVisitSummary?.urgencyLevel && (
-                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
-                      AI triage: <span className="font-semibold">{a.preVisitSummary.urgencyLevel} urgency</span>
-                    </p>
+                    <Badge variant={a.preVisitSummary.urgencyLevel.toLowerCase()} className="mt-2">
+                      {a.preVisitSummary.urgencyLevel} urgency
+                    </Badge>
                   )}
-
-                  <AppointmentTimeline status={a.status} />
-
-                  <div className="flex items-center gap-4 mt-3">
-                    <Link to={`/patient/appointments/${a._id}`} className="text-xs font-bold text-blue-600 hover:underline">
-                      View details
+                </div>
+                <div className="flex flex-col items-end gap-2 shrink-0">
+                  <Badge variant={a.status}>{a.status}</Badge>
+                  <div className="flex items-center gap-3">
+                    <Link to={`/patient/appointments/${a._id}`} className="text-xs font-medium text-primary hover:underline">
+                      View Details
                     </Link>
                     {['pending', 'confirmed'].includes(a.status) && (
-                      <button onClick={() => handleCancel(a._id)} className="text-xs font-bold text-red-500 hover:underline">
+                      <button onClick={() => handleCancel(a._id)} className="text-xs font-medium text-danger hover:underline">
                         Cancel
                       </button>
                     )}
                   </div>
-                </motion.div>
-              ))}
-            </AnimatePresence>
-          </div>
-        )}
-      </div>
+                  {a.status === 'completed' && (
+                    <Link to={`/patient/appointments/${a._id}`}>
+                      <Button size="sm" variant="secondary" className="!text-success !border-emerald-200 hover:!bg-emerald-50">
+                        View Summary
+                      </Button>
+                    </Link>
+                  )}
+                </div>
+              </div>
+            </Card>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

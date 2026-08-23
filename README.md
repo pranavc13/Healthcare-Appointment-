@@ -1,6 +1,6 @@
-# Jeevan Chakra — Healthcare Appointment & Follow-up Manager
+# DocConnect — Healthcare Appointment & Follow-up Manager
 
-Jeevan Chakra is a full-stack healthcare platform for booking and managing doctor appointments, with AI-assisted pre-visit triage and post-visit summaries, automated email notifications, Google Calendar sync, and role-based portals for patients, doctors, and admins.
+DocConnect is a full-stack healthcare platform for booking and managing doctor appointments, with AI-assisted pre-visit triage and post-visit summaries, automated email notifications, Google Calendar sync, and role-based portals for patients, doctors, and admins.
 
 ## What it does
 
@@ -25,7 +25,7 @@ Jeevan Chakra is a full-stack healthcare platform for booking and managing docto
 ## Project structure
 
 ```
-jeevan-chakra/
+docconnect/
 ├── client/           React frontend (Vite)
 │   └── src/
 │       ├── components/   Shared UI (Navbar, Toast, ui.jsx primitives, booking widgets…)
@@ -52,14 +52,14 @@ jeevan-chakra/
 ### Prerequisites
 
 - Node.js 18+
-- MongoDB running locally (`mongodb://localhost:27017`) — either installed natively, or via Docker: `docker run -d -p 27017:27017 --name jeevan-chakra-mongo mongo:7`
+- MongoDB running locally (`mongodb://localhost:27017`) — either installed natively, or via Docker: `docker run -d -p 27017:27017 --name docconnect-mongo mongo:7`
 - (Optional, for full functionality) A Gemini API key, an SMTP account (e.g. a Gmail App Password), and a Google Cloud OAuth client — see below. The app runs and the core booking flow works without these; AI summaries and emails just log a graceful failure and retry in the background.
 
 ### 1. Clone and install
 
 ```bash
-git clone <this-repo-url> jeevan-chakra
-cd jeevan-chakra
+git clone <this-repo-url> docconnect
+cd docconnect
 npm run install:all   # installs both server/ and client/ dependencies
 ```
 

@@ -7,6 +7,22 @@ export default {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        sans: ['Inter', 'ui-sans-serif', 'system-ui', '-apple-system', 'sans-serif'],
+      },
+      colors: {
+        primary: { DEFAULT: '#2563EB', hover: '#1D4ED8', light: '#EFF6FF' },
+        surface: '#FFFFFF',
+        background: '#F8FAFC',
+        border: { DEFAULT: '#E2E8F0', hover: '#CBD5E1' },
+        'text-primary': '#0F172A',
+        'text-secondary': '#475569',
+        'text-muted': '#94A3B8',
+        success: { DEFAULT: '#059669', bg: '#ECFDF5' },
+        warning: { DEFAULT: '#D97706', bg: '#FFFBEB' },
+        danger: { DEFAULT: '#DC2626', bg: '#FEF2F2' },
+        sidebar: { DEFAULT: '#0F172A', text: '#CBD5E1', active: '#1E293B' },
+      },
       animation: {
         'skeleton': 'skeleton-loading 1.5s infinite linear',
         'fade-in': 'fadeIn 0.3s ease-out',

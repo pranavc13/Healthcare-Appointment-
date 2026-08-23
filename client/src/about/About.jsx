@@ -116,8 +116,8 @@ export default function About() {
                 <Heart className="w-7 h-7 sm:w-8 sm:h-8 text-blue-600" />
               </div>
               <div>
-                <h1 className="text-3xl sm:text-4xl font-black">Jeevan Chakra</h1>
-                <p className="text-blue-200 text-sm sm:text-base">Healthcare Platform · Jeevan Chakra Project</p>
+                <h1 className="text-3xl sm:text-4xl font-black">DocConnect</h1>
+                <p className="text-blue-200 text-sm sm:text-base">Healthcare Platform · DocConnect Project</p>
               </div>
             </div>
             <p className="text-sm sm:text-lg text-blue-100 max-w-2xl leading-relaxed mb-6">
@@ -268,7 +268,7 @@ export default function About() {
           <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
             <Code className="w-8 h-8 text-white" />
           </div>
-          <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Jeevan Chakra / Jeevan Chakra</h3>
+          <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">DocConnect / DocConnect</h3>
           <p className="text-gray-600 dark:text-gray-400 text-sm max-w-lg mx-auto leading-relaxed mb-6">
             A full-stack healthcare platform built as a portfolio project.
             Features a JWT-secured Node/MongoDB backend, AI-assisted health guidance,

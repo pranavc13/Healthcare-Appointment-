@@ -1,30 +1,26 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, RefreshCw } from 'lucide-react';
+import { ArrowLeft, RefreshCw, CheckCircle2, XCircle, Sparkles, ListChecks } from 'lucide-react';
 import * as appointmentsService from '../../services/appointmentsService';
 import * as doctorsService from '../../services/doctorsService';
 import { useToast } from '../../components/Toast';
 import { apiErrorMessage } from '../../services/api';
+import { Card, Badge, Table } from '../../components/ui';
 
-const EASE = [0.22, 1, 0.36, 1];
-
-const URGENCY_COLOR = {
-  Low: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300',
-  Medium: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300',
-  High: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300',
+const STATUS_BANNER = {
+  confirmed: { className: 'bg-emerald-50 border-emerald-200 text-emerald-800 dark:bg-emerald-900/20 dark:border-emerald-900/40 dark:text-emerald-300', icon: CheckCircle2, text: 'Your appointment is confirmed.' },
+  completed: { className: 'bg-blue-50 border-blue-200 text-blue-800 dark:bg-blue-900/20 dark:border-blue-900/40 dark:text-blue-300', icon: CheckCircle2, text: 'Visit completed.' },
+  cancelled: { className: 'bg-red-50 border-red-200 text-red-800 dark:bg-red-900/20 dark:border-red-900/40 dark:text-red-300', icon: XCircle, text: 'This appointment was cancelled.' },
+  pending: { className: 'bg-amber-50 border-amber-200 text-amber-800 dark:bg-amber-900/20 dark:border-amber-900/40 dark:text-amber-300', icon: RefreshCw, text: 'Awaiting confirmation.' },
+  rescheduled: { className: 'bg-gray-100 border-gray-200 text-gray-700 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-300', icon: RefreshCw, text: 'This appointment was rescheduled.' },
 };
 
-function Section({ children, delay = 0, className = '' }) {
+function AISummaryPending() {
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.45, delay, ease: EASE }}
-      className={`bg-white dark:bg-slate-800 rounded-3xl p-6 border border-gray-100 dark:border-slate-700 shadow-sm mb-5 ${className}`}
-    >
-      {children}
-    </motion.div>
+    <div className="flex items-center gap-2 text-sm text-text-muted">
+      <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+      AI summary unavailable — being generated
+    </div>
   );
 }
 
@@ -94,147 +90,150 @@ export default function PatientAppointmentDetail() {
     }
   };
 
-  if (loading) return <div className="min-h-screen pt-24 text-center text-gray-400">Loading...</div>;
-  if (!appointment) return <div className="min-h-screen pt-24 text-center text-gray-400">Appointment not found.</div>;
+  if (loading) return null;
+  if (!appointment) return <Card><p className="text-center text-text-muted py-8">Appointment not found.</p></Card>;
 
   const pre = appointment.preVisitSummary;
   const post = appointment.postVisitSummary;
+  const banner = STATUS_BANNER[appointment.status] || STATUS_BANNER.pending;
+  const BannerIcon = banner.icon;
+
+  const prescriptionColumns = [
+    { key: 'medication', header: 'Medication' },
+    { key: 'dosage', header: 'Dosage' },
+    { key: 'frequency', header: 'Frequency' },
+    { key: 'duration', header: 'Duration' },
+  ];
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-slate-900 pt-20 pb-16 px-4">
-      <div className="max-w-2xl mx-auto">
-        <Link to="/patient/appointments" className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-blue-600 mb-4 transition-colors">
-          <ArrowLeft className="w-4 h-4" /> Back to appointments
-        </Link>
+    <div className="space-y-6">
+      <Link to="/patient/appointments" className="inline-flex items-center gap-1.5 text-sm text-text-secondary dark:text-slate-400 hover:text-primary transition-colors">
+        <ArrowLeft className="w-4 h-4" /> Back to appointments
+      </Link>
 
-        <Section>
-          <p className="font-bold text-gray-900 dark:text-white text-lg">Dr. {appointment.doctorId?.userId?.name}</p>
-          <p className="text-sm text-blue-500 font-medium mb-2">{appointment.doctorId?.specialisation}</p>
-          <p className="text-sm text-gray-500 dark:text-gray-400">
-            {new Date(appointment.date).toLocaleDateString('en-IN', { weekday: 'long', month: 'long', day: 'numeric' })} · {appointment.startTime} – {appointment.endTime}
-          </p>
-          <p className="text-xs uppercase font-bold tracking-wide text-gray-400 mt-2">{appointment.status}</p>
+      <div className={`flex items-center gap-2.5 rounded-xl border px-4 py-3 ${banner.className}`}>
+        <BannerIcon className="w-4 h-4 shrink-0" />
+        <span className="text-sm font-medium">{banner.text}</span>
+      </div>
 
-          {['pending', 'confirmed'].includes(appointment.status) && (
-            <div className="flex gap-3 mt-4">
-              <button onClick={() => setRescheduling((v) => !v)} className="text-xs font-bold text-blue-600 hover:underline">
-                Reschedule
-              </button>
-              <button onClick={handleCancel} className="text-xs font-bold text-red-500 hover:underline">
-                Cancel
-              </button>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+        {/* Left column */}
+        <div className="space-y-6">
+          <Card>
+            <div className="flex items-start justify-between mb-3">
+              <div>
+                <p className="font-semibold text-text-primary dark:text-white">Dr. {appointment.doctorId?.userId?.name}</p>
+                <p className="text-sm text-primary">{appointment.doctorId?.specialisation}</p>
+              </div>
+              <Badge variant={appointment.status}>{appointment.status}</Badge>
             </div>
-          )}
+            <p className="text-sm text-text-secondary dark:text-slate-400">
+              {new Date(appointment.date).toLocaleDateString('en-IN', { weekday: 'long', month: 'long', day: 'numeric' })} · {appointment.startTime} – {appointment.endTime}
+            </p>
 
-          <AnimatePresence>
+            {['pending', 'confirmed'].includes(appointment.status) && (
+              <div className="flex gap-4 mt-4 pt-4 border-t border-border dark:border-slate-700">
+                <button onClick={() => setRescheduling((v) => !v)} className="text-sm font-medium text-primary hover:underline">
+                  Reschedule
+                </button>
+                <button onClick={handleCancel} className="text-sm font-medium text-danger hover:underline">
+                  Cancel
+                </button>
+              </div>
+            )}
+
             {rescheduling && (
-              <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
-                exit={{ opacity: 0, height: 0 }}
-                transition={{ duration: 0.3, ease: EASE }}
-                className="mt-4 pt-4 border-t border-gray-100 dark:border-slate-700 overflow-hidden"
-              >
+              <div className="mt-4 pt-4 border-t border-border dark:border-slate-700">
                 <input
                   type="date"
                   min={new Date().toISOString().slice(0, 10)}
                   value={newDate}
                   onChange={(e) => loadNewSlots(e.target.value)}
-                  className="w-full mb-3 px-4 py-2.5 rounded-xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm text-gray-900 dark:text-white"
+                  className="w-full mb-3 h-10 px-3 rounded-lg border border-border dark:border-slate-700 bg-white dark:bg-slate-900 text-sm text-text-primary dark:text-white"
                 />
                 {newSlots.length > 0 && (
                   <div className="grid grid-cols-4 gap-2">
                     {newSlots.map((s) => (
-                      <motion.button
+                      <button
                         key={s}
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
                         disabled={savingReschedule}
                         onClick={() => handleReschedule(s)}
-                        className="text-xs font-semibold py-2 rounded-lg border border-gray-200 dark:border-slate-700 hover:border-blue-500 hover:text-blue-600"
+                        className="text-xs font-medium py-2 rounded-lg border border-border dark:border-slate-700 hover:border-primary hover:text-primary transition-colors"
                       >
                         {s}
-                      </motion.button>
+                      </button>
                     ))}
                   </div>
                 )}
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </Section>
-
-        {appointment.symptoms && (
-          <Section delay={0.08}>
-            <h2 className="font-bold text-gray-900 dark:text-white mb-2">Reported Symptoms</h2>
-            <p className="text-sm text-gray-600 dark:text-gray-300">{appointment.symptoms}</p>
-
-            <h3 className="font-bold text-gray-900 dark:text-white mt-4 mb-2 text-sm">AI Pre-Visit Summary</h3>
-            {pre?.chiefComplaint ? (
-              <div>
-                <span className={`inline-block text-[10px] font-bold px-2.5 py-1 rounded-full mb-2 ${URGENCY_COLOR[pre.urgencyLevel] || ''}`}>
-                  {pre.urgencyLevel} urgency
-                </span>
-                <p className="text-sm text-gray-600 dark:text-gray-300 mb-2">{pre.chiefComplaint}</p>
-                {pre.suggestedQuestions?.length > 0 && (
-                  <ul className="list-disc list-inside text-xs text-gray-500 dark:text-gray-400 space-y-1">
-                    {pre.suggestedQuestions.map((q, i) => <li key={i}>{q}</li>)}
-                  </ul>
-                )}
-              </div>
-            ) : (
-              <div className="flex items-center gap-2 text-xs text-gray-400">
-                <motion.span animate={{ rotate: 360 }} transition={{ duration: 1.2, repeat: Infinity, ease: 'linear' }}>
-                  <RefreshCw className="w-3.5 h-3.5" />
-                </motion.span>
-                AI summary unavailable — being generated
               </div>
             )}
-          </Section>
-        )}
+          </Card>
 
-        {appointment.status === 'completed' && (
-          <Section delay={0.16}>
-            <h2 className="font-bold text-gray-900 dark:text-white mb-2">Visit Summary</h2>
-            {post?.patientFriendlySummary ? (
-              <>
-                <p className="text-sm text-gray-600 dark:text-gray-300 whitespace-pre-wrap mb-3">{post.patientFriendlySummary}</p>
-                <h3 className="text-sm font-bold text-gray-900 dark:text-white mb-1">Medication Schedule</h3>
-                <p className="text-sm text-gray-600 dark:text-gray-300 whitespace-pre-wrap mb-3">{post.medicationSchedule}</p>
-                <h3 className="text-sm font-bold text-gray-900 dark:text-white mb-1">Follow-up Steps</h3>
-                <p className="text-sm text-gray-600 dark:text-gray-300 whitespace-pre-wrap">{post.followUpSteps}</p>
-              </>
-            ) : (
-              <div className="flex items-center gap-2 text-xs text-gray-400 mb-3">
-                <motion.span animate={{ rotate: 360 }} transition={{ duration: 1.2, repeat: Infinity, ease: 'linear' }}>
-                  <RefreshCw className="w-3.5 h-3.5" />
-                </motion.span>
-                AI summary unavailable — being generated
-              </div>
-            )}
+          {appointment.symptoms && (
+            <Card>
+              <h3 className="text-base font-semibold text-text-primary dark:text-white mb-2">Your symptoms</h3>
+              <p className="text-sm text-text-secondary dark:text-slate-300 border-l-4 border-blue-200 dark:border-blue-800 bg-gray-50 dark:bg-slate-900 rounded-r-lg p-4">
+                {appointment.symptoms}
+              </p>
+            </Card>
+          )}
+        </div>
 
-            {appointment.doctorNotes && (
-              <>
-                <h3 className="text-sm font-bold text-gray-900 dark:text-white mt-4 mb-1">Doctor's Notes</h3>
-                <p className="text-sm text-gray-600 dark:text-gray-300">{appointment.doctorNotes}</p>
-              </>
-            )}
-
-            {appointment.prescription?.length > 0 && (
-              <>
-                <h3 className="text-sm font-bold text-gray-900 dark:text-white mt-4 mb-2">Prescription</h3>
-                <div className="space-y-2">
-                  {appointment.prescription.map((p, i) => (
-                    <motion.div key={i} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.1 + i * 0.05 }} className="bg-gray-50 dark:bg-slate-900 rounded-xl p-3 text-sm">
-                      <p className="font-semibold text-gray-900 dark:text-white">{p.medication} — {p.dosage}</p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">{p.frequency}, for {p.duration}</p>
-                      {p.instructions && <p className="text-xs text-gray-400 mt-1">{p.instructions}</p>}
-                    </motion.div>
-                  ))}
+        {/* Right column */}
+        <div className="space-y-6">
+          {appointment.symptoms && (
+            <Card>
+              <h3 className="text-base font-semibold text-text-primary dark:text-white mb-3 inline-flex items-center gap-1.5">
+                <Sparkles className="w-4 h-4 text-primary" /> Pre-Visit Analysis
+              </h3>
+              {pre?.chiefComplaint ? (
+                <div>
+                  <Badge variant={(pre.urgencyLevel || '').toLowerCase()} className="mb-3">{pre.urgencyLevel} urgency</Badge>
+                  <p className="text-sm text-text-secondary dark:text-slate-300 mb-3">{pre.chiefComplaint}</p>
+                  {pre.suggestedQuestions?.length > 0 && (
+                    <>
+                      <p className="text-xs font-medium text-text-muted uppercase tracking-wide mb-1.5">Suggested questions for doctor</p>
+                      <ol className="list-decimal list-inside text-sm text-text-secondary dark:text-slate-300 space-y-1">
+                        {pre.suggestedQuestions.map((q, i) => <li key={i}>{q}</li>)}
+                      </ol>
+                    </>
+                  )}
                 </div>
-              </>
-            )}
-          </Section>
-        )}
+              ) : (
+                <AISummaryPending />
+              )}
+            </Card>
+          )}
+
+          {appointment.status === 'completed' && (
+            <Card>
+              <h3 className="text-base font-semibold text-text-primary dark:text-white mb-3 inline-flex items-center gap-1.5">
+                <ListChecks className="w-4 h-4 text-success" /> Your Visit Summary
+              </h3>
+              {post?.patientFriendlySummary ? (
+                <p className="text-sm text-text-secondary dark:text-slate-300 leading-relaxed whitespace-pre-wrap mb-4">{post.patientFriendlySummary}</p>
+              ) : (
+                <AISummaryPending />
+              )}
+
+              {appointment.prescription?.length > 0 && (
+                <>
+                  <p className="text-xs font-medium text-text-muted uppercase tracking-wide mb-2 mt-4">Medication schedule</p>
+                  <Card fullBleed className="mb-4">
+                    <Table columns={prescriptionColumns} data={appointment.prescription} keyField="medication" />
+                  </Card>
+                </>
+              )}
+
+              {post?.followUpSteps && (
+                <>
+                  <p className="text-xs font-medium text-text-muted uppercase tracking-wide mb-1.5">Follow-up steps</p>
+                  <p className="text-sm text-text-secondary dark:text-slate-300 whitespace-pre-wrap">{post.followUpSteps}</p>
+                </>
+              )}
+            </Card>
+          )}
+        </div>
       </div>
     </div>
   );

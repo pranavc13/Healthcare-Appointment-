@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { CalendarCheck2, ExternalLink } from 'lucide-react';
+import { CalendarCheck2, ExternalLink, CheckCircle2 } from 'lucide-react';
 import * as calendarService from '../services/calendarService';
 import useAuth from '../hooks/useAuth';
 import { useToast } from './Toast';
+import { Card, Button } from './ui';
 
 // Shared by /patient/calendar-connect and /doctor/calendar-connect — the OAuth flow
 // and messaging are identical for both roles.
@@ -32,32 +32,28 @@ export default function CalendarConnectPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-slate-900 pt-20 pb-16 px-4">
-      <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }} className="max-w-md mx-auto text-center">
-        <motion.div
-          initial={{ scale: 0, rotate: -20 }}
-          animate={{ scale: 1, rotate: 0 }}
-          transition={{ type: 'spring', stiffness: 260, damping: 18, delay: 0.1 }}
-          className="w-16 h-16 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-3xl flex items-center justify-center mx-auto mb-5 shadow-lg shadow-blue-200/50"
-        >
-          <CalendarCheck2 className="w-8 h-8 text-white" />
-        </motion.div>
-        <h1 className="text-xl font-black text-gray-900 dark:text-white mb-2">Connect Google Calendar</h1>
-        <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">
+    <div className="max-w-md mx-auto">
+      <Card className="text-center">
+        <div className="w-14 h-14 rounded-xl bg-primary-light dark:bg-blue-900/20 text-primary flex items-center justify-center mx-auto mb-5">
+          <CalendarCheck2 className="w-7 h-7" />
+        </div>
+        <h1 className="text-lg font-semibold text-text-primary dark:text-white mb-2">Connect Google Calendar</h1>
+        <p className="text-sm text-text-secondary dark:text-slate-400 mb-6">
           {user?.googleCalendarConnected
-            ? 'Your Google Calendar is connected. Appointments will automatically sync as events.'
-            : 'Connect your Google Calendar so confirmed appointments are added automatically, and cancellations are removed.'}
+            ? 'Your Google Calendar is connected. Appointments sync automatically as events.'
+            : 'Appointments will automatically sync to your Google Calendar, and cancellations are removed.'}
         </p>
-        <motion.button
-          whileHover={{ scale: 1.03 }}
-          whileTap={{ scale: 0.97 }}
-          onClick={handleConnect}
-          disabled={connecting}
-          className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white font-bold px-6 py-3 rounded-2xl text-sm transition-colors shadow-lg shadow-blue-200/40"
-        >
-          {user?.googleCalendarConnected ? 'Reconnect' : 'Connect'} Google Calendar <ExternalLink className="w-4 h-4" />
-        </motion.button>
-      </motion.div>
+
+        {user?.googleCalendarConnected && (
+          <div className="inline-flex items-center gap-1.5 text-sm font-medium text-success mb-4">
+            <CheckCircle2 className="w-4 h-4" /> Connected
+          </div>
+        )}
+
+        <Button onClick={handleConnect} loading={connecting} rightIcon={ExternalLink} className="w-full">
+          {user?.googleCalendarConnected ? 'Reconnect' : 'Connect with'} Google Calendar
+        </Button>
+      </Card>
     </div>
   );
 }

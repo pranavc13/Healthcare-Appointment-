@@ -1,19 +1,19 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import ReactCalendar from 'react-calendar';
+import 'react-calendar/dist/Calendar.css';
 import { ArrowLeft, CheckCircle, Clock } from 'lucide-react';
 import * as doctorsService from '../../services/doctorsService';
 import * as appointmentsService from '../../services/appointmentsService';
-import { ProgressSteps } from '../../components/ProgessSteps';
 import { useToast } from '../../components/Toast';
 import { apiErrorMessage } from '../../services/api';
+import { Card, Avatar, Button, EmptyState } from '../../components/ui';
 
 const COMMON_SYMPTOMS = ['Fever', 'Headache', 'Cough', 'Fatigue', 'Nausea', 'Body ache', 'Shortness of breath', 'Chest pain'];
-const HOLD_SECONDS = 5 * 60;
-const EASE = [0.22, 1, 0.36, 1];
+const DAY_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
-function todayISO() {
-  return new Date().toISOString().slice(0, 10);
+function toDateOnly(d) {
+  return new Date(d.getFullYear(), d.getMonth(), d.getDate());
 }
 
 export default function BookAppointment() {
@@ -22,16 +22,14 @@ export default function BookAppointment() {
   const toast = useToast();
 
   const [doctor, setDoctor] = useState(null);
-  const [date, setDate] = useState(todayISO());
+  const [date, setDate] = useState(toDateOnly(new Date()));
   const [slots, setSlots] = useState([]);
   const [slotsLoading, setSlotsLoading] = useState(false);
   const [selectedSlot, setSelectedSlot] = useState(null);
 
-  const [step, setStep] = useState(1); // 1: pick slot, 2: symptoms, 3: done
   const [appointmentId, setAppointmentId] = useState(null);
-  const [heldUntil, setHeldUntil] = useState(null);
-  const [secondsLeft, setSecondsLeft] = useState(HOLD_SECONDS);
   const [holding, setHolding] = useState(false);
+  const [confirmedDone, setConfirmedDone] = useState(false);
 
   const [checkedSymptoms, setCheckedSymptoms] = useState([]);
   const [symptomText, setSymptomText] = useState('');
@@ -43,40 +41,33 @@ export default function BookAppointment() {
   }, [doctorId]);
 
   useEffect(() => {
-    if (step !== 1) return;
     setSlotsLoading(true);
     setSelectedSlot(null);
+    setAppointmentId(null);
+    const isoDate = date.toISOString().slice(0, 10);
     doctorsService
-      .getSlots(doctorId, date)
+      .getSlots(doctorId, isoDate)
       .then((data) => setSlots(data.slots))
       .catch(() => setSlots([]))
       .finally(() => setSlotsLoading(false));
-  }, [doctorId, date, step]);
+  }, [doctorId, date]);
 
-  // Countdown for the 5-minute hold, shown to the patient while filling the symptom form.
-  useEffect(() => {
-    if (step !== 2 || !heldUntil) return undefined;
-    const interval = setInterval(() => {
-      const remaining = Math.max(0, Math.round((new Date(heldUntil).getTime() - Date.now()) / 1000));
-      setSecondsLeft(remaining);
-      if (remaining <= 0) {
-        clearInterval(interval);
-        toast.warning('Your hold expired', 'Please pick a slot again.');
-        setStep(1);
-      }
-    }, 1000);
-    return () => clearInterval(interval);
-  }, [step, heldUntil, toast]);
+  const isDayDisabled = (d) => {
+    if (!doctor) return false;
+    const dateOnly = toDateOnly(d);
+    if (dateOnly < toDateOnly(new Date())) return true;
+    const onLeave = (doctor.leaveDays || []).some((l) => toDateOnly(new Date(l)).getTime() === dateOnly.getTime());
+    if (onLeave) return true;
+    const dayName = DAY_NAMES[dateOnly.getDay()];
+    return !(doctor.workingHours || []).some((wh) => wh.day === dayName);
+  };
 
   const handleSelectSlot = async (slot) => {
     setHolding(true);
     try {
-      const result = await appointmentsService.holdSlot({ doctorId, date, startTime: slot });
+      const result = await appointmentsService.holdSlot({ doctorId, date: date.toISOString().slice(0, 10), startTime: slot });
       setAppointmentId(result.appointmentId);
-      setHeldUntil(result.heldUntil);
-      setSecondsLeft(HOLD_SECONDS);
       setSelectedSlot(slot);
-      setStep(2);
     } catch (err) {
       toast.error('Slot unavailable', apiErrorMessage(err));
       setSlots((prev) => prev.filter((s) => s !== slot));
@@ -99,171 +90,144 @@ export default function BookAppointment() {
     setConfirming(true);
     try {
       await appointmentsService.confirmAppointment({ appointmentId, symptoms: combined });
-      setStep(3);
+      setConfirmedDone(true);
     } catch (err) {
       toast.error('Could not confirm appointment', apiErrorMessage(err));
-      if (err.response?.status === 410) setStep(1);
+      if (err.response?.status === 410) {
+        setSelectedSlot(null);
+        setAppointmentId(null);
+      }
     } finally {
       setConfirming(false);
     }
   };
 
-  const mm = String(Math.floor(secondsLeft / 60)).padStart(2, '0');
-  const ss = String(secondsLeft % 60).padStart(2, '0');
-  const urgent = secondsLeft <= 60;
+  if (!doctor) return null;
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-slate-900 pt-20 pb-16 px-4">
-      <div className="max-w-2xl mx-auto">
-        <Link to="/patient/doctors" className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-blue-600 mb-4 transition-colors">
-          <ArrowLeft className="w-4 h-4" /> Back to doctors
-        </Link>
+    <div className="space-y-6">
+      <Link to="/patient/doctors" className="inline-flex items-center gap-1.5 text-sm text-text-secondary dark:text-slate-400 hover:text-primary transition-colors">
+        <ArrowLeft className="w-4 h-4" /> Back to doctors
+      </Link>
 
-        {doctor && (
-          <motion.div initial={{ opacity: 0, x: -12 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.4 }} className="flex items-center gap-3 mb-6">
-            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-black shadow-lg">
-              {doctor.userId?.name?.[0]}
-            </div>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+        {/* Left column: doctor + calendar + slots */}
+        <div className="space-y-6">
+          <Card className="flex items-center gap-3">
+            <Avatar name={doctor.userId?.name} size="lg" />
             <div>
-              <p className="font-bold text-gray-900 dark:text-white">{doctor.userId?.name}</p>
-              <p className="text-xs text-blue-500 font-medium">{doctor.specialisation}</p>
+              <p className="font-semibold text-text-primary dark:text-white">{doctor.userId?.name}</p>
+              <p className="text-sm text-primary">{doctor.specialisation}</p>
+              {doctor.qualifications && <p className="text-xs text-text-muted mt-0.5">{doctor.qualifications}</p>}
             </div>
-          </motion.div>
-        )}
+          </Card>
 
-        <ProgressSteps currentStep={step} totalSteps={3} />
+          <Card>
+            <ReactCalendar
+              value={date}
+              onChange={setDate}
+              minDate={new Date()}
+              tileDisabled={({ date: d }) => isDayDisabled(d)}
+              className="!border-0 !w-full"
+            />
+          </Card>
 
-        <div className="bg-white dark:bg-slate-800 rounded-3xl p-6 border border-gray-100 dark:border-slate-700 shadow-sm overflow-hidden">
-          <AnimatePresence mode="wait">
-            {step === 1 && (
-              <motion.div key="step1" initial={{ opacity: 0, x: 24 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -24 }} transition={{ duration: 0.3, ease: EASE }}>
-                <label className="block text-sm font-bold text-gray-700 dark:text-gray-200 mb-2">Select a date</label>
-                <input
-                  type="date"
-                  value={date}
-                  min={todayISO()}
-                  onChange={(e) => setDate(e.target.value)}
-                  className="w-full mb-6 px-4 py-3 rounded-2xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm text-gray-900 dark:text-white transition-shadow focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                />
-
-                <label className="block text-sm font-bold text-gray-700 dark:text-gray-200 mb-2">Available slots</label>
-                {slotsLoading ? (
-                  <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
-                    {Array.from({ length: 8 }).map((_, i) => (
-                      <div key={i} className="h-10 rounded-xl bg-gray-100 dark:bg-slate-700 animate-pulse" />
-                    ))}
-                  </div>
-                ) : slots.length === 0 ? (
-                  <p className="text-sm text-gray-400">No slots available on this date. Try another day.</p>
-                ) : (
-                  <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
-                    {slots.map((slot, i) => (
-                      <motion.button
-                        key={slot}
-                        initial={{ opacity: 0, y: 8 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: Math.min(i * 0.03, 0.3), duration: 0.25 }}
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        disabled={holding}
-                        onClick={() => handleSelectSlot(slot)}
-                        className="text-sm font-semibold py-2.5 rounded-xl border border-gray-200 dark:border-slate-700 text-gray-700 dark:text-gray-200 hover:border-blue-500 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors disabled:opacity-50"
-                      >
-                        {slot}
-                      </motion.button>
-                    ))}
-                  </div>
-                )}
-              </motion.div>
+          <Card>
+            <h3 className="text-sm font-semibold text-text-primary dark:text-white mb-3">Available slots</h3>
+            {slotsLoading ? (
+              <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
+                {Array.from({ length: 8 }).map((_, i) => (
+                  <div key={i} className="h-10 rounded-lg bg-gray-100 dark:bg-slate-700 animate-pulse" />
+                ))}
+              </div>
+            ) : slots.length === 0 ? (
+              <p className="text-sm text-text-muted">No slots available on this date. Try another day.</p>
+            ) : (
+              <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
+                {slots.map((slot) => (
+                  <button
+                    key={slot}
+                    disabled={holding}
+                    onClick={() => handleSelectSlot(slot)}
+                    className={`text-sm font-medium py-2 rounded-lg border transition-colors disabled:opacity-50 ${
+                      selectedSlot === slot
+                        ? 'bg-primary text-white border-primary'
+                        : 'border-border dark:border-slate-700 text-text-secondary dark:text-slate-300 hover:border-primary hover:bg-primary-light dark:hover:bg-blue-900/20'
+                    }`}
+                  >
+                    {slot}
+                  </button>
+                ))}
+              </div>
             )}
+          </Card>
+        </div>
 
-            {step === 2 && (
-              <motion.form key="step2" onSubmit={handleConfirm} initial={{ opacity: 0, x: 24 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -24 }} transition={{ duration: 0.3, ease: EASE }}>
+        {/* Right column: symptom form / confirmation */}
+        <div className="lg:sticky lg:top-24">
+          {confirmedDone ? (
+            <Card>
+              <EmptyState
+                icon={CheckCircle}
+                title="Appointment confirmed"
+                description="We've sent a confirmation email. Your doctor will review an AI-generated pre-visit summary of your symptoms."
+                action={<Button onClick={() => navigate('/patient/appointments')}>View my appointments</Button>}
+              />
+            </Card>
+          ) : selectedSlot ? (
+            <Card>
+              <form onSubmit={handleConfirm}>
                 <div className="flex items-center justify-between mb-5">
                   <div>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">Holding your slot</p>
-                    <p className="font-bold text-gray-900 dark:text-white">{date} at {selectedSlot}</p>
+                    <p className="text-sm text-text-muted">Holding your slot</p>
+                    <p className="font-semibold text-text-primary dark:text-white">
+                      {date.toLocaleDateString('en-IN', { month: 'short', day: 'numeric' })} at {selectedSlot}
+                    </p>
                   </div>
-                  <motion.div
-                    animate={urgent ? { scale: [1, 1.08, 1] } : {}}
-                    transition={{ duration: 0.8, repeat: urgent ? Infinity : 0 }}
-                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-sm font-bold ${urgent ? 'text-red-600 bg-red-50 dark:bg-red-900/20' : 'text-amber-600 bg-amber-50 dark:bg-amber-900/20'}`}
-                  >
-                    <Clock className="w-4 h-4" /> {mm}:{ss}
-                  </motion.div>
+                  <Clock className="w-5 h-5 text-warning" />
                 </div>
 
-                <label className="block text-sm font-bold text-gray-700 dark:text-gray-200 mb-2">Common symptoms</label>
+                <h3 className="text-base font-semibold text-text-primary dark:text-white mb-3">Tell us about your symptoms</h3>
+
                 <div className="flex flex-wrap gap-2 mb-4">
                   {COMMON_SYMPTOMS.map((s) => (
-                    <motion.button
+                    <button
                       type="button"
                       key={s}
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
                       onClick={() => toggleSymptom(s)}
-                      className={`text-xs font-semibold px-3 py-1.5 rounded-full border transition-colors ${
+                      className={`text-sm font-medium px-3 py-1 rounded-full border transition-colors ${
                         checkedSymptoms.includes(s)
-                          ? 'bg-blue-600 border-blue-600 text-white shadow-md shadow-blue-200/50'
-                          : 'border-gray-200 dark:border-slate-700 text-gray-600 dark:text-gray-300 hover:border-blue-400'
+                          ? 'bg-primary-light text-primary border-blue-200 dark:bg-blue-900/30 dark:border-blue-800'
+                          : 'bg-gray-50 text-text-secondary border-border dark:bg-slate-900 dark:text-slate-300 dark:border-slate-700 hover:border-border-hover'
                       }`}
                     >
                       {s}
-                    </motion.button>
+                    </button>
                   ))}
                 </div>
 
-                <label className="block text-sm font-bold text-gray-700 dark:text-gray-200 mb-2">Describe your symptoms</label>
                 <textarea
                   value={symptomText}
                   onChange={(e) => setSymptomText(e.target.value)}
-                  rows={4}
-                  placeholder="Tell us more about what you're experiencing..."
-                  className="w-full mb-6 px-4 py-3 rounded-2xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm text-gray-900 dark:text-white resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 transition-shadow"
+                  rows={6}
+                  placeholder="Describe your symptoms in detail..."
+                  className="w-full mb-1 px-3 py-2.5 rounded-lg border border-border dark:border-slate-700 bg-white dark:bg-slate-900 text-sm text-text-primary dark:text-white resize-none focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-primary transition"
                 />
+                <p className="text-xs text-text-muted mb-5 text-right">{symptomText.length} characters</p>
 
-                <motion.button
-                  whileHover={{ scale: 1.01 }}
-                  whileTap={{ scale: 0.98 }}
-                  type="submit"
-                  disabled={confirming}
-                  className="w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white font-bold py-3 rounded-2xl text-sm transition-colors shadow-lg shadow-blue-200/40 dark:shadow-none"
-                >
-                  {confirming ? 'Confirming...' : 'Confirm Appointment'}
-                </motion.button>
-              </motion.form>
-            )}
-
-            {step === 3 && (
-              <motion.div key="step3" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.4, ease: EASE }} className="text-center py-6">
-                <motion.div
-                  initial={{ scale: 0, rotate: -30 }}
-                  animate={{ scale: 1, rotate: 0 }}
-                  transition={{ type: 'spring', stiffness: 260, damping: 16, delay: 0.1 }}
-                  className="w-16 h-16 bg-gradient-to-br from-green-400 to-emerald-500 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg shadow-green-200/50"
-                >
-                  <CheckCircle className="w-8 h-8 text-white" />
-                </motion.div>
-                <motion.h2 initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="text-xl font-black text-gray-900 dark:text-white mb-2">
-                  Appointment Confirmed!
-                </motion.h2>
-                <motion.p initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.32 }} className="text-sm text-gray-500 dark:text-gray-400 mb-6">
-                  We've sent a confirmation email. Your doctor will review an AI-generated pre-visit summary of your symptoms.
-                </motion.p>
-                <motion.button
-                  initial={{ opacity: 0, y: 8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.4 }}
-                  whileHover={{ scale: 1.03 }}
-                  whileTap={{ scale: 0.97 }}
-                  onClick={() => navigate('/patient/appointments')}
-                  className="bg-blue-600 hover:bg-blue-700 text-white font-bold px-6 py-3 rounded-2xl text-sm transition-colors shadow-lg shadow-blue-200/40"
-                >
-                  View My Appointments
-                </motion.button>
-              </motion.div>
-            )}
-          </AnimatePresence>
+                <Button type="submit" size="lg" loading={confirming} className="w-full">
+                  Confirm Booking
+                </Button>
+                <p className="text-xs text-text-muted text-center mt-3">
+                  Your slot will be held for 5 minutes while you fill this form.
+                </p>
+              </form>
+            </Card>
+          ) : (
+            <Card>
+              <EmptyState title="Pick a slot" description="Choose an available time on the left to continue." />
+            </Card>
+          )}
         </div>
       </div>
     </div>

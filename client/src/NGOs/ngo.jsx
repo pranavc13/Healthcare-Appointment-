@@ -238,7 +238,7 @@ export default function NGO() {
         {/* ── Footer ── */}
         <footer className="bg-gray-100 dark:bg-slate-950 border-t border-gray-200 dark:border-slate-800 py-10 px-4">
           <div className="max-w-xl mx-auto text-center">
-            <p className="text-xs text-gray-400 dark:text-slate-500">&copy; 2024 Jeevan Chakra. All rights reserved.</p>
+            <p className="text-xs text-gray-400 dark:text-slate-500">&copy; 2024 DocConnect. All rights reserved.</p>
           </div>
         </footer>
 

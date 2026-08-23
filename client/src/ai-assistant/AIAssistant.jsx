@@ -8,7 +8,7 @@ const STORAGE_KEY = 'aarohi_chat_history';
 const WELCOME_MSG = {
   id: 'welcome',
   role: 'bot',
-  text: `Hello! I'm **Aarohi**, your AI health assistant on Jeevan Chakra. 👋\n\nI can help you with symptom guidance, finding specialists, appointment help, and healthcare FAQs.\n\n*Disclaimer: I provide general health information only — not a substitute for professional medical advice. Always consult a qualified doctor for medical decisions.*`,
+  text: `Hello! I'm **Aarohi**, your AI health assistant on DocConnect. 👋\n\nI can help you with symptom guidance, finding specialists, appointment help, and healthcare FAQs.\n\n*Disclaimer: I provide general health information only — not a substitute for professional medical advice. Always consult a qualified doctor for medical decisions.*`,
   time: new Date(),
   suggestions: ['I have a fever', 'How do I book?', 'Emergency numbers', 'Which doctor?'],
 };
@@ -233,7 +233,7 @@ export default function AIAssistant() {
         </form>
 
         <p className="text-center text-xs text-gray-400 mt-3 shrink-0">
-          Powered by Jeevan Chakra AI · Not a substitute for professional medical advice ·{' '}
+          Powered by DocConnect AI · Not a substitute for professional medical advice ·{' '}
           <Link to="/emergency" className="text-blue-500 hover:underline">Emergency Help</Link>
         </p>
       </div>

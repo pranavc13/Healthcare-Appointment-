@@ -64,9 +64,9 @@ export default function SignupPage() {
             transition={{ duration: 0.4, ease: EASE }}
             className="lg:hidden flex items-center gap-3 mb-6"
           >
-            <img src="/logo.png" alt="Jeevan Chakra" className="w-10 h-10 object-contain" />
+            <img src="/logo.png" alt="DocConnect" className="w-10 h-10 object-contain" />
             <div>
-              <p className="font-black text-lg bg-gradient-to-r from-green-600 via-blue-600 to-orange-500 bg-clip-text text-transparent leading-none">Jeevan Chakra</p>
+              <p className="font-black text-lg bg-gradient-to-r from-green-600 via-blue-600 to-orange-500 bg-clip-text text-transparent leading-none">DocConnect</p>
               <p className="text-[10px] text-gray-400 dark:text-slate-500 uppercase tracking-widest">Healthcare Platform</p>
             </div>
           </motion.div>
@@ -217,7 +217,7 @@ export default function SignupPage() {
           transition={{ duration: 0.4, delay: 0.25 }}
           className="relative text-3xl font-black mb-4 text-gray-800 dark:text-white"
         >
-          Welcome to Jeevan Chakra
+          Welcome to DocConnect
         </motion.h2>
         <motion.p
           initial={{ opacity: 0, y: 10 }}
@@ -225,7 +225,7 @@ export default function SignupPage() {
           transition={{ duration: 0.4, delay: 0.35 }}
           className="relative text-gray-600 dark:text-gray-400 text-center max-w-md leading-relaxed"
         >
-          "Your health, your control — Jeevan Chakra simplifies care, secures your records, and connects you to better healthcare anytime, anywhere."
+          "Your health, your control — DocConnect simplifies care, secures your records, and connects you to better healthcare anytime, anywhere."
         </motion.p>
       </div>
     </div>

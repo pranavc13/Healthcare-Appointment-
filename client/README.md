@@ -1,8 +1,8 @@
-# Jeevan Chakra — Healthcare Platform
+# DocConnect — Healthcare Platform
 
 A full-stack, portfolio-grade healthcare platform connecting patients with doctors. Built with React 18, Firebase, and Tailwind CSS.
 
-![Jeevan Chakra](public/logo.png)
+![DocConnect](public/logo.png)
 
 ## Features
 

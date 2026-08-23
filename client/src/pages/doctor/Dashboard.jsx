@@ -1,28 +1,28 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import { CalendarDays, ClipboardList, CalendarRange, CheckCircle2, AlertTriangle, Coffee } from 'lucide-react';
 import * as doctorPortalService from '../../services/doctorPortalService';
 import { useToast } from '../../components/Toast';
 import { apiErrorMessage } from '../../services/api';
-
-const EASE = [0.22, 1, 0.36, 1];
-
-const URGENCY_COLOR = {
-  Low: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300',
-  Medium: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300',
-  High: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300',
-};
-
-const TABS = ['Today', 'Upcoming', 'Completed'];
+import { Card, Stat, Badge, EmptyState } from '../../components/ui';
+import { StatSkeleton, AppointmentCardSkeleton } from '../../components/ui/Skeleton';
 
 function isSameDay(a, b) {
   return new Date(a).toDateString() === new Date(b).toDateString();
 }
 
+function startOfWeek(d) {
+  const s = new Date(d);
+  s.setDate(s.getDate() - s.getDay());
+  s.setHours(0, 0, 0, 0);
+  return s;
+}
+
+const URGENCY_BORDER = { High: 'border-l-danger', Medium: 'border-l-warning', Low: 'border-l-success' };
+
 export default function DoctorDashboard() {
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [tab, setTab] = useState('Today');
   const toast = useToast();
 
   useEffect(() => {
@@ -35,82 +35,105 @@ export default function DoctorDashboard() {
   }, []);
 
   const today = new Date();
-  const filtered = appointments
-    .filter((a) => {
-      if (tab === 'Completed') return a.status === 'completed';
-      if (tab === 'Today') return a.status === 'confirmed' && isSameDay(a.date, today);
-      return a.status === 'confirmed' && !isSameDay(a.date, today) && new Date(a.date) >= today;
-    })
-    .sort((a, b) => new Date(a.date) - new Date(b.date) || a.startTime.localeCompare(b.startTime));
+  const weekStart = startOfWeek(today);
+  const weekEnd = new Date(weekStart.getTime() + 7 * 24 * 60 * 60 * 1000);
+
+  const todaysSchedule = appointments
+    .filter((a) => a.status === 'confirmed' && isSameDay(a.date, today))
+    .sort((a, b) => a.startTime.localeCompare(b.startTime));
+  const pendingReview = appointments.filter((a) => a.status === 'confirmed' && new Date(a.date) <= today);
+  const thisWeek = appointments.filter((a) => ['confirmed', 'completed'].includes(a.status) && new Date(a.date) >= weekStart && new Date(a.date) < weekEnd);
+  const completed = appointments.filter((a) => a.status === 'completed');
+  const highUrgency = appointments.filter((a) => a.status === 'confirmed' && a.preVisitSummary?.urgencyLevel === 'High');
+
+  const nowTime = `${String(today.getHours()).padStart(2, '0')}:${String(today.getMinutes()).padStart(2, '0')}`;
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-slate-900 pt-20 pb-16 px-4">
-      <div className="max-w-4xl mx-auto">
-        <motion.h1 initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }} className="text-2xl font-black text-gray-900 dark:text-white mb-6">
-          Doctor Dashboard
-        </motion.h1>
+    <div className="space-y-8">
+      <div>
+        <h2 className="text-2xl font-bold text-text-primary dark:text-white">Dashboard</h2>
+        <p className="text-sm text-text-secondary dark:text-slate-400 mt-1">
+          {today.toLocaleDateString('en-IN', { weekday: 'long', month: 'long', day: 'numeric' })}
+        </p>
+      </div>
 
-        <div className="flex gap-2 mb-6">
-          {TABS.map((t, i) => (
-            <motion.button
-              key={t}
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.05 }}
-              whileHover={{ scale: 1.04 }}
-              whileTap={{ scale: 0.96 }}
-              onClick={() => setTab(t)}
-              className={`text-sm font-bold px-4 py-2 rounded-xl transition-colors ${
-                tab === t ? 'bg-blue-600 text-white shadow-md shadow-blue-200/50' : 'bg-white dark:bg-slate-800 text-gray-500 dark:text-gray-400 border border-gray-200 dark:border-slate-700'
-              }`}
-            >
-              {t}
-            </motion.button>
-          ))}
-        </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        {loading ? (
+          <>
+            <StatSkeleton /><StatSkeleton /><StatSkeleton /><StatSkeleton />
+          </>
+        ) : (
+          <>
+            <Stat icon={CalendarDays} label="Today's Appointments" value={todaysSchedule.length} iconClassName="text-primary bg-primary-light" />
+            <Stat icon={ClipboardList} label="Pending Review" value={pendingReview.length} iconClassName="text-warning bg-warning-bg" />
+            <Stat icon={CalendarRange} label="This Week" value={thisWeek.length} iconClassName="text-primary bg-primary-light" />
+            <Stat icon={CheckCircle2} label="Completed" value={completed.length} iconClassName="text-success bg-success-bg" />
+          </>
+        )}
+      </div>
+
+      {!loading && highUrgency.length > 0 && (
+        <Card className="!bg-danger-bg !border-red-200 dark:!bg-red-900/20 dark:!border-red-900/40">
+          <h3 className="text-sm font-semibold text-danger inline-flex items-center gap-1.5 mb-3">
+            <AlertTriangle className="w-4 h-4" /> Patients with High Urgency
+          </h3>
+          <div className="space-y-1.5">
+            {highUrgency.map((a) => (
+              <Link key={a._id} to={`/doctor/appointments/${a._id}`} className="flex items-center justify-between text-sm text-red-800 dark:text-red-200 hover:underline">
+                <span>{a.patientId?.name}</span>
+                <span>{a.startTime}</span>
+              </Link>
+            ))}
+          </div>
+        </Card>
+      )}
+
+      <div>
+        <h3 className="text-xl font-semibold text-text-primary dark:text-white mb-4">Today's Schedule</h3>
 
         {loading ? (
           <div className="space-y-3">
-            {[1, 2, 3].map((i) => <div key={i} className="h-20 rounded-2xl bg-gray-100 dark:bg-slate-800 animate-pulse" />)}
+            <AppointmentCardSkeleton /><AppointmentCardSkeleton />
           </div>
-        ) : filtered.length === 0 ? (
-          <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-sm text-gray-400">No appointments here.</motion.p>
+        ) : todaysSchedule.length === 0 ? (
+          <Card>
+            <EmptyState icon={Coffee} title="No appointments today" description="Enjoy your day off!" />
+          </Card>
         ) : (
-          <div className="space-y-3">
-            <AnimatePresence>
-              {filtered.map((a, i) => (
-                <motion.div
-                  key={a._id}
-                  initial={{ opacity: 0, y: 16 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.35, delay: Math.min(i * 0.05, 0.3), ease: EASE }}
-                  whileHover={{ y: -3, scale: 1.005 }}
-                >
-                  <Link
-                    to={`/doctor/appointments/${a._id}`}
-                    className="flex items-center justify-between bg-white dark:bg-slate-800 rounded-2xl p-4 border border-gray-100 dark:border-slate-700 shadow-sm hover:shadow-lg transition-shadow duration-300"
-                  >
-                    <div className="min-w-0">
-                      <p className="font-bold text-gray-900 dark:text-white text-sm truncate">{a.patientId?.name}</p>
-                      <p className="text-xs text-gray-400">
-                        {new Date(a.date).toLocaleDateString('en-IN', { month: 'short', day: 'numeric' })} · {a.startTime}
-                      </p>
-                      {a.symptoms && <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 truncate max-w-md">{a.symptoms}</p>}
-                    </div>
-                    {a.preVisitSummary?.urgencyLevel && (
-                      <motion.span
-                        animate={a.preVisitSummary.urgencyLevel === 'High' ? { scale: [1, 1.06, 1] } : {}}
-                        transition={{ duration: 1, repeat: Infinity }}
-                        className={`shrink-0 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase ${URGENCY_COLOR[a.preVisitSummary.urgencyLevel]}`}
+          <div className="relative pl-6">
+            <div className="absolute left-[7px] top-2 bottom-2 w-px bg-border dark:bg-slate-700" />
+            <div className="space-y-3">
+              {todaysSchedule.map((a) => {
+                const isPast = a.startTime < nowTime;
+                const isNext = !isPast && todaysSchedule.find((x) => x.startTime >= nowTime)?._id === a._id;
+                const urgency = a.preVisitSummary?.urgencyLevel;
+                return (
+                  <div key={a._id} className="relative">
+                    <span className={`absolute -left-[26px] top-5 w-3 h-3 rounded-full ring-4 ring-background dark:ring-slate-900 ${isPast ? 'bg-gray-300 dark:bg-slate-600' : 'bg-primary'}`} />
+                    <Link to={`/doctor/appointments/${a._id}`}>
+                      <Card
+                        hoverable
+                        className={`!p-4 border-l-4 ${urgency ? URGENCY_BORDER[urgency] : 'border-l-border dark:border-l-slate-700'} ${isPast ? 'opacity-60' : ''} ${isNext ? 'ring-2 ring-blue-100 bg-primary-light/30 dark:ring-blue-900/30 dark:bg-blue-900/10' : ''}`}
                       >
-                        {a.preVisitSummary.urgencyLevel}
-                      </motion.span>
-                    )}
-                  </Link>
-                </motion.div>
-              ))}
-            </AnimatePresence>
+                        <div className="flex items-center justify-between gap-4">
+                          <div className="flex items-center gap-4 min-w-0">
+                            <span className="text-sm font-bold text-text-primary dark:text-white w-14 shrink-0">{a.startTime}</span>
+                            <div className="min-w-0">
+                              <p className="text-sm font-semibold text-text-primary dark:text-white truncate">{a.patientId?.name}</p>
+                              {a.symptoms && <p className="text-xs text-text-muted truncate max-w-xs">{a.symptoms}</p>}
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-3 shrink-0">
+                            {urgency && <Badge variant={urgency.toLowerCase()}>{urgency}</Badge>}
+                            <span className="text-xs font-medium text-primary">View</span>
+                          </div>
+                        </div>
+                      </Card>
+                    </Link>
+                  </div>
+                );
+              })}
+            </div>
           </div>
         )}
       </div>
