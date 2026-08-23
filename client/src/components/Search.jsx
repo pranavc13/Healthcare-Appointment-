@@ -6,13 +6,13 @@ import { Star, MapPin, Clock, CheckCircle, Stethoscope, ArrowRight, IndianRupee 
 /* ── Per-specialty themes ──────────────────────────────────────────── */
 const SPECIALTY_THEME = {
   'Cardiologist':       { grad: 'from-rose-500 to-red-600',      pill: 'bg-rose-50 text-rose-700 dark:bg-rose-900/30 dark:text-rose-300',      dot: 'bg-rose-400' },
-  'Dermatologist':      { grad: 'from-pink-500 to-fuchsia-600',   pill: 'bg-pink-50 text-pink-700 dark:bg-pink-900/30 dark:text-pink-300',       dot: 'bg-pink-400' },
+  'Dermatologist':      { grad: 'from-pink-500 to-gold-600',   pill: 'bg-pink-50 text-pink-700 dark:bg-pink-900/30 dark:text-pink-300',       dot: 'bg-pink-400' },
   'Dentist':            { grad: 'from-sky-500 to-brand-700',       pill: 'bg-sky-50 text-sky-700 dark:bg-sky-900/30 dark:text-sky-300',           dot: 'bg-sky-400' },
-  'Gynologist':         { grad: 'from-purple-500 to-violet-600',  pill: 'bg-purple-50 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300', dot: 'bg-purple-400' },
+  'Gynologist':         { grad: 'from-gold-500 to-gold-600',  pill: 'bg-gold-50 text-gold-700 dark:bg-gold-900/30 dark:text-gold-300', dot: 'bg-gold-400' },
   'Psychiatrist':       { grad: 'from-brand-600 to-brand-700',    pill: 'bg-brand-50 text-brand-800 dark:bg-brand-900/30 dark:text-brand-300', dot: 'bg-gold-300' },
   'Ophthalmologist':    { grad: 'from-teal-500 to-cyan-600',      pill: 'bg-teal-50 text-teal-700 dark:bg-teal-900/30 dark:text-teal-300',        dot: 'bg-teal-400' },
   'Orthopedist':        { grad: 'from-amber-500 to-orange-500',   pill: 'bg-amber-50 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300',    dot: 'bg-amber-400' },
-  'Neurologist':        { grad: 'from-violet-500 to-purple-600',  pill: 'bg-violet-50 text-violet-700 dark:bg-violet-900/30 dark:text-violet-300', dot: 'bg-violet-400' },
+  'Neurologist':        { grad: 'from-gold-500 to-gold-600',  pill: 'bg-gold-50 text-gold-700 dark:bg-gold-900/30 dark:text-gold-300', dot: 'bg-gold-400' },
   'Pediatrician':       { grad: 'from-green-500 to-emerald-600',  pill: 'bg-green-50 text-green-700 dark:bg-green-900/30 dark:text-green-300',    dot: 'bg-green-400' },
   'General Physician':  { grad: 'from-brand-600 to-brand-700',    pill: 'bg-brand-50 text-brand-800 dark:bg-brand-900/30 dark:text-brand-300',        dot: 'bg-gold-300' },
   'Nephrologist':       { grad: 'from-cyan-500 to-teal-600',      pill: 'bg-cyan-50 text-cyan-700 dark:bg-cyan-900/30 dark:text-cyan-300',        dot: 'bg-cyan-400' },
@@ -21,9 +21,9 @@ const SPECIALTY_THEME = {
   'Gastroenterologist': { grad: 'from-lime-500 to-green-600',     pill: 'bg-lime-50 text-lime-700 dark:bg-lime-900/30 dark:text-lime-300',        dot: 'bg-lime-400' },
   'Pulmonologist':      { grad: 'from-sky-400 to-brand-600',       pill: 'bg-sky-50 text-sky-700 dark:bg-sky-900/30 dark:text-sky-300',            dot: 'bg-sky-400' },
   'Oncologist':         { grad: 'from-red-600 to-rose-700',       pill: 'bg-red-50 text-red-700 dark:bg-red-900/30 dark:text-red-300',            dot: 'bg-red-400' },
-  'Rheumatologist':     { grad: 'from-purple-600 to-brand-800',  pill: 'bg-purple-50 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300', dot: 'bg-purple-400' },
+  'Rheumatologist':     { grad: 'from-gold-600 to-brand-800',  pill: 'bg-gold-50 text-gold-700 dark:bg-gold-900/30 dark:text-gold-300', dot: 'bg-gold-400' },
   'ENT Specialist':     { grad: 'from-teal-600 to-green-600',     pill: 'bg-teal-50 text-teal-700 dark:bg-teal-900/30 dark:text-teal-300',        dot: 'bg-teal-400' },
-  'Plastic Surgeon':    { grad: 'from-fuchsia-500 to-pink-600',   pill: 'bg-fuchsia-50 text-fuchsia-700 dark:bg-fuchsia-900/30 dark:text-fuchsia-300', dot: 'bg-fuchsia-400' },
+  'Plastic Surgeon':    { grad: 'from-gold-500 to-pink-600',   pill: 'bg-gold-50 text-gold-700 dark:bg-gold-900/30 dark:text-gold-300', dot: 'bg-gold-400' },
   'General Surgeon':    { grad: 'from-brand-600 to-sand-600',     pill: 'bg-cream-100 text-brand-800 dark:bg-brand-800/60 dark:text-brand-200',    dot: 'bg-brand-300' },
 };
 

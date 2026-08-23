@@ -172,7 +172,7 @@ export default function CustomCursor() {
           3. ROUNDED MEDICAL CROSS  (exact cursor position)
           Two overlapping rounded rectangles form a soft ✚ shape.
           Hidden over text inputs so the system text-cursor shows.
-          Color: violet-300 → emerald-300 on hover.
+          Color: gold-300 → emerald-300 on hover.
           Glow: CSS-transitioned drop-shadow (violet → emerald).
       ───────────────────────────────────────────────────────────── */}
       {!overText && (

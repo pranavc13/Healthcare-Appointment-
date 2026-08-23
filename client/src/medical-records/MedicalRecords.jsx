@@ -22,12 +22,12 @@ function Section({ icon: Icon, title, description, color = 'blue', children }) {
     blue:   'border-brand-200 dark:border-brand-800 bg-brand-50/50 dark:bg-brand-900/10',
     red:    'border-red-200  dark:border-red-800  bg-red-50/50  dark:bg-red-900/10',
     green:  'border-green-200 dark:border-green-800 bg-green-50/50 dark:bg-green-900/10',
-    purple: 'border-purple-200 dark:border-purple-800 bg-purple-50/50 dark:bg-purple-900/10',
+    purple: 'border-gold-200 dark:border-gold-800 bg-gold-50/50 dark:bg-gold-900/10',
     orange: 'border-orange-200 dark:border-orange-800 bg-orange-50/50 dark:bg-orange-900/10',
   };
   const iconColor = {
     blue: 'text-brand-600', red: 'text-red-500', green: 'text-green-500',
-    purple: 'text-purple-500', orange: 'text-orange-500',
+    purple: 'text-gold-500', orange: 'text-orange-500',
   };
   return (
     <div className={`border rounded-2xl p-6 ${colorMap[color]}`}>

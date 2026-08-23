@@ -102,14 +102,14 @@ function QuizGame({ onComplete }) {
         </div>
       </div>
       <div className="h-2 bg-sand-200 dark:bg-brand-800 rounded-full mb-6 overflow-hidden">
-        <motion.div className="h-full bg-gradient-to-r from-purple-500 to-brand-600 rounded-full" animate={{ width: `${progress}%` }} />
+        <motion.div className="h-full bg-gradient-to-r from-gold-500 to-brand-600 rounded-full" animate={{ width: `${progress}%` }} />
       </div>
 
       <motion.div key={idx} initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0 }} className="bg-white dark:bg-brand-900 rounded-3xl border border-sand-100 dark:border-brand-800 p-8 mb-6">
         <p className="text-lg font-bold text-sand-900 dark:text-white leading-snug mb-8">{q.q}</p>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {q.options.map((opt, i) => {
-            let style = 'bg-sand-50 dark:bg-brand-800 border-sand-200 dark:border-brand-700 text-sand-700 dark:text-sand-300 hover:border-purple-400';
+            let style = 'bg-sand-50 dark:bg-brand-800 border-sand-200 dark:border-brand-700 text-sand-700 dark:text-sand-300 hover:border-gold-400';
             if (selected !== null) {
               if (i === q.answer) style = 'bg-green-50 dark:bg-green-900/30 border-green-400 text-green-700 dark:text-green-300';
               else if (i === selected) style = 'bg-red-50 dark:bg-red-900/30 border-red-400 text-red-700 dark:text-red-300';
@@ -133,7 +133,7 @@ function QuizGame({ onComplete }) {
         <span className="text-sm text-sand-500 dark:text-sand-400">Score</span>
         <div className="flex items-center gap-1">
           {[...Array(questions.length)].map((_, i) => (
-            <div key={i} className={`w-2 h-2 rounded-full ${i < idx ? 'bg-purple-500' : 'bg-sand-200 dark:bg-brand-700'}`} />
+            <div key={i} className={`w-2 h-2 rounded-full ${i < idx ? 'bg-gold-500' : 'bg-sand-200 dark:bg-brand-700'}`} />
           ))}
         </div>
         <span className="font-bold text-sand-900 dark:text-white">{score} pts</span>
@@ -195,8 +195,8 @@ function MemoryGame({ onComplete }) {
               card.matched
                 ? 'bg-green-100 dark:bg-green-900/30 border-2 border-green-400'
                 : card.flipped
-                ? 'bg-purple-50 dark:bg-purple-900/20 border-2 border-purple-400'
-                : 'bg-white dark:bg-brand-900 border-2 border-sand-100 dark:border-brand-800 hover:border-purple-300'
+                ? 'bg-gold-50 dark:bg-gold-900/20 border-2 border-gold-400'
+                : 'bg-white dark:bg-brand-900 border-2 border-sand-100 dark:border-brand-800 hover:border-gold-300'
             }`}>
             <motion.span animate={{ rotateY: card.flipped || card.matched ? 0 : 180 }}>
               {card.flipped || card.matched ? card.emoji : '❓'}
@@ -221,7 +221,7 @@ function ResultScreen({ score, total, gameType, onReplay, onBack }) {
   return (
     <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}
       className="max-w-md mx-auto bg-white dark:bg-brand-900 rounded-3xl border border-sand-100 dark:border-brand-800 p-8 text-center">
-      <div className="w-24 h-24 rounded-full bg-gradient-to-br from-purple-500 to-brand-700 flex items-center justify-center mx-auto mb-5">
+      <div className="w-24 h-24 rounded-full bg-gradient-to-br from-gold-500 to-brand-700 flex items-center justify-center mx-auto mb-5">
         <span className="text-4xl font-black text-white">{score}</span>
       </div>
       <h2 className="text-2xl font-black text-sand-900 dark:text-white mb-1">{grade}</h2>
@@ -230,7 +230,7 @@ function ResultScreen({ score, total, gameType, onReplay, onBack }) {
       </p>
       <div className="flex gap-3">
         <motion.button whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }} onClick={onReplay}
-          className="flex-1 bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 rounded-2xl flex items-center justify-center gap-2 transition-colors">
+          className="flex-1 bg-gold-600 hover:bg-gold-700 text-white font-semibold py-3 rounded-2xl flex items-center justify-center gap-2 transition-colors">
           <RotateCcw className="w-4 h-4" /> Play Again
         </motion.button>
         <motion.button whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }} onClick={onBack}
@@ -282,11 +282,11 @@ function Leaderboard() {
             return (
               <motion.div key={s.id} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.05 }}
                 className={`flex items-center gap-4 bg-white dark:bg-brand-900 rounded-2xl border px-5 py-4 ${
-                  isMe ? 'border-purple-400 bg-purple-50 dark:bg-purple-900/20' : 'border-sand-100 dark:border-brand-800'
+                  isMe ? 'border-gold-400 bg-gold-50 dark:bg-gold-900/20' : 'border-sand-100 dark:border-brand-800'
                 }`}>
                 <span className="text-xl w-8 text-center">{medals[i] ?? `#${i + 1}`}</span>
                 <div className="flex-1">
-                  <p className={`font-semibold text-sm ${isMe ? 'text-purple-700 dark:text-purple-300' : 'text-sand-900 dark:text-white'}`}>
+                  <p className={`font-semibold text-sm ${isMe ? 'text-gold-700 dark:text-gold-300' : 'text-sand-900 dark:text-white'}`}>
                     {s.playerName || 'Anonymous'} {isMe && '(You)'}
                   </p>
                   <p className="text-xs text-sand-400 capitalize">{s.gameType || 'quiz'}</p>
@@ -307,7 +307,7 @@ function Leaderboard() {
 /* ── Game Selection ─────────────────────────────────────────────── */
 function GameMenu({ onSelect }) {
   const games = [
-    { id: 'quiz', icon: Brain, title: 'Health Quiz', desc: '8 questions · 20s each · Test your medical knowledge', color: 'from-purple-500 to-brand-700', light: 'bg-purple-100 dark:bg-purple-900/30' },
+    { id: 'quiz', icon: Brain, title: 'Health Quiz', desc: '8 questions · 20s each · Test your medical knowledge', color: 'from-gold-500 to-brand-700', light: 'bg-gold-100 dark:bg-gold-900/30' },
     { id: 'memory', icon: Zap, title: 'Memory Match', desc: 'Match health-themed emoji pairs · Train your brain', color: 'from-emerald-500 to-teal-600', light: 'bg-emerald-100 dark:bg-emerald-900/30' },
   ];
 
@@ -322,7 +322,7 @@ function GameMenu({ onSelect }) {
             </div>
             <h3 className="font-bold text-lg text-sand-900 dark:text-white mb-2">{g.title}</h3>
             <p className="text-sm text-sand-500 dark:text-sand-400 mb-5">{g.desc}</p>
-            <div className="flex items-center text-sm font-semibold text-purple-600 dark:text-purple-400 group-hover:gap-2 transition-all gap-1">
+            <div className="flex items-center text-sm font-semibold text-gold-600 dark:text-gold-400 group-hover:gap-2 transition-all gap-1">
               Play Now <ChevronRight className="w-4 h-4" />
             </div>
           </motion.button>
@@ -336,7 +336,7 @@ function GameMenu({ onSelect }) {
           { icon: Trophy, label: 'Leaderboard', value: 'Top 10', sub: 'players' },
         ].map(s => (
           <div key={s.label} className="bg-white dark:bg-brand-900 rounded-2xl border border-sand-100 dark:border-brand-800 p-4">
-            <s.icon className="w-5 h-5 text-purple-500 mx-auto mb-2" />
+            <s.icon className="w-5 h-5 text-gold-500 mx-auto mb-2" />
             <p className="font-black text-sand-900 dark:text-white">{s.value}</p>
             <p className="text-xs text-sand-400 mt-0.5">{s.sub}</p>
           </div>
@@ -380,19 +380,19 @@ export default function Game() {
     <PageTransition>
       <div className="min-h-screen bg-sand-50 dark:bg-brand-950 pt-16 pb-24 md:pb-8">
         {/* Header */}
-        <div className="bg-gradient-to-r from-purple-600 to-brand-700 text-white py-8 px-4">
+        <div className="bg-gradient-to-r from-gold-600 to-brand-700 text-white py-8 px-4">
           <div className="max-w-5xl mx-auto flex items-center justify-between">
             <div>
               <h1 className="text-2xl font-bold flex items-center gap-2">
                 <Gamepad2 className="w-6 h-6" /> Health Games
               </h1>
-              <p className="text-purple-100 text-sm mt-1">Learn while you play · Fun health quizzes & puzzles</p>
+              <p className="text-gold-100 text-sm mt-1">Learn while you play · Fun health quizzes & puzzles</p>
             </div>
             <div className="flex gap-2">
               {['menu', 'leaderboard'].map(v => (
                 <button key={v} onClick={() => setView(v)}
                   className={`px-4 py-2 rounded-xl text-sm font-semibold capitalize transition-colors ${
-                    view === v ? 'bg-white text-purple-700' : 'text-white hover:bg-white/10'
+                    view === v ? 'bg-white text-gold-700' : 'text-white hover:bg-white/10'
                   }`}>
                   {v === 'leaderboard' ? '🏆 Scores' : '🎮 Games'}
                 </button>
@@ -412,7 +412,7 @@ export default function Game() {
               <motion.div key="quiz" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
                 <div className="flex items-center justify-between mb-6">
                   <h2 className="font-bold text-sand-900 dark:text-white flex items-center gap-2">
-                    <Brain className="w-5 h-5 text-purple-600" /> Health Quiz
+                    <Brain className="w-5 h-5 text-gold-600" /> Health Quiz
                   </h2>
                   <button onClick={() => setView('menu')} className="text-sm text-sand-400 hover:text-sand-600 dark:hover:text-sand-200 transition-colors">← Back</button>
                 </div>

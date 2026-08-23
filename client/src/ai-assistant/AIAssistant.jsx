@@ -55,7 +55,7 @@ function MessageBubble({ msg }) {
       <div className={`w-8 h-8 rounded-full shrink-0 flex items-center justify-center ${
         isBot
           ? 'bg-gradient-to-br from-brand-600 to-cyan-500'
-          : 'bg-gradient-to-br from-violet-500 to-purple-600'
+          : 'bg-gradient-to-br from-gold-500 to-gold-600'
       }`}>
         {isBot ? <Bot className="w-4 h-4 text-white" /> : <User className="w-4 h-4 text-white" />}
       </div>

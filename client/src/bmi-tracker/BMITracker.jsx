@@ -312,28 +312,28 @@ function MedsTab({ currentUser }) {
       {/* Add medication */}
       <div className="bg-white dark:bg-brand-900 rounded-2xl border border-sand-100 dark:border-brand-800 p-6">
         <h2 className="font-bold text-sand-900 dark:text-white mb-5 flex items-center gap-2">
-          <Plus className="w-5 h-5 text-purple-600" /> Add Medication
+          <Plus className="w-5 h-5 text-gold-600" /> Add Medication
         </h2>
         <div className="space-y-4">
           <div>
             <label className="block text-xs font-semibold text-sand-500 uppercase tracking-wide mb-1.5">Medication Name</label>
             <input type="text" value={name} onChange={e => setName(e.target.value)} placeholder="e.g. Metformin"
-              className="w-full px-4 py-3 rounded-xl border border-sand-200 dark:border-brand-700 bg-sand-50 dark:bg-brand-800 text-sand-900 dark:text-white placeholder-sand-400 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500" />
+              className="w-full px-4 py-3 rounded-xl border border-sand-200 dark:border-brand-700 bg-sand-50 dark:bg-brand-800 text-sand-900 dark:text-white placeholder-sand-400 text-sm focus:outline-none focus:ring-2 focus:ring-gold-500" />
           </div>
           <div>
             <label className="block text-xs font-semibold text-sand-500 uppercase tracking-wide mb-1.5">Time</label>
             <input type="time" value={time} onChange={e => setTime(e.target.value)}
-              className="w-full px-4 py-3 rounded-xl border border-sand-200 dark:border-brand-700 bg-sand-50 dark:bg-brand-800 text-sand-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-purple-500" />
+              className="w-full px-4 py-3 rounded-xl border border-sand-200 dark:border-brand-700 bg-sand-50 dark:bg-brand-800 text-sand-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-gold-500" />
           </div>
           <div>
             <label className="block text-xs font-semibold text-sand-500 uppercase tracking-wide mb-1.5">Frequency</label>
             <select value={freq} onChange={e => setFreq(e.target.value)}
-              className="w-full px-4 py-3 rounded-xl border border-sand-200 dark:border-brand-700 bg-sand-50 dark:bg-brand-800 text-sand-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-purple-500">
+              className="w-full px-4 py-3 rounded-xl border border-sand-200 dark:border-brand-700 bg-sand-50 dark:bg-brand-800 text-sand-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-gold-500">
               {['Daily', 'Twice daily', 'Three times daily', 'Weekly', 'As needed'].map(f => <option key={f}>{f}</option>)}
             </select>
           </div>
           <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }} onClick={add}
-            className="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 rounded-xl flex items-center justify-center gap-2 transition-colors">
+            className="w-full bg-gold-600 hover:bg-gold-700 text-white font-semibold py-3 rounded-xl flex items-center justify-center gap-2 transition-colors">
             <Plus className="w-4 h-4" /> Add Medication
           </motion.button>
         </div>
@@ -342,7 +342,7 @@ function MedsTab({ currentUser }) {
       {/* Medication list */}
       <div className="bg-white dark:bg-brand-900 rounded-2xl border border-sand-100 dark:border-brand-800 p-6">
         <h2 className="font-bold text-sand-900 dark:text-white mb-5 flex items-center gap-2">
-          <Pill className="w-5 h-5 text-purple-600" /> Today's Medications
+          <Pill className="w-5 h-5 text-gold-600" /> Today's Medications
         </h2>
         {meds.length === 0 ? (
           <div className="text-center py-12">

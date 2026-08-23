@@ -106,7 +106,7 @@ export default function ChatWidget() {
                 className={`flex gap-2 items-end animate-fade-in ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}
               >
                 <div className={`w-6 h-6 rounded-full shrink-0 flex items-center justify-center ${
-                  msg.role === 'bot' ? 'bg-brand-600' : 'bg-violet-500'
+                  msg.role === 'bot' ? 'bg-brand-600' : 'bg-gold-500'
                 }`}>
                   {msg.role === 'bot'
                     ? <Bot className="w-3 h-3 text-white" />
