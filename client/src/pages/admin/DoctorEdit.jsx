@@ -9,6 +9,7 @@ import { Switch } from '../../components/Switch';
 import { useToast } from '../../components/Toast';
 import { apiErrorMessage } from '../../services/api';
 import { Card, Badge, Button, Input, Modal } from '../../components/ui';
+import { formatDateOnly } from '../../utils/date';
 
 const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
@@ -92,7 +93,7 @@ export default function AdminDoctorEdit() {
     if (!pendingLeaveDate) return;
     setMarkingLeave(true);
     try {
-      const result = await adminService.markLeave(id, { date: pendingLeaveDate.toISOString().slice(0, 10) });
+      const result = await adminService.markLeave(id, { date: formatDateOnly(pendingLeaveDate) });
       toast.success(
         'Leave marked',
         result.cancelledAppointments > 0 ? `${result.cancelledAppointments} appointment(s) cancelled and patients notified.` : undefined

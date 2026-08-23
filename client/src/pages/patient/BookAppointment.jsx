@@ -8,6 +8,7 @@ import * as appointmentsService from '../../services/appointmentsService';
 import { useToast } from '../../components/Toast';
 import { apiErrorMessage } from '../../services/api';
 import { Card, Avatar, Button, EmptyState } from '../../components/ui';
+import { formatDateOnly } from '../../utils/date';
 
 const COMMON_SYMPTOMS = ['Fever', 'Headache', 'Cough', 'Fatigue', 'Nausea', 'Body ache', 'Shortness of breath', 'Chest pain'];
 const DAY_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
@@ -44,9 +45,8 @@ export default function BookAppointment() {
     setSlotsLoading(true);
     setSelectedSlot(null);
     setAppointmentId(null);
-    const isoDate = date.toISOString().slice(0, 10);
     doctorsService
-      .getSlots(doctorId, isoDate)
+      .getSlots(doctorId, formatDateOnly(date))
       .then((data) => setSlots(data.slots))
       .catch(() => setSlots([]))
       .finally(() => setSlotsLoading(false));
@@ -65,7 +65,7 @@ export default function BookAppointment() {
   const handleSelectSlot = async (slot) => {
     setHolding(true);
     try {
-      const result = await appointmentsService.holdSlot({ doctorId, date: date.toISOString().slice(0, 10), startTime: slot });
+      const result = await appointmentsService.holdSlot({ doctorId, date: formatDateOnly(date), startTime: slot });
       setAppointmentId(result.appointmentId);
       setSelectedSlot(slot);
     } catch (err) {
