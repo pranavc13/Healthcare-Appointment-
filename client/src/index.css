@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@300;400;500;600;700;800&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -16,9 +16,15 @@ body {
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  background-color: #F7F3EA;
+  color: #12312A;
 }
 
-/* Prevent any element from causing horizontal scroll */
+.dark body {
+  background-color: #071B16;
+  color: #E7EFEA;
+}
+
 * {
   box-sizing: border-box;
   min-width: 0;
@@ -29,9 +35,23 @@ img, video, svg {
   height: auto;
 }
 
-/* ── Smooth dark mode transitions ───────────────────────────────────── */
+::selection {
+  background: #1D4B3B;
+  color: #F7F3EA;
+}
+
+/* ── Smooth theme transitions ───────────────────────────────────────── */
 *, *::before, *::after {
-  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.15s ease;
+  transition: background-color 0.25s ease, border-color 0.25s ease, color 0.2s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
 /* ── Touch targets ≥ 44 × 44 px ────────────────────────────────────── */
@@ -39,54 +59,159 @@ button, a, [role="button"], input[type="checkbox"], input[type="radio"] {
   touch-action: manipulation;
 }
 
-/* Minimum tap target for small interactive elements */
 button:not([class*="h-"]):not([class*="w-"]),
 a:not([class*="h-"]):not([class*="w-"]) {
   min-height: 44px;
 }
 
+/* ── Typography helpers ─────────────────────────────────────────────── */
+.font-display {
+  font-family: 'Fraunces', Georgia, Cambria, 'Times New Roman', serif;
+  font-variation-settings: 'opsz' 100;
+  letter-spacing: -0.015em;
+}
+
+.eyebrow {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: #A47531;
+}
+
+.dark .eyebrow { color: #DFC079; }
+
+.text-gold-gradient {
+  background: linear-gradient(96deg, #CFA755 0%, #E9CE8E 45%, #A47531 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Animated underline for links / nav items */
+.link-underline {
+  position: relative;
+}
+.link-underline::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -3px;
+  height: 1.5px;
+  width: 100%;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.link-underline:hover::after,
+.link-underline[data-active='true']::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+/* ── Decorative surfaces ────────────────────────────────────────────── */
+.surface-card {
+  background: #fff;
+  border: 1px solid #E5DFD2;
+  border-radius: 1.25rem;
+  box-shadow: 0 1px 2px rgba(14, 43, 35, 0.04), 0 8px 24px -12px rgba(14, 43, 35, 0.12);
+}
+.dark .surface-card {
+  background: #16382F;
+  border-color: rgba(157, 186, 174, 0.16);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 24px -12px rgba(0, 0, 0, 0.6);
+}
+
+.glass {
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(18px) saturate(150%);
+  -webkit-backdrop-filter: blur(18px) saturate(150%);
+}
+.dark .glass {
+  background: rgba(7, 27, 22, 0.72);
+}
+
+.grain-overlay::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.035;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 220 220' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  mix-blend-mode: multiply;
+}
+
+/* Subtle leaf/arc watermark used behind CTA bands */
+.arc-lines {
+  background-image:
+    radial-gradient(circle at 100% 50%, transparent 34%, rgba(255, 255, 255, 0.07) 34.4%, transparent 35%),
+    radial-gradient(circle at 100% 50%, transparent 44%, rgba(255, 255, 255, 0.07) 44.4%, transparent 45%),
+    radial-gradient(circle at 100% 50%, transparent 54%, rgba(255, 255, 255, 0.07) 54.4%, transparent 55%),
+    radial-gradient(circle at 100% 50%, transparent 64%, rgba(255, 255, 255, 0.07) 64.4%, transparent 65%);
+}
+
 /* ── Skeleton loader ────────────────────────────────────────────────── */
 .skeleton {
-  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background: linear-gradient(90deg, #EFE7D8 25%, #E3D7C2 50%, #EFE7D8 75%);
   background-size: 200% 100%;
   animation: skeleton-loading 1.5s infinite linear;
 }
-
 .dark .skeleton {
-  background: linear-gradient(90deg, #1e293b 25%, #334155 50%, #1e293b 75%);
+  background: linear-gradient(90deg, #12312A 25%, #1D4B3B 50%, #12312A 75%);
   background-size: 200% 100%;
   animation: skeleton-loading 1.5s infinite linear;
 }
-
 @keyframes skeleton-loading {
   0%   { background-position: -200% 0; }
   100% { background-position:  200% 0; }
 }
 
-/* ── Animations ─────────────────────────────────────────────────────── */
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(8px); }
-  to   { opacity: 1; transform: translateY(0);   }
+/* ── Keyframe animations ────────────────────────────────────────────── */
+@keyframes fadeIn  { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes slideUp { from { opacity: 0; transform: translateY(28px); } to { opacity: 1; transform: translateY(0); } }
+
+.animate-fade-in  { animation: fadeIn  0.4s ease-out both; }
+.animate-slide-up { animation: slideUp 0.5s cubic-bezier(0.22, 1, 0.36, 1) both; }
+
+/* Shine sweep on hover (buttons, cards) */
+.shine {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+.shine::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  transform: translateX(-130%) skewX(-18deg);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.32), transparent);
+  transition: transform 0.75s cubic-bezier(0.22, 1, 0.36, 1);
+  pointer-events: none;
+}
+.shine:hover::after { transform: translateX(230%) skewX(-18deg); }
+
+/* Marquee track */
+.marquee-mask {
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
 }
 
-@keyframes slideUp {
-  from { opacity: 0; transform: translateY(20px); }
-  to   { opacity: 1; transform: translateY(0);    }
-}
+/* Hide scrollbar but keep scrolling (horizontal chip rows) */
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+.no-scrollbar::-webkit-scrollbar { display: none; }
 
-.animate-fade-in  { animation: fadeIn  0.3s ease-out; }
-.animate-slide-up { animation: slideUp 0.4s ease-out; }
-
-/* ── React Calendar — mobile-first overrides ────────────────────────── */
+/* ── React Calendar — Harmony theme ─────────────────────────────────── */
 .react-calendar {
   width: 100% !important;
   max-width: 100% !important;
-  border: 1px solid #e5e7eb !important;
-  border-radius: 0.75rem !important;
+  border: 1px solid #E5DFD2 !important;
+  border-radius: 1rem !important;
   font-family: inherit !important;
   line-height: 1.5 !important;
   background: #ffffff !important;
   font-size: 0.875rem !important;
+  padding: 0.5rem !important;
   overflow: hidden;
 }
 
@@ -100,34 +225,29 @@ a:not([class*="h-"]):not([class*="w-"]) {
   height: 44px !important;
   font-size: 0.875rem !important;
   font-weight: 600 !important;
-  color: #374151 !important;
+  color: #12312A !important;
   background: transparent !important;
-  border-radius: 0.5rem !important;
+  border-radius: 0.65rem !important;
 }
 
 .react-calendar__navigation button:hover,
 .react-calendar__navigation button:focus {
-  background: #eff6ff !important;
+  background: #EDF4F0 !important;
 }
 
 .react-calendar__month-view__weekdays__weekday {
   padding: 0.375rem 0.25rem !important;
   text-align: center !important;
-  font-size: 0.7rem !important;
+  font-size: 0.65rem !important;
   font-weight: 700 !important;
-  color: #6b7280 !important;
+  color: #8C9891 !important;
   text-transform: uppercase !important;
-  letter-spacing: 0.05em !important;
+  letter-spacing: 0.12em !important;
   text-decoration: none !important;
 }
 
-.react-calendar__month-view__weekdays__weekday abbr {
-  text-decoration: none !important;
-}
-
-.react-calendar__month-view__days {
-  gap: 0 !important;
-}
+.react-calendar__month-view__weekdays__weekday abbr { text-decoration: none !important; }
+.react-calendar__month-view__days { gap: 0 !important; }
 
 .react-calendar__tile {
   height: 40px !important;
@@ -135,98 +255,65 @@ a:not([class*="h-"]):not([class*="w-"]) {
   padding: 0.25rem 0.125rem !important;
   text-align: center !important;
   font-size: 0.8125rem !important;
-  border-radius: 0.5rem !important;
+  font-weight: 500 !important;
+  border-radius: 0.65rem !important;
   border: none !important;
-  color: #374151 !important;
+  color: #12312A !important;
+  background: transparent !important;
 }
 
 @media (max-width: 380px) {
-  .react-calendar__tile {
-    height: 36px !important;
-    font-size: 0.75rem !important;
-  }
+  .react-calendar__tile { height: 36px !important; font-size: 0.75rem !important; }
 }
 
-.react-calendar__tile:hover {
-  background: #eff6ff !important;
-  color: #2563eb !important;
+.react-calendar__tile:enabled:hover {
+  background: #EDF4F0 !important;
+  color: #1D4B3B !important;
 }
 
 .react-calendar__tile--active,
-.react-calendar__tile--active:hover {
-  background: #2563eb !important;
+.react-calendar__tile--active:enabled:hover {
+  background: #1D4B3B !important;
   color: #ffffff !important;
 }
 
 .react-calendar__tile--now {
-  background: #dbeafe !important;
-  color: #1d4ed8 !important;
+  background: #FCF8EF !important;
+  color: #A47531 !important;
   font-weight: 700 !important;
+  box-shadow: inset 0 0 0 1px #EDD9A9;
 }
 
 .react-calendar__tile:disabled {
   background: transparent !important;
-  color: #d1d5db !important;
+  color: #C9CFCB !important;
   pointer-events: none !important;
 }
 
 /* Dark mode calendar */
 .dark .react-calendar {
-  background: #1e293b !important;
-  border-color: #334155 !important;
-  color: #f1f5f9 !important;
+  background: #16382F !important;
+  border-color: rgba(157, 186, 174, 0.18) !important;
+  color: #E7EFEA !important;
 }
-
-.dark .react-calendar__navigation button {
-  color: #f1f5f9 !important;
-}
-
-.dark .react-calendar__navigation button:hover {
-  background: #334155 !important;
-}
-
-.dark .react-calendar__month-view__weekdays__weekday {
-  color: #94a3b8 !important;
-}
-
-.dark .react-calendar__tile {
-  color: #f1f5f9 !important;
-}
-
-.dark .react-calendar__tile:hover {
-  background: #1e40af !important;
-  color: #ffffff !important;
-}
-
-.dark .react-calendar__tile--active {
-  background: #3b82f6 !important;
-  color: #ffffff !important;
-}
-
-.dark .react-calendar__tile--now {
-  background: #1d4ed8 !important;
-  color: #ffffff !important;
-}
-
-.dark .react-calendar__tile:disabled {
-  color: #475569 !important;
-}
-
-.dark .react-calendar__month-view__days__day--weekend {
-  color: #f87171 !important;
-}
+.dark .react-calendar__navigation button { color: #E7EFEA !important; }
+.dark .react-calendar__navigation button:hover { background: #1D4B3B !important; }
+.dark .react-calendar__month-view__weekdays__weekday { color: #9DBAAE !important; }
+.dark .react-calendar__tile { color: #E7EFEA !important; }
+.dark .react-calendar__tile:enabled:hover { background: #1D4B3B !important; color: #fff !important; }
+.dark .react-calendar__tile--active { background: #C0913D !important; color: #071B16 !important; }
+.dark .react-calendar__tile--now { background: rgba(192,145,61,0.16) !important; color: #DFC079 !important; box-shadow: inset 0 0 0 1px rgba(192,145,61,0.4); }
+.dark .react-calendar__tile:disabled { color: #3D5B51 !important; }
+.dark .react-calendar__month-view__days__day--weekend { color: #E4A79E !important; }
 
 /* ── Scrollbar styling ──────────────────────────────────────────────── */
-::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 99px; }
-.dark ::-webkit-scrollbar-thumb { background: #475569; }
+::-webkit-scrollbar-thumb { background: #D3C9B5; border-radius: 99px; }
+::-webkit-scrollbar-thumb:hover { background: #8CB4A2; }
+.dark ::-webkit-scrollbar-thumb { background: #1D4B3B; }
+.dark ::-webkit-scrollbar-thumb:hover { background: #3D7159; }
 
 /* ── iOS safe area ──────────────────────────────────────────────────── */
-.pb-safe {
-  padding-bottom: max(env(safe-area-inset-bottom, 0px), 0px);
-}
-
-.pb-safe-or-24 {
-  padding-bottom: max(env(safe-area-inset-bottom, 0px), 6rem);
-}
+.pb-safe { padding-bottom: max(env(safe-area-inset-bottom, 0px), 0px); }
+.pb-safe-or-24 { padding-bottom: max(env(safe-area-inset-bottom, 0px), 6rem); }

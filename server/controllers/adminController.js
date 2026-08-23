@@ -6,15 +6,43 @@ const asyncHandler = require('../utils/asyncHandler');
 const { normalizeDateOnly } = require('../services/slots');
 const { notifyCancellation, deleteCalendarEvents } = require('../services/appointmentEvents');
 
-// GET /api/admin/doctors
+// GET /api/admin/doctors?search=&page=&limit= — paginated because the directory
+// holds tens of thousands of profiles once the dataset is imported.
 const listDoctors = asyncHandler(async (req, res) => {
-  const doctors = await DoctorProfile.find().populate('userId', 'name email phone');
-  res.json(doctors);
+  const page = Math.max(parseInt(req.query.page, 10) || 1, 1);
+  const limit = Math.min(Math.max(parseInt(req.query.limit, 10) || 20, 1), 100);
+  const { search } = req.query;
+
+  const filter = {};
+  if (search) {
+    const rx = new RegExp(String(search).replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i');
+    const matchedUsers = await User.find({ role: 'doctor', name: rx }).select('_id').limit(400).lean();
+    filter.$or = [
+      { userId: { $in: matchedUsers.map((u) => u._id) } },
+      { specialisation: rx },
+      { city: rx },
+    ];
+  }
+
+  const [doctors, total] = await Promise.all([
+    DoctorProfile.find(filter)
+      .populate('userId', 'name email phone')
+      .sort({ isActive: -1, rating: -1 })
+      .skip((page - 1) * limit)
+      .limit(limit)
+      .lean(),
+    DoctorProfile.countDocuments(filter),
+  ]);
+
+  res.json({ doctors, page, limit, total, totalPages: Math.max(Math.ceil(total / limit), 1) });
 });
 
 // POST /api/admin/doctors — creates the User (role=doctor) and DoctorProfile together.
 const createDoctor = asyncHandler(async (req, res) => {
-  const { name, email, password, phone, specialisation, qualifications, bio, slotDuration, workingHours } = req.body;
+  const {
+    name, email, password, phone, specialisation, qualifications, bio, slotDuration, workingHours,
+    city, locality, consultationFee, experienceYears,
+  } = req.body;
   if (!name || !email || !password || !specialisation) {
     return res.status(400).json({ message: 'name, email, password and specialisation are required' });
   }
@@ -32,10 +60,15 @@ const createDoctor = asyncHandler(async (req, res) => {
     profile = await DoctorProfile.create({
       userId: user._id,
       specialisation,
+      specialities: specialisation.split(',').map((s) => s.trim()).filter(Boolean),
       qualifications,
       bio,
       slotDuration: slotDuration || 30,
       workingHours: workingHours || [],
+      city,
+      locality,
+      consultationFee: consultationFee || 0,
+      experienceYears: experienceYears || 0,
     });
   } catch (err) {
     // Roll back the just-created user so we don't leave an orphaned account behind.
@@ -53,14 +86,24 @@ const updateDoctor = asyncHandler(async (req, res) => {
     return res.status(404).json({ message: 'Doctor not found' });
   }
 
-  const { specialisation, qualifications, bio, profileImage, slotDuration, workingHours, isActive } = req.body;
-  if (specialisation !== undefined) doctor.specialisation = specialisation;
+  const {
+    specialisation, qualifications, bio, profileImage, slotDuration, workingHours, isActive,
+    city, locality, consultationFee, experienceYears,
+  } = req.body;
+  if (specialisation !== undefined) {
+    doctor.specialisation = specialisation;
+    doctor.specialities = specialisation.split(',').map((s) => s.trim()).filter(Boolean);
+  }
   if (qualifications !== undefined) doctor.qualifications = qualifications;
   if (bio !== undefined) doctor.bio = bio;
   if (profileImage !== undefined) doctor.profileImage = profileImage;
   if (slotDuration !== undefined) doctor.slotDuration = slotDuration;
   if (workingHours !== undefined) doctor.workingHours = workingHours;
   if (isActive !== undefined) doctor.isActive = isActive;
+  if (city !== undefined) doctor.city = city;
+  if (locality !== undefined) doctor.locality = locality;
+  if (consultationFee !== undefined) doctor.consultationFee = consultationFee;
+  if (experienceYears !== undefined) doctor.experienceYears = experienceYears;
   await doctor.save();
 
   res.json(doctor);
