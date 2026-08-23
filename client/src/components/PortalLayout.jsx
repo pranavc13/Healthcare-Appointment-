@@ -53,7 +53,7 @@ export default function PortalLayout() {
   const items = NAV_ITEMS[user?.role] || [];
 
   return (
-    <div className="min-h-screen bg-background dark:bg-slate-900">
+    <div className="min-h-screen bg-background dark:bg-brand-950">
       <Sidebar items={items} mobileOpen={mobileOpen} onCloseMobile={() => setMobileOpen(false)} />
       <div className="lg:pl-64">
         <TopBar title={resolveTitle(pathname)} onOpenMobile={() => setMobileOpen(true)} />

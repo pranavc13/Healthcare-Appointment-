@@ -19,25 +19,25 @@ const COMMON_ALLERGIES = [
 
 function Section({ icon: Icon, title, description, color = 'blue', children }) {
   const colorMap = {
-    blue:   'border-blue-200 dark:border-blue-800 bg-blue-50/50 dark:bg-blue-900/10',
+    blue:   'border-brand-200 dark:border-brand-800 bg-brand-50/50 dark:bg-brand-900/10',
     red:    'border-red-200  dark:border-red-800  bg-red-50/50  dark:bg-red-900/10',
     green:  'border-green-200 dark:border-green-800 bg-green-50/50 dark:bg-green-900/10',
     purple: 'border-purple-200 dark:border-purple-800 bg-purple-50/50 dark:bg-purple-900/10',
     orange: 'border-orange-200 dark:border-orange-800 bg-orange-50/50 dark:bg-orange-900/10',
   };
   const iconColor = {
-    blue: 'text-blue-500', red: 'text-red-500', green: 'text-green-500',
+    blue: 'text-brand-600', red: 'text-red-500', green: 'text-green-500',
     purple: 'text-purple-500', orange: 'text-orange-500',
   };
   return (
     <div className={`border rounded-2xl p-6 ${colorMap[color]}`}>
       <div className="flex items-center gap-3 mb-5">
-        <div className={`w-9 h-9 rounded-xl flex items-center justify-center bg-white dark:bg-slate-800 shadow-sm ${iconColor[color]}`}>
+        <div className={`w-9 h-9 rounded-xl flex items-center justify-center bg-white dark:bg-brand-900 shadow-sm ${iconColor[color]}`}>
           <Icon className="w-5 h-5" />
         </div>
         <div>
-          <h3 className="font-bold text-gray-900 dark:text-white">{title}</h3>
-          {description && <p className="text-xs text-gray-500 dark:text-gray-400">{description}</p>}
+          <h3 className="font-bold text-sand-900 dark:text-white">{title}</h3>
+          {description && <p className="text-xs text-sand-500 dark:text-sand-400">{description}</p>}
         </div>
       </div>
       {children}
@@ -48,7 +48,7 @@ function Section({ icon: Icon, title, description, color = 'blue', children }) {
 function Field({ label, required, children }) {
   return (
     <div>
-      <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide mb-1.5">
+      <label className="block text-xs font-semibold text-sand-600 dark:text-sand-400 uppercase tracking-wide mb-1.5">
         {label}{required && <span className="text-red-500 ml-1">*</span>}
       </label>
       {children}
@@ -56,7 +56,7 @@ function Field({ label, required, children }) {
   );
 }
 
-const inputCls = 'w-full bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-600 rounded-xl px-3 py-2.5 text-sm text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500';
+const inputCls = 'w-full bg-white dark:bg-brand-900 border border-sand-200 dark:border-brand-700 rounded-xl px-3 py-2.5 text-sm text-sand-900 dark:text-white placeholder-sand-400 focus:outline-none focus:ring-2 focus:ring-brand-600';
 
 function TagInput({ tags, onChange, suggestions }) {
   const [input, setInput] = useState('');
@@ -73,7 +73,7 @@ function TagInput({ tags, onChange, suggestions }) {
     <div className="space-y-2">
       <div className="flex flex-wrap gap-1.5">
         {tags.map(t => (
-          <span key={t} className="inline-flex items-center gap-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-xs px-2.5 py-1 rounded-full">
+          <span key={t} className="inline-flex items-center gap-1 bg-brand-100 dark:bg-brand-900/30 text-brand-800 dark:text-brand-300 text-xs px-2.5 py-1 rounded-full">
             {t}
             <button type="button" onClick={() => remove(t)} className="hover:text-red-500">×</button>
           </span>
@@ -88,7 +88,7 @@ function TagInput({ tags, onChange, suggestions }) {
           className={inputCls}
         />
         <button type="button" onClick={() => add(input)}
-          className="px-3 py-2 bg-blue-600 text-white rounded-xl text-sm hover:bg-blue-700">
+          className="px-3 py-2 bg-brand-700 text-white rounded-xl text-sm hover:bg-brand-800">
           Add
         </button>
       </div>
@@ -96,7 +96,7 @@ function TagInput({ tags, onChange, suggestions }) {
         <div className="flex flex-wrap gap-1">
           {suggestions.filter(s => !tags.includes(s)).map(s => (
             <button key={s} type="button" onClick={() => add(s)}
-              className="text-xs bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-gray-300 px-2.5 py-1 rounded-full hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:text-blue-600 transition-colors">
+              className="text-xs bg-sand-100 dark:bg-brand-800 text-sand-600 dark:text-sand-300 px-2.5 py-1 rounded-full hover:bg-brand-50 dark:hover:bg-brand-900/30 hover:text-brand-700 transition-colors">
               + {s}
             </button>
           ))}
@@ -192,14 +192,14 @@ export default function MedicalRecords() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-slate-900 pt-20 flex items-center justify-center">
-        <Loader2 className="w-8 h-8 text-blue-500 animate-spin" />
+      <div className="min-h-screen bg-sand-50 dark:bg-brand-950 pt-20 flex items-center justify-center">
+        <Loader2 className="w-8 h-8 text-brand-600 animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-slate-900 pt-16 pb-24 md:pb-8">
+    <div className="min-h-screen bg-sand-50 dark:bg-brand-950 pt-16 pb-24 md:pb-8">
       <div className="max-w-3xl mx-auto px-4 py-8 animate-fade-in">
 
         {/* Header */}
@@ -208,8 +208,8 @@ export default function MedicalRecords() {
             <FileText className="w-6 h-6 text-red-600 dark:text-red-400" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Medical Records</h1>
-            <p className="text-sm text-gray-500 dark:text-gray-400">Your health information, securely stored and accessible to your doctors</p>
+            <h1 className="text-2xl font-bold text-sand-900 dark:text-white">Medical Records</h1>
+            <p className="text-sm text-sand-500 dark:text-sand-400">Your health information, securely stored and accessible to your doctors</p>
           </div>
         </div>
 
@@ -233,12 +233,12 @@ export default function MedicalRecords() {
                   placeholder="70" className={inputCls} />
               </Field>
               <div>
-                <p className="text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide mb-1.5">BMI</p>
+                <p className="text-xs font-semibold text-sand-600 dark:text-sand-400 uppercase tracking-wide mb-1.5">BMI</p>
                 <div className={`rounded-xl px-3 py-2.5 text-sm font-bold ${
                   bmiCategory === 'Normal' ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300' :
-                  bmiCategory === 'Underweight' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300' :
+                  bmiCategory === 'Underweight' ? 'bg-brand-100 text-brand-800 dark:bg-brand-900/30 dark:text-brand-300' :
                   bmiCategory ? 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300' :
-                  'bg-gray-100 text-gray-400 dark:bg-slate-700 dark:text-gray-500'
+                  'bg-sand-100 text-sand-400 dark:bg-brand-800 dark:text-sand-500'
                 }`}>
                   {bmi ? `${bmi} — ${bmiCategory}` : '—'}
                 </div>
@@ -302,10 +302,10 @@ export default function MedicalRecords() {
               <Field label="Smoking">
                 <div className="flex items-center gap-3 mt-1">
                   <button type="button" onClick={() => set('smoker', !form.smoker)}
-                    className={`relative w-12 h-6 rounded-full transition-colors ${form.smoker ? 'bg-red-500' : 'bg-gray-200 dark:bg-slate-600'}`}>
+                    className={`relative w-12 h-6 rounded-full transition-colors ${form.smoker ? 'bg-red-500' : 'bg-sand-200 dark:bg-brand-700'}`}>
                     <span className={`absolute top-0.5 w-5 h-5 bg-white rounded-full shadow transition-all ${form.smoker ? 'left-6' : 'left-0.5'}`} />
                   </button>
-                  <span className="text-sm text-gray-700 dark:text-gray-300">{form.smoker ? 'Smoker' : 'Non-smoker'}</span>
+                  <span className="text-sm text-sand-700 dark:text-sand-300">{form.smoker ? 'Smoker' : 'Non-smoker'}</span>
                 </div>
               </Field>
               <Field label="Alcohol">
@@ -374,7 +374,7 @@ export default function MedicalRecords() {
             <button
               type="submit"
               disabled={saving}
-              className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white font-semibold px-8 py-3 rounded-xl transition-colors"
+              className="flex items-center gap-2 bg-brand-700 hover:bg-brand-800 disabled:opacity-50 text-white font-semibold px-8 py-3 rounded-xl transition-colors"
             >
               {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
               {saving ? 'Saving...' : 'Save Records'}

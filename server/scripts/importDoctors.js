@@ -67,7 +67,7 @@ const parseRating = (raw, seed) => {
   if (Number.isFinite(pct) && pct > 0) {
     return Math.round(Math.max(3, Math.min(5, (pct / 100) * 5)) * 10) / 10;
   }
-  return Math.round((4.1 + ((seed >> 3) % 6) / 10) * 10) / 10;
+  return Math.round((4.1 + ((seed >>> 3) % 6) / 10) * 10) / 10;
 };
 
 // The source packs multiple specialities into one string, sometimes glued
@@ -133,7 +133,7 @@ function toRecords(row, index, passwordHash) {
       email,
       passwordHash,
       role: 'doctor',
-      phone: `+91 ${String(70000 + (seed % 29999))}${String(10000 + ((seed >> 7) % 89999))}`,
+      phone: `+91 ${70000 + (seed % 29999)}${10000 + ((seed >>> 7) % 89999)}`,
       createdAt: new Date(),
     },
     profile: {
@@ -147,7 +147,7 @@ function toRecords(row, index, passwordHash) {
       experienceYears: years,
       rating: parseRating(row['DP Score'], seed),
       reviewCount: parseReviewCount(row['NPV Value']),
-      slotDuration: SLOT_DURATIONS[(seed >> 5) % SLOT_DURATIONS.length],
+      slotDuration: SLOT_DURATIONS[(seed >>> 5) % SLOT_DURATIONS.length],
       workingHours: buildWorkingHours(seed),
       bio: buildBio({ name, speciality, city: row.City, years }),
       isActive: true,

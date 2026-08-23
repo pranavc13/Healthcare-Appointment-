@@ -26,17 +26,17 @@ function ToastItem({ toast, onClose }) {
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: 24 }}
       transition={{ duration: 0.2, ease: 'easeOut' }}
-      className="relative flex items-start gap-3 bg-white dark:bg-slate-800 border border-border dark:border-slate-700 rounded-xl shadow-lg p-4 max-w-sm w-full overflow-hidden pl-4"
+      className="relative flex items-start gap-3 bg-white dark:bg-brand-900 border border-border dark:border-brand-800 rounded-xl shadow-lg p-4 max-w-sm w-full overflow-hidden pl-4"
     >
       <span className={`absolute left-0 top-0 bottom-0 w-1 ${BAR_COLOR[toast.type]}`} />
       <span className="mt-0.5 shrink-0">{ICONS[toast.type]}</span>
       <div className="flex-1 min-w-0">
         {toast.title && <p className="text-sm font-semibold text-text-primary dark:text-white">{toast.title}</p>}
-        {toast.message && <p className="text-sm text-text-secondary dark:text-slate-300 mt-0.5">{toast.message}</p>}
+        {toast.message && <p className="text-sm text-text-secondary dark:text-brand-200 mt-0.5">{toast.message}</p>}
       </div>
       <button
         onClick={() => onClose(toast.id)}
-        className="shrink-0 p-0.5 rounded-lg text-text-muted hover:text-text-secondary dark:hover:text-slate-200 transition-colors"
+        className="shrink-0 p-0.5 rounded-lg text-text-muted hover:text-text-secondary dark:hover:text-brand-100 transition-colors"
       >
         <X className="w-4 h-4" />
       </button>

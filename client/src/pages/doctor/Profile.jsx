@@ -47,7 +47,7 @@ export default function DoctorProfile() {
         <div className="flex flex-col items-center text-center mb-6">
           <Avatar name={profile?.userId?.name} src={form.profileImage} size="lg" className="!h-20 !w-20 !text-xl mb-3" />
           <p className="font-semibold text-text-primary dark:text-white">{profile?.userId?.name}</p>
-          <p className="text-sm text-text-secondary dark:text-slate-400">{profile?.specialisation}</p>
+          <p className="text-sm text-text-secondary dark:text-brand-300">{profile?.specialisation}</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-5">
@@ -74,7 +74,7 @@ export default function DoctorProfile() {
               onChange={handleChange}
               rows={4}
               placeholder="Tell patients about your experience and approach to care..."
-              className="w-full px-3 py-2.5 rounded-lg border border-border dark:border-slate-700 bg-white dark:bg-slate-900 text-sm text-text-primary dark:text-white resize-none focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-primary transition"
+              className="w-full px-3 py-2.5 rounded-lg border border-border dark:border-brand-800 bg-white dark:bg-brand-950 text-sm text-text-primary dark:text-white resize-none focus:outline-none focus:ring-2 focus:ring-brand-100 focus:border-primary transition"
             />
           </div>
 

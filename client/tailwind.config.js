@@ -45,6 +45,20 @@ export default {
           200: '#EFE7D8',
           300: '#E3D7C2',
         },
+        /* Warm neutral replacing Tailwind's cool `gray` throughout the app. */
+        sand: {
+          50:  '#FDFBF7',
+          100: '#F5F1E8',
+          200: '#EAE3D4',
+          300: '#D8CDB8',
+          400: '#B4A98F',
+          500: '#8C8069',
+          600: '#6B6252',
+          700: '#524B3F',
+          800: '#3A352C',
+          900: '#252119',
+          950: '#17140F',
+        },
         ink: {
           DEFAULT: '#0B1F1A',
           soft: '#12312A',

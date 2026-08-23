@@ -8,7 +8,7 @@ export default function Table({ columns, data, keyField = '_id', onRowClick }) {
       <div className="hidden sm:block overflow-x-auto">
         <table className="w-full border-collapse">
           <thead>
-            <tr className="bg-gray-50 dark:bg-slate-900/40 border-b border-border dark:border-slate-700">
+            <tr className="bg-sand-50 dark:bg-brand-950/40 border-b border-border dark:border-brand-800">
               {columns.map((col) => (
                 <th key={col.key} className="text-left text-xs uppercase tracking-wider text-text-muted font-medium px-4 py-3">
                   {col.header}
@@ -22,8 +22,8 @@ export default function Table({ columns, data, keyField = '_id', onRowClick }) {
                 key={row[keyField]}
                 onClick={() => onRowClick?.(row)}
                 className={clsx(
-                  'border-b border-gray-100 dark:border-slate-700 last:border-0 text-sm text-text-secondary dark:text-slate-300 transition-colors',
-                  onRowClick && 'cursor-pointer hover:bg-gray-50 dark:hover:bg-slate-900/40'
+                  'border-b border-sand-100 dark:border-brand-800 last:border-0 text-sm text-text-secondary dark:text-brand-200 transition-colors',
+                  onRowClick && 'cursor-pointer hover:bg-sand-50 dark:hover:bg-brand-950/40'
                 )}
               >
                 {columns.map((col) => (
@@ -37,17 +37,17 @@ export default function Table({ columns, data, keyField = '_id', onRowClick }) {
         </table>
       </div>
 
-      <div className="sm:hidden divide-y divide-gray-100 dark:divide-slate-700">
+      <div className="sm:hidden divide-y divide-sand-100 dark:divide-brand-800">
         {data.map((row) => (
           <div
             key={row[keyField]}
             onClick={() => onRowClick?.(row)}
-            className={clsx('px-4 py-3 space-y-1.5', onRowClick && 'cursor-pointer active:bg-gray-50 dark:active:bg-slate-900/40')}
+            className={clsx('px-4 py-3 space-y-1.5', onRowClick && 'cursor-pointer active:bg-sand-50 dark:active:bg-brand-950/40')}
           >
             {columns.map((col) => (
               <div key={col.key} className="flex items-center justify-between gap-3">
                 <span className="text-xs uppercase tracking-wide text-text-muted shrink-0">{col.header}</span>
-                <span className="text-sm text-text-secondary dark:text-slate-300 text-right">
+                <span className="text-sm text-text-secondary dark:text-brand-200 text-right">
                   {col.render ? col.render(row) : row[col.key]}
                 </span>
               </div>

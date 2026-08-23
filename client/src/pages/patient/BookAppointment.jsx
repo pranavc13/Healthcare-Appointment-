@@ -106,7 +106,7 @@ export default function BookAppointment() {
 
   return (
     <div className="space-y-6">
-      <Link to="/patient/doctors" className="inline-flex items-center gap-1.5 text-sm text-text-secondary dark:text-slate-400 hover:text-primary transition-colors">
+      <Link to="/patient/doctors" className="inline-flex items-center gap-1.5 text-sm text-text-secondary dark:text-brand-300 hover:text-primary transition-colors">
         <ArrowLeft className="w-4 h-4" /> Back to doctors
       </Link>
 
@@ -137,7 +137,7 @@ export default function BookAppointment() {
             {slotsLoading ? (
               <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
                 {Array.from({ length: 8 }).map((_, i) => (
-                  <div key={i} className="h-10 rounded-lg bg-gray-100 dark:bg-slate-700 animate-pulse" />
+                  <div key={i} className="h-10 rounded-lg bg-sand-100 dark:bg-brand-800 animate-pulse" />
                 ))}
               </div>
             ) : slots.length === 0 ? (
@@ -152,7 +152,7 @@ export default function BookAppointment() {
                     className={`text-sm font-medium py-2 rounded-lg border transition-colors disabled:opacity-50 ${
                       selectedSlot === slot
                         ? 'bg-primary text-white border-primary'
-                        : 'border-border dark:border-slate-700 text-text-secondary dark:text-slate-300 hover:border-primary hover:bg-primary-light dark:hover:bg-blue-900/20'
+                        : 'border-border dark:border-brand-800 text-text-secondary dark:text-brand-200 hover:border-primary hover:bg-primary-light dark:hover:bg-brand-900/20'
                     }`}
                   >
                     {slot}
@@ -197,8 +197,8 @@ export default function BookAppointment() {
                       onClick={() => toggleSymptom(s)}
                       className={`text-sm font-medium px-3 py-1 rounded-full border transition-colors ${
                         checkedSymptoms.includes(s)
-                          ? 'bg-primary-light text-primary border-blue-200 dark:bg-blue-900/30 dark:border-blue-800'
-                          : 'bg-gray-50 text-text-secondary border-border dark:bg-slate-900 dark:text-slate-300 dark:border-slate-700 hover:border-border-hover'
+                          ? 'bg-primary-light text-primary border-brand-200 dark:bg-brand-900/30 dark:border-brand-800'
+                          : 'bg-sand-50 text-text-secondary border-border dark:bg-brand-950 dark:text-brand-200 dark:border-brand-800 hover:border-border-hover'
                       }`}
                     >
                       {s}
@@ -211,7 +211,7 @@ export default function BookAppointment() {
                   onChange={(e) => setSymptomText(e.target.value)}
                   rows={6}
                   placeholder="Describe your symptoms in detail..."
-                  className="w-full mb-1 px-3 py-2.5 rounded-lg border border-border dark:border-slate-700 bg-white dark:bg-slate-900 text-sm text-text-primary dark:text-white resize-none focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-primary transition"
+                  className="w-full mb-1 px-3 py-2.5 rounded-lg border border-border dark:border-brand-800 bg-white dark:bg-brand-950 text-sm text-text-primary dark:text-white resize-none focus:outline-none focus:ring-2 focus:ring-brand-100 focus:border-primary transition"
                 />
                 <p className="text-xs text-text-muted mb-5 text-right">{symptomText.length} characters</p>
 

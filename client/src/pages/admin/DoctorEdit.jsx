@@ -112,13 +112,13 @@ export default function AdminDoctorEdit() {
 
   return (
     <div className="max-w-2xl mx-auto space-y-6">
-      <Link to="/admin/doctors" className="inline-flex items-center gap-1.5 text-sm text-text-secondary dark:text-slate-400 hover:text-primary transition-colors">
+      <Link to="/admin/doctors" className="inline-flex items-center gap-1.5 text-sm text-text-secondary dark:text-brand-300 hover:text-primary transition-colors">
         <ArrowLeft className="w-4 h-4" /> Back to doctors
       </Link>
 
       <div>
         <h2 className="text-xl font-semibold text-text-primary dark:text-white">{doctor.userId?.name}</h2>
-        <p className="text-sm text-text-secondary dark:text-slate-400">{doctor.userId?.email}</p>
+        <p className="text-sm text-text-secondary dark:text-brand-300">{doctor.userId?.email}</p>
       </div>
 
       <Card>
@@ -135,7 +135,7 @@ export default function AdminDoctorEdit() {
               value={form.bio}
               onChange={handleChange}
               rows={3}
-              className="w-full px-3 py-2.5 rounded-lg border border-border dark:border-slate-700 bg-white dark:bg-slate-900 text-sm text-text-primary dark:text-white resize-none focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-primary transition"
+              className="w-full px-3 py-2.5 rounded-lg border border-border dark:border-brand-800 bg-white dark:bg-brand-950 text-sm text-text-primary dark:text-white resize-none focus:outline-none focus:ring-2 focus:ring-brand-100 focus:border-primary transition"
             />
           </div>
           <Input label="Slot duration (minutes)" type="number" min={5} step={5} name="slotDuration" value={form.slotDuration} onChange={handleChange} containerClassName="w-40" />
@@ -143,7 +143,7 @@ export default function AdminDoctorEdit() {
           <h3 className="text-base font-semibold text-text-primary dark:text-white pt-2">Working Hours</h3>
           <div className="space-y-1">
             {DAYS.map((day) => (
-              <div key={day} className="flex flex-wrap items-center gap-3 py-2 border-b border-border dark:border-slate-700 last:border-0">
+              <div key={day} className="flex flex-wrap items-center gap-3 py-2 border-b border-border dark:border-brand-800 last:border-0">
                 <div className="w-28 shrink-0">
                   <Switch checked={dayMap[day].enabled} onChange={(v) => setDayMap((prev) => ({ ...prev, [day]: { ...prev[day], enabled: v } }))} label={day} />
                 </div>
@@ -204,7 +204,7 @@ export default function AdminDoctorEdit() {
           </>
         }
       >
-        <p className="text-sm text-text-secondary dark:text-slate-300">
+        <p className="text-sm text-text-secondary dark:text-brand-200">
           Any confirmed appointments on this date will be cancelled and patients will be notified by email.
         </p>
       </Modal>

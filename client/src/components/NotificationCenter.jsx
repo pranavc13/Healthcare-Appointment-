@@ -25,16 +25,16 @@ function NotifItem({ notif }) {
   const ts = notif.sentAt || notif.scheduledAt;
 
   return (
-    <div className="flex items-start gap-3 px-4 py-3 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors">
+    <div className="flex items-start gap-3 px-4 py-3 hover:bg-sand-50 dark:hover:bg-brand-800 transition-colors">
       <div className={`${meta.color} p-2 rounded-lg shrink-0 mt-0.5`}>
         <Icon className="w-4 h-4" />
       </div>
       <div className="flex-1 min-w-0">
-        <p className="text-sm leading-snug text-gray-900 dark:text-white font-medium truncate">
+        <p className="text-sm leading-snug text-sand-900 dark:text-white font-medium truncate">
           {TYPE_LABEL[notif.type] || notif.type}
         </p>
-        <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{notif.subject}</p>
-        <p className="text-xs text-gray-400 mt-0.5">{ts ? formatDistanceToNow(new Date(ts), { addSuffix: true }) : ''}</p>
+        <p className="text-xs text-sand-500 dark:text-sand-400 truncate">{notif.subject}</p>
+        <p className="text-xs text-sand-400 mt-0.5">{ts ? formatDistanceToNow(new Date(ts), { addSuffix: true }) : ''}</p>
       </div>
     </div>
   );
@@ -66,23 +66,23 @@ export default function NotificationCenter() {
     <div ref={ref} className="relative">
       <button
         onClick={() => setOpen((v) => !v)}
-        className="relative p-2 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors"
+        className="relative p-2 rounded-lg text-sand-500 dark:text-sand-400 hover:bg-sand-100 dark:hover:bg-brand-800 transition-colors"
         aria-label="Notifications"
       >
         <Bell className="w-5 h-5" />
       </button>
 
       {open && (
-        <div className="absolute right-0 mt-2 w-80 bg-white dark:bg-slate-800 border border-border dark:border-slate-700 rounded-xl shadow-lg z-50 overflow-hidden animate-fade-in">
-          <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100 dark:border-slate-700">
-            <h3 className="font-semibold text-gray-900 dark:text-white text-sm">Notifications</h3>
+        <div className="absolute right-0 mt-2 w-80 bg-white dark:bg-brand-900 border border-border dark:border-brand-800 rounded-xl shadow-lg z-50 overflow-hidden animate-fade-in">
+          <div className="flex items-center justify-between px-4 py-3 border-b border-sand-100 dark:border-brand-800">
+            <h3 className="font-semibold text-sand-900 dark:text-white text-sm">Notifications</h3>
           </div>
 
           <div className="max-h-80 overflow-y-auto">
             {notifs.length === 0 ? (
               <div className="text-center py-8">
-                <Bell className="w-10 h-10 text-gray-200 dark:text-slate-600 mx-auto mb-2" />
-                <p className="text-sm text-gray-400">No notifications yet</p>
+                <Bell className="w-10 h-10 text-sand-200 dark:text-brand-700 mx-auto mb-2" />
+                <p className="text-sm text-sand-400">No notifications yet</p>
               </div>
             ) : (
               notifs.map((n) => <NotifItem key={n._id} notif={n} />)

@@ -4,9 +4,9 @@ export default function Card({ hoverable = false, fullBleed = false, className, 
   return (
     <div
       className={clsx(
-        'bg-white dark:bg-slate-800 rounded-xl border border-border dark:border-slate-700 shadow-sm overflow-hidden',
+        'surface-card rounded-2xl overflow-hidden',
         !fullBleed && 'p-6',
-        hoverable && 'hover:border-border-hover dark:hover:border-slate-600 hover:shadow transition-all duration-150 cursor-pointer',
+        hoverable && 'transition-all duration-300 hover:-translate-y-1 hover:shadow-lift cursor-pointer',
         className
       )}
       {...props}
@@ -18,7 +18,13 @@ export default function Card({ hoverable = false, fullBleed = false, className, 
 
 export function CardHeader({ className, children, ...props }) {
   return (
-    <div className={clsx('bg-gray-50 dark:bg-slate-900/40 border-b border-border dark:border-slate-700 px-6 py-4', className)} {...props}>
+    <div
+      className={clsx(
+        'bg-cream-100 dark:bg-brand-900/60 border-b border-border dark:border-brand-200/10 px-6 py-4',
+        className
+      )}
+      {...props}
+    >
       {children}
     </div>
   );
@@ -26,7 +32,10 @@ export function CardHeader({ className, children, ...props }) {
 
 export function CardTitle({ className, children, ...props }) {
   return (
-    <h3 className={clsx('text-base font-semibold text-text-primary dark:text-white', className)} {...props}>
+    <h3
+      className={clsx('font-display text-[17px] font-semibold text-text-primary dark:text-cream-100', className)}
+      {...props}
+    >
       {children}
     </h3>
   );

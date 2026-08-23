@@ -14,10 +14,10 @@ const NGOS = [
     href: 'https://www.helpageindia.org/',
     founded: '1978',
     focus: 'Elder Care',
-    color: 'from-blue-500 to-indigo-600',
-    lightColor: 'bg-blue-50 dark:bg-blue-900/20',
-    borderColor: 'border-blue-200 dark:border-blue-800',
-    tagColor: 'bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300',
+    color: 'from-brand-600 to-brand-700',
+    lightColor: 'bg-brand-50 dark:bg-brand-900/20',
+    borderColor: 'border-brand-200 dark:border-brand-800',
+    tagColor: 'bg-brand-100 dark:bg-brand-900/40 text-brand-800 dark:text-brand-300',
     icon: Users,
     stats: [
       { label: 'Elders Helped', value: '3M+' },
@@ -103,10 +103,10 @@ const fadeUp = (delay = 0) => ({
 export default function NGO() {
   return (
     <PageTransition>
-      <div className="min-h-screen bg-gray-50 dark:bg-slate-900">
+      <div className="min-h-screen bg-sand-50 dark:bg-brand-950">
 
         {/* ── Hero ── */}
-        <section className="relative overflow-hidden bg-gradient-to-br from-blue-600 via-indigo-600 to-teal-600 text-white pt-28 pb-20 px-4">
+        <section className="relative overflow-hidden bg-gradient-to-br from-brand-700 via-brand-700 to-teal-600 text-white pt-28 pb-20 px-4">
           {/* Decorative blobs */}
           <div className="absolute top-0 right-0 w-96 h-96 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/3 blur-3xl" />
           <div className="absolute bottom-0 left-0 w-72 h-72 bg-teal-500/20 rounded-full translate-y-1/2 -translate-x-1/3 blur-3xl" />
@@ -122,7 +122,7 @@ export default function NGO() {
               <span className="block text-teal-200">One Step at a Time</span>
             </motion.h1>
 
-            <motion.p {...fadeUp(0.16)} className="text-lg md:text-xl text-blue-100 max-w-2xl mx-auto mb-10 leading-relaxed">
+            <motion.p {...fadeUp(0.16)} className="text-lg md:text-xl text-brand-100 max-w-2xl mx-auto mb-10 leading-relaxed">
               These organisations are working tirelessly to make quality healthcare accessible to every Indian — from remote villages to urban slums.
             </motion.p>
 
@@ -132,7 +132,7 @@ export default function NGO() {
                 <div key={label} className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl py-4 px-3">
                   <Icon className="w-5 h-5 text-teal-200 mx-auto mb-1" />
                   <p className="text-2xl font-black">{value}</p>
-                  <p className="text-xs text-blue-200 mt-0.5">{label}</p>
+                  <p className="text-xs text-brand-200 mt-0.5">{label}</p>
                 </div>
               ))}
             </motion.div>
@@ -142,8 +142,8 @@ export default function NGO() {
         {/* ── NGO Cards ── */}
         <section className="max-w-6xl mx-auto px-4 py-16">
           <motion.div {...fadeUp(0)} className="text-center mb-12">
-            <h2 className="text-3xl font-black text-gray-900 dark:text-white mb-3">Our Partner Organisations</h2>
-            <p className="text-gray-500 dark:text-gray-400 max-w-xl mx-auto">
+            <h2 className="text-3xl font-black text-sand-900 dark:text-white mb-3">Our Partner Organisations</h2>
+            <p className="text-sand-500 dark:text-sand-400 max-w-xl mx-auto">
               Each NGO below is making a measurable difference. Click any card to learn more and support their cause.
             </p>
           </motion.div>
@@ -157,7 +157,7 @@ export default function NGO() {
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: i * 0.1 }}
                 whileHover={{ y: -5 }}
-                className="bg-white dark:bg-slate-800 rounded-3xl border border-gray-100 dark:border-slate-700 overflow-hidden shadow-sm hover:shadow-xl transition-shadow flex flex-col"
+                className="bg-white dark:bg-brand-900 rounded-3xl border border-sand-100 dark:border-brand-800 overflow-hidden shadow-sm hover:shadow-xl transition-shadow flex flex-col"
               >
                 {/* Card top accent */}
                 <div className={`h-1.5 bg-gradient-to-r ${ngo.color}`} />
@@ -169,12 +169,12 @@ export default function NGO() {
                       <img src={ngo.img} alt={ngo.name} className="w-full h-full object-contain" />
                     </div>
                     <div className="flex-1 min-w-0 pt-1">
-                      <h3 className="text-xl font-bold text-gray-900 dark:text-white leading-snug">{ngo.name}</h3>
+                      <h3 className="text-xl font-bold text-sand-900 dark:text-white leading-snug">{ngo.name}</h3>
                       <div className="flex flex-wrap gap-2 mt-2">
                         <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${ngo.tagColor}`}>
                           {ngo.focus}
                         </span>
-                        <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-gray-100 dark:bg-slate-700 text-gray-500 dark:text-gray-400">
+                        <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-sand-100 dark:bg-brand-800 text-sand-500 dark:text-sand-400">
                           Est. {ngo.founded}
                         </span>
                       </div>
@@ -182,7 +182,7 @@ export default function NGO() {
                   </div>
 
                   {/* Description */}
-                  <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed mb-6 flex-1">
+                  <p className="text-sm text-sand-600 dark:text-sand-400 leading-relaxed mb-6 flex-1">
                     {ngo.description}
                   </p>
 
@@ -190,8 +190,8 @@ export default function NGO() {
                   <div className={`grid grid-cols-3 gap-3 ${ngo.lightColor} rounded-2xl border ${ngo.borderColor} p-4 mb-6`}>
                     {ngo.stats.map(stat => (
                       <div key={stat.label} className="text-center">
-                        <p className="text-lg font-black text-gray-900 dark:text-white">{stat.value}</p>
-                        <p className="text-[10px] text-gray-500 dark:text-gray-400 leading-snug mt-0.5">{stat.label}</p>
+                        <p className="text-lg font-black text-sand-900 dark:text-white">{stat.value}</p>
+                        <p className="text-[10px] text-sand-500 dark:text-sand-400 leading-snug mt-0.5">{stat.label}</p>
                       </div>
                     ))}
                   </div>
@@ -213,14 +213,14 @@ export default function NGO() {
         </section>
 
         {/* ── How to Help CTA ── */}
-        <section className="bg-gradient-to-br from-slate-800 to-slate-900 text-white py-16 px-4">
+        <section className="bg-gradient-to-br from-brand-900 to-brand-950 text-white py-16 px-4">
           <div className="max-w-3xl mx-auto text-center">
             <motion.div {...fadeUp(0)}>
               <div className="w-16 h-16 bg-white/10 rounded-2xl flex items-center justify-center mx-auto mb-5">
                 <HandHeart className="w-8 h-8 text-teal-300" />
               </div>
               <h2 className="text-3xl font-black mb-4">Want to Make a Difference?</h2>
-              <p className="text-gray-300 mb-8 leading-relaxed max-w-xl mx-auto">
+              <p className="text-sand-300 mb-8 leading-relaxed max-w-xl mx-auto">
                 Whether you volunteer your time, donate, or simply spread awareness — every action counts. Visit any of the NGO websites above to get involved.
               </p>
               <div className="flex flex-wrap justify-center gap-4">
@@ -236,9 +236,9 @@ export default function NGO() {
         </section>
 
         {/* ── Footer ── */}
-        <footer className="bg-gray-100 dark:bg-slate-950 border-t border-gray-200 dark:border-slate-800 py-10 px-4">
+        <footer className="bg-sand-100 dark:bg-brand-950 border-t border-sand-200 dark:border-brand-900 py-10 px-4">
           <div className="max-w-xl mx-auto text-center">
-            <p className="text-xs text-gray-400 dark:text-slate-500">&copy; 2024 DocConnect. All rights reserved.</p>
+            <p className="text-xs text-sand-400 dark:text-brand-600">&copy; 2024 DocConnect. All rights reserved.</p>
           </div>
         </footer>
 

@@ -25,7 +25,7 @@ export function DonutChart({ data = [], size = 140, strokeWidth = 18, label, sub
             cx={size / 2} cy={size / 2} r={radius}
             fill="none"
             stroke="currentColor"
-            className="text-gray-100 dark:text-slate-700"
+            className="text-sand-100 dark:text-brand-800"
             strokeWidth={strokeWidth}
           />
           {segments.map((seg, i) => (
@@ -44,8 +44,8 @@ export function DonutChart({ data = [], size = 140, strokeWidth = 18, label, sub
         </svg>
         {/* Centre label */}
         <div className="absolute inset-0 flex flex-col items-center justify-center">
-          <span className="text-2xl font-bold text-gray-900 dark:text-white">{label}</span>
-          {sublabel && <span className="text-xs text-gray-500 dark:text-gray-400">{sublabel}</span>}
+          <span className="text-2xl font-bold text-sand-900 dark:text-white">{label}</span>
+          {sublabel && <span className="text-xs text-sand-500 dark:text-sand-400">{sublabel}</span>}
         </div>
       </div>
       {/* Legend */}
@@ -53,7 +53,7 @@ export function DonutChart({ data = [], size = 140, strokeWidth = 18, label, sub
         {data.map(d => (
           <div key={d.label} className="flex items-center gap-1.5">
             <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ background: d.color }} />
-            <span className="text-xs text-gray-600 dark:text-gray-400">{d.label} ({d.value})</span>
+            <span className="text-xs text-sand-600 dark:text-sand-400">{d.label} ({d.value})</span>
           </div>
         ))}
       </div>
@@ -67,13 +67,13 @@ export function BarChart({ data = [], height = 160, color = '#3b82f6', label = '
 
   return (
     <div>
-      {label && <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-3">{label}</p>}
+      {label && <p className="text-xs font-semibold text-sand-500 dark:text-sand-400 uppercase tracking-wide mb-3">{label}</p>}
       <div className="flex items-end gap-1.5" style={{ height }}>
         {data.map((d, i) => {
           const barH = Math.max((d.value / max) * (height - 28), 4);
           return (
             <div key={i} className="flex-1 flex flex-col items-center gap-1">
-              <span className="text-xs font-medium text-gray-600 dark:text-gray-400">{d.value || ''}</span>
+              <span className="text-xs font-medium text-sand-600 dark:text-sand-400">{d.value || ''}</span>
               <div
                 className="w-full rounded-t-lg transition-all duration-700 ease-out"
                 style={{ height: barH, background: color, opacity: d.value === 0 ? 0.2 : 1 }}
@@ -86,7 +86,7 @@ export function BarChart({ data = [], height = 160, color = '#3b82f6', label = '
       <div className="flex gap-1.5 mt-1">
         {data.map((d, i) => (
           <div key={i} className="flex-1 text-center">
-            <span className="text-[10px] text-gray-400 dark:text-gray-500 truncate block">{d.label}</span>
+            <span className="text-[10px] text-sand-400 dark:text-sand-500 truncate block">{d.label}</span>
           </div>
         ))}
       </div>
@@ -128,14 +128,14 @@ export function AnalyticStatCard({ icon, label, value, sub, sparkData, color = '
   const trendDown = trend < 0;
 
   return (
-    <div className="bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700 p-5 shadow-sm">
+    <div className="bg-white dark:bg-brand-900 rounded-2xl border border-sand-100 dark:border-brand-800 p-5 shadow-sm">
       <div className="flex items-start justify-between">
         <div>
-          <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">{label}</p>
-          <p className="text-3xl font-bold text-gray-900 dark:text-white mt-1">{value}</p>
-          {sub && <p className="text-xs text-gray-400 mt-1">{sub}</p>}
+          <p className="text-xs font-semibold text-sand-500 dark:text-sand-400 uppercase tracking-wide">{label}</p>
+          <p className="text-3xl font-bold text-sand-900 dark:text-white mt-1">{value}</p>
+          {sub && <p className="text-xs text-sand-400 mt-1">{sub}</p>}
           {trend !== undefined && (
-            <p className={`text-xs font-medium mt-1 ${trendUp ? 'text-green-500' : trendDown ? 'text-red-500' : 'text-gray-400'}`}>
+            <p className={`text-xs font-medium mt-1 ${trendUp ? 'text-green-500' : trendDown ? 'text-red-500' : 'text-sand-400'}`}>
               {trendUp ? '▲' : trendDown ? '▼' : '–'} {Math.abs(trend)}% vs last month
             </p>
           )}
@@ -158,11 +158,11 @@ export function ProgressBar({ label, value, max = 100, color = '#3b82f6' }) {
   const pct = Math.min((value / max) * 100, 100);
   return (
     <div>
-      <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400 mb-1">
+      <div className="flex justify-between text-xs text-sand-500 dark:text-sand-400 mb-1">
         <span>{label}</span>
         <span className="font-medium">{value}/{max}</span>
       </div>
-      <div className="h-2 bg-gray-100 dark:bg-slate-700 rounded-full overflow-hidden">
+      <div className="h-2 bg-sand-100 dark:bg-brand-800 rounded-full overflow-hidden">
         <div
           className="h-full rounded-full transition-all duration-700"
           style={{ width: `${pct}%`, background: color }}

@@ -24,8 +24,11 @@ const About           = lazy(() => import('./about/About.jsx'));
 const FAQ             = lazy(() => import('./faq/FAQ.jsx'));
 const HealthGame      = lazy(() => import('./game/Game.jsx'));
 const BMITracker      = lazy(() => import('./bmi-tracker/BMITracker.jsx'));
-const BookMedicine    = lazy(() => import('./book-medicine/BookMedicine.jsx'));
 const MedicalRecords  = lazy(() => import('./medical-records/MedicalRecords.jsx'));
+
+/* Public doctor directory (backed by the imported practitioner dataset) */
+const FindDoctors     = lazy(() => import('./doctors/FindDoctors.jsx'));
+const DoctorDetail    = lazy(() => import('./doctors/DoctorDetail.jsx'));
 
 /* Patient portal */
 const PatientDashboard      = lazy(() => import('./pages/patient/Dashboard.jsx'));
@@ -48,10 +51,13 @@ const AdminDoctorEdit       = lazy(() => import('./pages/admin/DoctorEdit.jsx'))
 
 function PageLoader() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-slate-900">
-      <div className="flex flex-col items-center gap-3">
-        <div className="w-10 h-10 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
-        <p className="text-sm text-gray-400">Loading...</p>
+    <div className="min-h-screen flex items-center justify-center bg-cream-100 dark:bg-brand-950">
+      <div className="flex flex-col items-center gap-4">
+        <div className="relative w-12 h-12">
+          <div className="absolute inset-0 rounded-full border-2 border-brand-200 dark:border-brand-800" />
+          <div className="absolute inset-0 rounded-full border-2 border-gold-400 border-t-transparent animate-spin" />
+        </div>
+        <p className="text-[13px] font-medium tracking-wide text-text-muted">Loading…</p>
       </div>
     </div>
   );
@@ -59,18 +65,18 @@ function PageLoader() {
 
 function NotFound() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-slate-900 px-4">
+    <div className="min-h-screen flex items-center justify-center bg-cream-100 dark:bg-brand-950 px-5">
       <div className="text-center">
-        <p className="text-8xl font-black text-gray-100 dark:text-slate-800 mb-4 select-none">404</p>
-        <h1 className="text-2xl font-bold text-gray-800 dark:text-white mb-2">Page not found</h1>
-        <p className="text-gray-500 dark:text-gray-400 text-sm mb-6">
+        <p className="font-display text-[7rem] leading-none font-semibold text-cream-200 dark:text-brand-900 mb-2 select-none">404</p>
+        <h1 className="font-display text-3xl font-semibold text-brand-900 dark:text-cream-100 mb-3">Page not found</h1>
+        <p className="text-text-secondary dark:text-brand-200 text-sm mb-8 max-w-sm mx-auto">
           The page you're looking for doesn't exist or has been moved.
         </p>
         <a
           href="/"
-          className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-medium px-5 py-2.5 rounded-xl text-sm transition-colors"
+          className="inline-flex items-center gap-2 h-12 px-7 rounded-full bg-brand-700 hover:bg-brand-800 text-cream-100 font-semibold text-sm transition-colors"
         >
-          ← Back to Home
+          ← Back to home
         </a>
       </div>
     </div>
@@ -89,12 +95,13 @@ function AnimatedRoutes() {
           <Route index element={<App />} />
           <Route path="help"          element={<NGO />} />
           <Route path="emergency"     element={<Emergency />} />
+          <Route path="doctors"       element={<FindDoctors />} />
+          <Route path="doctors/:id"   element={<DoctorDetail />} />
           <Route path="about"         element={<About />} />
           <Route path="ai-assistant"  element={<AIAssistant />} />
           <Route path="faq"           element={<FAQ />} />
           <Route path="game"          element={<HealthGame />} />
           <Route path="bmi-tracker"   element={<BMITracker />} />
-          <Route path="book-medicine" element={<BookMedicine />} />
           <Route path="medical-records" element={<PrivateRoute><MedicalRecords /></PrivateRoute>} />
         </Route>
 

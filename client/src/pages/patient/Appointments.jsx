@@ -12,7 +12,7 @@ const TABS = ['Upcoming', 'Past', 'Cancelled'];
 function DateBlock({ date }) {
   const d = new Date(date);
   return (
-    <div className="w-14 h-14 rounded-lg bg-primary-light dark:bg-blue-900/20 text-primary flex flex-col items-center justify-center shrink-0">
+    <div className="w-14 h-14 rounded-lg bg-primary-light dark:bg-brand-900/20 text-primary flex flex-col items-center justify-center shrink-0">
       <span className="text-lg font-bold leading-none">{d.getDate()}</span>
       <span className="text-[10px] font-medium uppercase mt-0.5">{d.toLocaleDateString('en-IN', { month: 'short' })}</span>
     </div>
@@ -63,7 +63,7 @@ export default function PatientAppointments() {
 
   return (
     <div className="space-y-6">
-      <div className="flex gap-6 border-b border-border dark:border-slate-700">
+      <div className="flex gap-6 border-b border-border dark:border-brand-800">
         {TABS.map((t) => (
           <button
             key={t}
@@ -93,7 +93,7 @@ export default function PatientAppointments() {
                 <DateBlock date={a.date} />
                 <div className="flex-1 min-w-0">
                   <p className="font-semibold text-text-primary dark:text-white text-sm">Dr. {a.doctorId?.userId?.name}</p>
-                  <p className="text-sm text-text-secondary dark:text-slate-400">{a.doctorId?.specialisation}</p>
+                  <p className="text-sm text-text-secondary dark:text-brand-300">{a.doctorId?.specialisation}</p>
                   <p className="text-xs text-text-muted mt-0.5 inline-flex items-center gap-1">
                     <Clock className="w-3 h-3" /> {a.startTime}
                   </p>

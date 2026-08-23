@@ -16,7 +16,7 @@ function greeting() {
 function DateBlock({ date }) {
   const d = new Date(date);
   return (
-    <div className="w-14 h-14 rounded-lg bg-primary-light dark:bg-blue-900/20 text-primary flex flex-col items-center justify-center shrink-0">
+    <div className="w-14 h-14 rounded-lg bg-primary-light dark:bg-brand-900/20 text-primary flex flex-col items-center justify-center shrink-0">
       <span className="text-lg font-bold leading-none">{d.getDate()}</span>
       <span className="text-[10px] font-medium uppercase mt-0.5">{d.toLocaleDateString('en-IN', { month: 'short' })}</span>
     </div>
@@ -45,7 +45,7 @@ export default function PatientDashboard() {
         <h2 className="text-2xl font-bold text-text-primary dark:text-white">
           {greeting()}, {user?.name?.split(' ')[0]}
         </h2>
-        <p className="text-sm text-text-secondary dark:text-slate-400 mt-1">
+        <p className="text-sm text-text-secondary dark:text-brand-300 mt-1">
           {now.toLocaleDateString('en-IN', { weekday: 'long', month: 'long', day: 'numeric' })}
         </p>
       </div>
@@ -95,7 +95,7 @@ export default function PatientDashboard() {
                   <DateBlock date={a.date} />
                   <div className="flex-1 min-w-0">
                     <p className="font-semibold text-text-primary dark:text-white text-sm truncate">Dr. {a.doctorId?.userId?.name}</p>
-                    <p className="text-sm text-text-secondary dark:text-slate-400">{a.doctorId?.specialisation}</p>
+                    <p className="text-sm text-text-secondary dark:text-brand-300">{a.doctorId?.specialisation}</p>
                     <p className="text-xs text-text-muted mt-0.5 inline-flex items-center gap-1">
                       <Clock className="w-3 h-3" /> {a.startTime}
                     </p>

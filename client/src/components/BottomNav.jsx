@@ -1,35 +1,59 @@
 import { NavLink } from 'react-router-dom';
-import { Home, Search, Calendar, User, MessageCircle } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { Activity, Calendar, Home, LayoutDashboard, Stethoscope } from 'lucide-react';
+import useAuth from '../hooks/useAuth';
 
-const links = [
-  { to: '/',              icon: Home,          label: 'Home'        },
-  { to: '/search',        icon: Search,        label: 'Search'      },
-  { to: '/ai-assistant',  icon: MessageCircle, label: 'AI'          },
-  { to: '/appointments',  icon: Calendar,      label: 'Bookings'    },
-  { to: '/settings',      icon: User,          label: 'Profile'     },
-];
+const BY_ROLE = {
+  patient: [
+    { to: '/', icon: Home, label: 'Home', end: true },
+    { to: '/doctors', icon: Stethoscope, label: 'Doctors' },
+    { to: '/ai-assistant', icon: Activity, label: 'Symptoms' },
+    { to: '/patient/appointments', icon: Calendar, label: 'Bookings' },
+    { to: '/patient/dashboard', icon: LayoutDashboard, label: 'Portal' },
+  ],
+  doctor: [
+    { to: '/', icon: Home, label: 'Home', end: true },
+    { to: '/doctors', icon: Stethoscope, label: 'Doctors' },
+    { to: '/doctor/dashboard', icon: LayoutDashboard, label: 'Portal' },
+  ],
+  admin: [
+    { to: '/', icon: Home, label: 'Home', end: true },
+    { to: '/admin/doctors', icon: Stethoscope, label: 'Doctors' },
+    { to: '/admin/dashboard', icon: LayoutDashboard, label: 'Portal' },
+  ],
+};
 
 export default function BottomNav() {
+  const { user } = useAuth();
+  const links = BY_ROLE[user?.role] || BY_ROLE.patient;
+
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-40 bg-white dark:bg-slate-800 border-t border-gray-200 dark:border-slate-700 md:hidden pb-safe">
-      <div className="grid grid-cols-5">
-        {links.map(({ to, icon: Icon, label }) => (
-          <NavLink
-            key={to}
-            to={to}
-            end={to === '/'}
-            className={({ isActive }) =>
-              `flex flex-col items-center justify-center gap-0.5 py-2.5 text-[10px] font-medium transition-colors ${
-                isActive
-                  ? 'text-blue-600 dark:text-blue-400'
-                  : 'text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-gray-300'
-              }`
-            }
-          >
+    <nav className="fixed bottom-0 left-0 right-0 z-40 glass border-t border-border dark:border-brand-200/10 lg:hidden pb-safe">
+      <div className="grid" style={{ gridTemplateColumns: `repeat(${links.length}, minmax(0, 1fr))` }}>
+        {links.map(({ to, icon: Icon, label, end }) => (
+          <NavLink key={to} to={to} end={end} className="relative flex flex-col items-center justify-center gap-1 py-2.5">
             {({ isActive }) => (
               <>
-                <Icon className={`w-5 h-5 ${isActive ? 'stroke-[2.5]' : 'stroke-[1.5]'}`} />
-                <span>{label}</span>
+                {isActive && (
+                  <motion.span
+                    layoutId="bottomnav-pill"
+                    className="absolute inset-x-3 inset-y-1 rounded-xl bg-brand-700/10 dark:bg-gold-400/10"
+                    transition={{ type: 'spring', stiffness: 380, damping: 32 }}
+                  />
+                )}
+                <Icon
+                  className={`relative w-5 h-5 transition-colors ${
+                    isActive ? 'text-brand-700 dark:text-gold-300' : 'text-text-muted'
+                  }`}
+                  strokeWidth={isActive ? 2.3 : 1.7}
+                />
+                <span
+                  className={`relative text-[10px] font-semibold transition-colors ${
+                    isActive ? 'text-brand-700 dark:text-gold-300' : 'text-text-muted'
+                  }`}
+                >
+                  {label}
+                </span>
               </>
             )}
           </NavLink>

@@ -52,7 +52,7 @@ export default function DoctorDashboard() {
     <div className="space-y-8">
       <div>
         <h2 className="text-2xl font-bold text-text-primary dark:text-white">Dashboard</h2>
-        <p className="text-sm text-text-secondary dark:text-slate-400 mt-1">
+        <p className="text-sm text-text-secondary dark:text-brand-300 mt-1">
           {today.toLocaleDateString('en-IN', { weekday: 'long', month: 'long', day: 'numeric' })}
         </p>
       </div>
@@ -101,7 +101,7 @@ export default function DoctorDashboard() {
           </Card>
         ) : (
           <div className="relative pl-6">
-            <div className="absolute left-[7px] top-2 bottom-2 w-px bg-border dark:bg-slate-700" />
+            <div className="absolute left-[7px] top-2 bottom-2 w-px bg-border dark:bg-brand-800" />
             <div className="space-y-3">
               {todaysSchedule.map((a) => {
                 const isPast = a.startTime < nowTime;
@@ -109,11 +109,11 @@ export default function DoctorDashboard() {
                 const urgency = a.preVisitSummary?.urgencyLevel;
                 return (
                   <div key={a._id} className="relative">
-                    <span className={`absolute -left-[26px] top-5 w-3 h-3 rounded-full ring-4 ring-background dark:ring-slate-900 ${isPast ? 'bg-gray-300 dark:bg-slate-600' : 'bg-primary'}`} />
+                    <span className={`absolute -left-[26px] top-5 w-3 h-3 rounded-full ring-4 ring-background dark:ring-brand-950 ${isPast ? 'bg-sand-300 dark:bg-brand-700' : 'bg-primary'}`} />
                     <Link to={`/doctor/appointments/${a._id}`}>
                       <Card
                         hoverable
-                        className={`!p-4 border-l-4 ${urgency ? URGENCY_BORDER[urgency] : 'border-l-border dark:border-l-slate-700'} ${isPast ? 'opacity-60' : ''} ${isNext ? 'ring-2 ring-blue-100 bg-primary-light/30 dark:ring-blue-900/30 dark:bg-blue-900/10' : ''}`}
+                        className={`!p-4 border-l-4 ${urgency ? URGENCY_BORDER[urgency] : 'border-l-border dark:border-l-brand-800'} ${isPast ? 'opacity-60' : ''} ${isNext ? 'ring-2 ring-brand-100 bg-primary-light/30 dark:ring-brand-900/30 dark:bg-brand-900/10' : ''}`}
                       >
                         <div className="flex items-center justify-between gap-4">
                           <div className="flex items-center gap-4 min-w-0">

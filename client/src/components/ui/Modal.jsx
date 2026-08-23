@@ -20,16 +20,16 @@ export default function Modal({ open, onClose, title, description, children, foo
             exit={{ opacity: 0, scale: 0.95 }}
             transition={{ duration: 0.2, ease: 'easeOut' }}
             onClick={(e) => e.stopPropagation()}
-            className={`bg-white dark:bg-slate-800 rounded-2xl shadow-xl w-full ${maxWidth} mx-4 p-6 max-h-[90vh] overflow-y-auto sm:rounded-2xl max-sm:rounded-none max-sm:h-full max-sm:max-h-full max-sm:mx-0`}
+            className={`bg-white dark:bg-brand-900 rounded-2xl shadow-xl w-full ${maxWidth} mx-4 p-6 max-h-[90vh] overflow-y-auto sm:rounded-2xl max-sm:rounded-none max-sm:h-full max-sm:max-h-full max-sm:mx-0`}
           >
             <div className="flex items-start justify-between mb-1">
               <div>
                 {title && <h2 className="text-lg font-semibold text-text-primary dark:text-white">{title}</h2>}
-                {description && <p className="text-sm text-text-secondary dark:text-slate-400 mt-1">{description}</p>}
+                {description && <p className="text-sm text-text-secondary dark:text-brand-300 mt-1">{description}</p>}
               </div>
               <button
                 onClick={onClose}
-                className="p-1.5 -m-1.5 rounded-lg text-text-muted hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors shrink-0"
+                className="p-1.5 -m-1.5 rounded-lg text-text-muted hover:bg-sand-100 dark:hover:bg-brand-800 transition-colors shrink-0"
                 aria-label="Close"
               >
                 <X className="w-4 h-4" />

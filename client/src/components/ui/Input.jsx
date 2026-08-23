@@ -5,19 +5,23 @@ const Input = forwardRef(function Input({ label, icon: Icon, error, className, c
   return (
     <div className={containerClassName}>
       {label && (
-        <label className="block text-xs font-medium text-text-muted uppercase tracking-wide mb-1.5">{label}</label>
+        <label className="block text-[11px] font-bold text-text-muted uppercase tracking-[0.14em] mb-2">
+          {label}
+        </label>
       )}
       <div className="relative">
-        {Icon && <Icon className="w-4 h-4 text-text-muted absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />}
+        {Icon && (
+          <Icon className="w-4 h-4 text-text-muted absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+        )}
         <input
           ref={ref}
           className={clsx(
-            'h-10 w-full rounded-lg border text-sm outline-none transition',
-            'bg-white dark:bg-slate-900 text-text-primary dark:text-white placeholder:text-text-muted',
-            Icon ? 'pl-10 pr-3' : 'px-3',
+            'h-11 w-full rounded-xl border text-[13.5px] outline-none transition',
+            'bg-white dark:bg-brand-900 text-text-primary dark:text-cream-100 placeholder:text-text-muted',
+            Icon ? 'pl-10 pr-3.5' : 'px-3.5',
             error
-              ? 'border-red-300 focus:border-danger focus:ring-2 focus:ring-red-100 dark:border-red-900'
-              : 'border-border dark:border-slate-700 focus:border-primary focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-900/30',
+              ? 'border-danger/50 focus:border-danger focus:ring-2 focus:ring-danger/15'
+              : 'border-border dark:border-brand-200/15 focus:border-brand-600 focus:ring-2 focus:ring-brand-600/15',
             'disabled:opacity-60 disabled:cursor-not-allowed',
             className
           )}

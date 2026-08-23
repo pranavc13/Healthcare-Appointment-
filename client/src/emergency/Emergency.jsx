@@ -83,7 +83,7 @@ const FIRST_AID_TIPS = [
 
 const COLOR_MAP = {
   red: 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800 text-red-700 dark:text-red-300',
-  blue: 'bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-300',
+  blue: 'bg-brand-50 dark:bg-brand-900/20 border-brand-200 dark:border-brand-800 text-brand-800 dark:text-brand-300',
   orange: 'bg-orange-50 dark:bg-orange-900/20 border-orange-200 dark:border-orange-800 text-orange-700 dark:text-orange-300',
   purple: 'bg-purple-50 dark:bg-purple-900/20 border-purple-200 dark:border-purple-800 text-purple-700 dark:text-purple-300',
   pink: 'bg-pink-50 dark:bg-pink-900/20 border-pink-200 dark:border-pink-800 text-pink-700 dark:text-pink-300',
@@ -95,24 +95,24 @@ function AccordionItem({ tip }) {
   const [open, setOpen] = useState(false);
   const borderColor = {
     red: 'border-l-red-500', orange: 'border-l-orange-500',
-    yellow: 'border-l-yellow-500', blue: 'border-l-blue-500',
+    yellow: 'border-l-yellow-500', blue: 'border-l-brand-600',
   }[tip.color];
 
   return (
-    <div className={`border-l-4 ${borderColor} bg-white dark:bg-slate-800 border border-gray-100 dark:border-slate-700 rounded-r-xl overflow-hidden`}>
+    <div className={`border-l-4 ${borderColor} bg-white dark:bg-brand-900 border border-sand-100 dark:border-brand-800 rounded-r-xl overflow-hidden`}>
       <button
         onClick={() => setOpen(v => !v)}
         className="w-full flex items-center justify-between px-5 py-4 text-left"
       >
-        <span className="font-semibold text-gray-900 dark:text-white">{tip.title}</span>
-        {open ? <ChevronUp className="w-4 h-4 text-gray-400" /> : <ChevronDown className="w-4 h-4 text-gray-400" />}
+        <span className="font-semibold text-sand-900 dark:text-white">{tip.title}</span>
+        {open ? <ChevronUp className="w-4 h-4 text-sand-400" /> : <ChevronDown className="w-4 h-4 text-sand-400" />}
       </button>
       {open && (
         <div className="px-5 pb-4 animate-fade-in">
           <ol className="space-y-2">
             {tip.steps.map((step, i) => (
-              <li key={i} className="flex gap-3 text-sm text-gray-700 dark:text-gray-300">
-                <span className="w-5 h-5 bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-gray-300 rounded-full text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">{i + 1}</span>
+              <li key={i} className="flex gap-3 text-sm text-sand-700 dark:text-sand-300">
+                <span className="w-5 h-5 bg-sand-100 dark:bg-brand-800 text-sand-600 dark:text-sand-300 rounded-full text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">{i + 1}</span>
                 <span>{step}</span>
               </li>
             ))}
@@ -125,7 +125,7 @@ function AccordionItem({ tip }) {
 
 export default function Emergency() {
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-slate-900 pt-16 pb-24 md:pb-8">
+    <div className="min-h-screen bg-sand-50 dark:bg-brand-950 pt-16 pb-24 md:pb-8">
       <div className="max-w-5xl mx-auto px-4 py-8 animate-fade-in">
 
         {/* Hero */}
@@ -157,7 +157,7 @@ export default function Emergency() {
         <section className="mb-10">
           <div className="flex items-center gap-2 mb-5">
             <Phone className="w-5 h-5 text-red-500" />
-            <h2 className="text-xl font-bold text-gray-900 dark:text-white">Emergency Numbers</h2>
+            <h2 className="text-xl font-bold text-sand-900 dark:text-white">Emergency Numbers</h2>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {EMERGENCY_NUMBERS.map(n => (
@@ -181,7 +181,7 @@ export default function Emergency() {
         <section className="mb-10">
           <div className="flex items-center gap-2 mb-5">
             <Heart className="w-5 h-5 text-red-500" />
-            <h2 className="text-xl font-bold text-gray-900 dark:text-white">Emergency First Aid Guide</h2>
+            <h2 className="text-xl font-bold text-sand-900 dark:text-white">Emergency First Aid Guide</h2>
           </div>
           <div className="space-y-3">
             {FIRST_AID_TIPS.map(tip => <AccordionItem key={tip.title} tip={tip} />)}
@@ -192,27 +192,27 @@ export default function Emergency() {
         <section className="mb-10">
           <div className="flex items-center gap-2 mb-5">
             <Droplets className="w-5 h-5 text-red-500" />
-            <h2 className="text-xl font-bold text-gray-900 dark:text-white">Blood Banks</h2>
+            <h2 className="text-xl font-bold text-sand-900 dark:text-white">Blood Banks</h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {BLOOD_BANKS.map(b => (
-              <div key={b.name} className="bg-white dark:bg-slate-800 border border-gray-100 dark:border-slate-700 rounded-2xl p-5 hover:shadow-md transition-shadow">
+              <div key={b.name} className="bg-white dark:bg-brand-900 border border-sand-100 dark:border-brand-800 rounded-2xl p-5 hover:shadow-md transition-shadow">
                 <div className="flex items-start justify-between gap-3">
                   <div>
-                    <h3 className="font-bold text-gray-900 dark:text-white">{b.name}</h3>
-                    <div className="flex items-center gap-1 text-sm text-gray-500 dark:text-gray-400 mt-1">
+                    <h3 className="font-bold text-sand-900 dark:text-white">{b.name}</h3>
+                    <div className="flex items-center gap-1 text-sm text-sand-500 dark:text-sand-400 mt-1">
                       <MapPin className="w-3.5 h-3.5" /> {b.location}
                     </div>
                   </div>
                   <span className={`text-xs px-2.5 py-1 rounded-full font-medium shrink-0 ${
-                    b.type === 'Govt' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300' :
+                    b.type === 'Govt' ? 'bg-brand-100 text-brand-800 dark:bg-brand-900/30 dark:text-brand-300' :
                     b.type === 'NGO'  ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300' :
                     b.type === 'Hospital' ? 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300' :
-                    'bg-gray-100 text-gray-700 dark:bg-slate-700 dark:text-gray-300'
+                    'bg-sand-100 text-sand-700 dark:bg-brand-800 dark:text-sand-300'
                   }`}>{b.type}</span>
                 </div>
                 <a href={`tel:${b.phone.replace(/[-\s]/g, '')}`}
-                  className="flex items-center gap-1.5 mt-3 text-sm text-blue-600 dark:text-blue-400 hover:underline font-medium">
+                  className="flex items-center gap-1.5 mt-3 text-sm text-brand-700 dark:text-gold-300 hover:underline font-medium">
                   <Phone className="w-3.5 h-3.5" /> {b.phone}
                 </a>
               </div>
@@ -223,19 +223,19 @@ export default function Emergency() {
         {/* NGOs */}
         <section className="mb-10">
           <div className="flex items-center gap-2 mb-5">
-            <Users className="w-5 h-5 text-blue-500" />
-            <h2 className="text-xl font-bold text-gray-900 dark:text-white">Healthcare NGOs & Helplines</h2>
+            <Users className="w-5 h-5 text-brand-600" />
+            <h2 className="text-xl font-bold text-sand-900 dark:text-white">Healthcare NGOs & Helplines</h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {NGOS.map(n => (
-              <div key={n.name} className="bg-white dark:bg-slate-800 border border-gray-100 dark:border-slate-700 rounded-2xl p-5 hover:shadow-md transition-shadow">
+              <div key={n.name} className="bg-white dark:bg-brand-900 border border-sand-100 dark:border-brand-800 rounded-2xl p-5 hover:shadow-md transition-shadow">
                 <div className="flex items-start justify-between gap-3 mb-2">
-                  <h3 className="font-bold text-gray-900 dark:text-white">{n.name}</h3>
-                  <span className="text-xs px-2.5 py-1 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-300 rounded-full font-medium shrink-0">{n.focus}</span>
+                  <h3 className="font-bold text-sand-900 dark:text-white">{n.name}</h3>
+                  <span className="text-xs px-2.5 py-1 bg-brand-50 dark:bg-brand-900/30 text-brand-700 dark:text-brand-300 rounded-full font-medium shrink-0">{n.focus}</span>
                 </div>
-                <p className="text-sm text-gray-500 dark:text-gray-400 mb-3">{n.desc}</p>
+                <p className="text-sm text-sand-500 dark:text-sand-400 mb-3">{n.desc}</p>
                 <a href={`tel:${n.phone.replace(/[-\s]/g, '')}`}
-                  className="flex items-center gap-1.5 text-sm text-blue-600 dark:text-blue-400 hover:underline font-medium">
+                  className="flex items-center gap-1.5 text-sm text-brand-700 dark:text-gold-300 hover:underline font-medium">
                   <Phone className="w-3.5 h-3.5" /> {n.phone}
                 </a>
               </div>
@@ -244,15 +244,15 @@ export default function Emergency() {
         </section>
 
         {/* Find hospital CTA */}
-        <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-2xl p-6 text-center">
-          <MapPin className="w-10 h-10 text-blue-500 mx-auto mb-3" />
-          <h3 className="font-bold text-gray-900 dark:text-white text-lg mb-2">Find Nearest Hospital</h3>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">Use Google Maps to find the nearest emergency hospital or clinic</p>
+        <div className="bg-brand-50 dark:bg-brand-900/20 border border-brand-200 dark:border-brand-800 rounded-2xl p-6 text-center">
+          <MapPin className="w-10 h-10 text-brand-600 mx-auto mb-3" />
+          <h3 className="font-bold text-sand-900 dark:text-white text-lg mb-2">Find Nearest Hospital</h3>
+          <p className="text-sm text-sand-500 dark:text-sand-400 mb-4">Use Google Maps to find the nearest emergency hospital or clinic</p>
           <a
             href="https://www.google.com/maps/search/hospital+near+me"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-medium transition-colors"
+            className="inline-flex items-center gap-2 bg-brand-700 hover:bg-brand-800 text-white px-6 py-3 rounded-xl font-medium transition-colors"
           >
             <ExternalLink className="w-4 h-4" /> Open in Google Maps
           </a>

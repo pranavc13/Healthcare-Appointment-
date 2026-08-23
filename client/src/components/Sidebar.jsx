@@ -34,14 +34,14 @@ function SidebarBody({ items, onNavigate }) {
 
   return (
     <div className="flex flex-col h-full bg-sidebar">
-      <div className="px-6 py-5 border-b border-slate-800 flex items-center gap-2.5">
+      <div className="px-6 py-5 border-b border-brand-900 flex items-center gap-2.5">
         <img src="/logo.png" alt="DocConnect" className="w-7 h-7 object-contain" />
         <span className="text-white font-bold text-[15px] tracking-tight">DocConnect</span>
       </div>
 
       <NavItems items={items} onNavigate={onNavigate} />
 
-      <div className="border-t border-slate-800 p-3">
+      <div className="border-t border-brand-900 p-3">
         <div className="flex items-center gap-2.5 px-3 py-2">
           <Avatar name={user?.name} size="sm" />
           <div className="min-w-0 flex-1">

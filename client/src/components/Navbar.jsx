@@ -1,18 +1,19 @@
 import { useState, useContext, useEffect, useRef } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
-import { FiMenu, FiX } from 'react-icons/fi';
-import { Sun, Moon, ChevronDown } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import {
+  Activity, CalendarCheck, ChevronDown, Gamepad2, HandHeart, HelpCircle,
+  LogOut, Menu, Moon, Scale, Stethoscope, Sun, X,
+} from 'lucide-react';
 import { AuthContext } from '../AuthContext';
 import NotificationCenter from './NotificationCenter';
 
 const TOOLS = [
-  { to: '/game',          label: '🎮 Health Games' },
-  { to: '/bmi-tracker',   label: '📊 BMI Tracker'  },
-  { to: '/book-medicine', label: '💊 Pharmacy'      },
-  { to: '/ai-assistant',  label: '🤖 AI Assistant'  },
-  { to: '/help',          label: '🤝 NGOs'          },
-  { to: '/faq',           label: '❓ FAQ'           },
+  { to: '/ai-assistant', label: 'Symptom Checker', icon: Activity },
+  { to: '/bmi-tracker', label: 'BMI Tracker', icon: Scale },
+  { to: '/game', label: 'Health Games', icon: Gamepad2 },
+  { to: '/help', label: 'NGO Partners', icon: HandHeart },
+  { to: '/faq', label: 'FAQ', icon: HelpCircle },
 ];
 
 const ROLE_HOME = { patient: '/patient/dashboard', doctor: '/doctor/dashboard', admin: '/admin/dashboard' };
@@ -27,28 +28,39 @@ function useDarkMode() {
     document.documentElement.classList.toggle('dark', dark);
     localStorage.setItem('theme', dark ? 'dark' : 'light');
   }, [dark]);
-  return [dark, () => setDark(v => !v)];
+  return [dark, () => setDark((v) => !v)];
 }
+
+const dropdownVariants = {
+  hidden: { opacity: 0, y: -8, scale: 0.97 },
+  visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.22, ease: [0.22, 1, 0.36, 1] } },
+  exit: { opacity: 0, y: -6, scale: 0.97, transition: { duration: 0.14 } },
+};
 
 export function Navbar() {
   const { currentUser, role, logout } = useContext(AuthContext);
   const navigate = useNavigate();
-  const [mobileOpen, setMobileOpen]   = useState(false);
-  const [avatarOpen, setAvatarOpen]   = useState(false);
-  const [toolsOpen, setToolsOpen]     = useState(false);
-  const [scrolled, setScrolled]       = useState(false);
-  const [dark, toggleDark]            = useDarkMode();
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [avatarOpen, setAvatarOpen] = useState(false);
+  const [toolsOpen, setToolsOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const [dark, toggleDark] = useDarkMode();
   const toolsRef = useRef(null);
 
   const initial = currentUser?.name?.charAt(0).toUpperCase() ?? '?';
   const homePath = ROLE_HOME[role] || '/';
 
-  /* shadow on scroll */
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 10);
+    const onScroll = () => setScrolled(window.scrollY > 12);
+    onScroll();
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
+
+  useEffect(() => {
+    document.body.style.overflow = mobileOpen ? 'hidden' : '';
+    return () => { document.body.style.overflow = ''; };
+  }, [mobileOpen]);
 
   const handleLogout = () => {
     logout();
@@ -57,7 +69,6 @@ export function Navbar() {
     navigate('/');
   };
 
-  /* close dropdowns on outside click */
   useEffect(() => {
     const h = () => setAvatarOpen(false);
     if (avatarOpen) document.addEventListener('click', h);
@@ -70,79 +81,78 @@ export function Navbar() {
     return () => document.removeEventListener('mousedown', h);
   }, [toolsOpen]);
 
-  const dropdownVariants = {
-    hidden:  { opacity: 0, y: -6, scale: 0.97 },
-    visible: { opacity: 1, y: 0,  scale: 1, transition: { duration: 0.18, ease: 'easeOut' } },
-    exit:    { opacity: 0, y: -4, scale: 0.97, transition: { duration: 0.12 } },
-  };
+  const primaryLinks = [
+    { to: '/', label: 'Home', end: true },
+    { to: '/about', label: 'About' },
+    { to: '/doctors', label: 'Find Doctors' },
+    ...(role === 'patient' ? [{ to: '/patient/appointments', label: 'Appointments' }] : []),
+    ...(role === 'doctor' ? [{ to: '/doctor/dashboard', label: 'Dashboard' }] : []),
+    ...(role === 'admin' ? [{ to: '/admin/doctors', label: 'Manage Doctors' }] : []),
+    { to: '/emergency', label: 'Emergency' },
+  ];
 
   return (
-    <nav className={`fixed w-full top-0 left-0 z-50 transition-all duration-300 ${
-      scrolled
-        ? 'bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl shadow-lg shadow-gray-200/60 dark:shadow-slate-950/60 border-b border-gray-200/60 dark:border-slate-700/60'
-        : 'bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-gray-200/40 dark:border-slate-700/40'
-    }`}>
-      <div className="max-w-7xl mx-auto px-4">
-        <div className="flex items-center justify-between h-[68px]">
-
-          {/* ── Logo + Brand ── */}
-          <Link to={currentUser ? homePath : '/'} className="flex items-center gap-3 shrink-0 group">
-            <motion.div
-              whileHover={{ scale: 1.08, rotate: 3 }}
-              transition={{ type: 'spring', stiffness: 300, damping: 18 }}
-              className="relative"
-            >
-              <img
-                src="/logo.png"
-                alt="DocConnect"
-                className="w-11 h-11 object-contain drop-shadow-sm group-hover:drop-shadow-[0_0_8px_rgba(34,197,94,0.5)] transition-all duration-300"
-              />
-            </motion.div>
-            <div className="flex flex-col leading-none">
-              <span className="text-[19px] font-black tracking-tight bg-gradient-to-r from-green-600 via-blue-600 to-orange-500 bg-clip-text text-transparent drop-shadow-sm">
-                DocConnect
+    <motion.nav
+      initial={{ y: -80 }}
+      animate={{ y: 0 }}
+      transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+      className={`fixed w-full top-0 left-0 z-50 transition-all duration-500 ${
+        scrolled
+          ? 'glass border-b border-border/70 dark:border-brand-200/10 shadow-soft'
+          : 'bg-transparent border-b border-transparent'
+      }`}
+    >
+      <div className="max-w-7xl mx-auto px-5 sm:px-8">
+        <div className={`flex items-center justify-between transition-all duration-500 ${scrolled ? 'h-[68px]' : 'h-[84px]'}`}>
+          {/* ── Brand ── */}
+          <Link to={currentUser ? homePath : '/'} className="flex items-center gap-2.5 shrink-0 group">
+            <motion.img
+              src="/logo.png"
+              alt=""
+              whileHover={{ scale: 1.08, rotate: -4 }}
+              transition={{ type: 'spring', stiffness: 320, damping: 16 }}
+              className="w-10 h-10 object-contain"
+            />
+            <span className="flex flex-col leading-none">
+              <span className="font-display text-[20px] font-semibold tracking-tight text-brand-900 dark:text-cream-100">
+                Jeevan Chakra
               </span>
-              <span className="text-[9px] font-semibold tracking-[0.18em] text-gray-400 dark:text-slate-500 uppercase">
-                Healthcare Platform
+              <span className="text-[9px] font-bold tracking-[0.24em] text-gold-600 dark:text-gold-400 uppercase mt-0.5">
+                Health · Care · Follow-up
               </span>
-            </div>
+            </span>
           </Link>
 
           {/* ── Desktop nav ── */}
-          <div className="hidden md:flex items-center gap-1 ml-6">
-            {[
-              { to: '/', label: 'Home', end: true },
-              ...(role === 'patient' ? [{ to: '/patient/doctors', label: 'Find Doctors' }] : []),
-              ...(role === 'patient' ? [{ to: '/patient/appointments', label: 'Appointments' }] : []),
-              ...(role === 'doctor' ? [{ to: '/doctor/dashboard', label: 'Dashboard' }] : []),
-              ...(role === 'admin' ? [{ to: '/admin/doctors', label: 'Doctors' }] : []),
-              { to: '/emergency', label: 'Emergency' },
-            ].map(({ to, label, end }) => (
-              <NavLink key={to} to={to} end={end} className={({ isActive }) =>
-                `relative px-3 py-1.5 rounded-lg text-sm font-semibold transition-all duration-200 ${
-                  isActive
-                    ? 'text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20'
-                    : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100/80 dark:hover:bg-slate-800/80'
-                }`
-              }>
-                {label}
+          <div className="hidden lg:flex items-center gap-7">
+            {primaryLinks.map(({ to, label, end }) => (
+              <NavLink key={to} to={to} end={end}>
+                {({ isActive }) => (
+                  <span
+                    data-active={isActive}
+                    className={`link-underline text-[13px] font-semibold uppercase tracking-[0.09em] transition-colors ${
+                      isActive
+                        ? 'text-gold-600 dark:text-gold-300'
+                        : 'text-brand-900/75 dark:text-cream-100/75 hover:text-brand-900 dark:hover:text-cream-100'
+                    }`}
+                  >
+                    {label}
+                  </span>
+                )}
               </NavLink>
             ))}
 
-            {/* Tools dropdown */}
             <div className="relative" ref={toolsRef}>
               <button
-                onClick={() => setToolsOpen(v => !v)}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-semibold transition-all duration-200 ${
-                  toolsOpen
-                    ? 'text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20'
-                    : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100/80 dark:hover:bg-slate-800/80'
+                onClick={() => setToolsOpen((v) => !v)}
+                className={`flex items-center gap-1.5 text-[13px] font-semibold uppercase tracking-[0.09em] transition-colors ${
+                  toolsOpen ? 'text-gold-600 dark:text-gold-300' : 'text-brand-900/75 dark:text-cream-100/75 hover:text-brand-900 dark:hover:text-cream-100'
                 }`}
               >
                 Tools
-                <motion.div animate={{ rotate: toolsOpen ? 180 : 0 }} transition={{ duration: 0.2 }}>
+                <motion.span animate={{ rotate: toolsOpen ? 180 : 0 }} transition={{ duration: 0.22 }}>
                   <ChevronDown className="w-3.5 h-3.5" />
-                </motion.div>
+                </motion.span>
               </button>
 
               <AnimatePresence>
@@ -152,26 +162,25 @@ export function Navbar() {
                     initial="hidden"
                     animate="visible"
                     exit="exit"
-                    className="absolute top-full left-0 mt-2 w-52 bg-white/95 dark:bg-slate-800/95 backdrop-blur-xl border border-gray-200/60 dark:border-slate-700/60 rounded-2xl shadow-2xl shadow-gray-200/50 dark:shadow-slate-950/50 z-50 overflow-hidden"
+                    className="absolute top-full left-1/2 -translate-x-1/2 mt-4 w-60 rounded-2xl surface-card p-2 z-50"
                   >
-                    <div className="p-1.5">
-                      {TOOLS.map((t, i) => (
-                        <motion.div
-                          key={t.to}
-                          initial={{ opacity: 0, x: -8 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: i * 0.04 }}
+                    {TOOLS.map((t, i) => (
+                      <motion.div
+                        key={t.to}
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: i * 0.045 }}
+                      >
+                        <Link
+                          to={t.to}
+                          onClick={() => setToolsOpen(false)}
+                          className="group flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13.5px] font-medium text-text-secondary dark:text-brand-200 hover:bg-cream-100 dark:hover:bg-brand-800 hover:text-brand-900 dark:hover:text-cream-100 transition-colors"
                         >
-                          <Link
-                            to={t.to}
-                            onClick={() => setToolsOpen(false)}
-                            className="flex items-center gap-2.5 px-3 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:text-blue-600 dark:hover:text-blue-400 rounded-xl transition-all duration-150 font-medium"
-                          >
-                            {t.label}
-                          </Link>
-                        </motion.div>
-                      ))}
-                    </div>
+                          <t.icon className="w-4 h-4 text-brand-600 dark:text-gold-400 transition-transform duration-300 group-hover:scale-110" />
+                          {t.label}
+                        </Link>
+                      </motion.div>
+                    ))}
                   </motion.div>
                 )}
               </AnimatePresence>
@@ -179,36 +188,36 @@ export function Navbar() {
           </div>
 
           {/* ── Right side ── */}
-          <div className="hidden md:flex items-center gap-2">
+          <div className="hidden lg:flex items-center gap-2.5">
             <button
               onClick={toggleDark}
-              className="p-2 rounded-xl text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-slate-800 transition-all duration-200 hover:scale-105"
+              className="w-10 h-10 rounded-full flex items-center justify-center text-brand-900/70 dark:text-cream-100/70 hover:bg-cream-200/70 dark:hover:bg-brand-800 transition-colors"
               aria-label="Toggle dark mode"
             >
-              <AnimatePresence mode="wait">
-                {dark
-                  ? <motion.div key="sun" initial={{ rotate: -90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: 90, opacity: 0 }} transition={{ duration: 0.2 }}>
-                      <Sun className="w-5 h-5 text-yellow-400" />
-                    </motion.div>
-                  : <motion.div key="moon" initial={{ rotate: 90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: -90, opacity: 0 }} transition={{ duration: 0.2 }}>
-                      <Moon className="w-5 h-5" />
-                    </motion.div>
-                }
+              <AnimatePresence mode="wait" initial={false}>
+                {dark ? (
+                  <motion.span key="sun" initial={{ rotate: -90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: 90, opacity: 0 }} transition={{ duration: 0.2 }}>
+                    <Sun className="w-[18px] h-[18px] text-gold-400" />
+                  </motion.span>
+                ) : (
+                  <motion.span key="moon" initial={{ rotate: 90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: -90, opacity: 0 }} transition={{ duration: 0.2 }}>
+                    <Moon className="w-[18px] h-[18px]" />
+                  </motion.span>
+                )}
               </AnimatePresence>
             </button>
 
             {currentUser ? (
               <>
                 <NotificationCenter />
-
-                <div className="relative" onClick={e => e.stopPropagation()}>
+                <div className="relative" onClick={(e) => e.stopPropagation()}>
                   <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.97 }}
-                    onClick={() => setAvatarOpen(v => !v)}
-                    className="flex items-center justify-center w-9 h-9 rounded-full overflow-hidden ring-2 ring-blue-500 ring-offset-2 dark:ring-offset-slate-900 focus:outline-none shadow-lg shadow-blue-200/50 dark:shadow-none"
+                    whileHover={{ scale: 1.06 }}
+                    whileTap={{ scale: 0.96 }}
+                    onClick={() => setAvatarOpen((v) => !v)}
+                    className="w-10 h-10 rounded-full bg-brand-700 text-cream-100 font-bold text-sm flex items-center justify-center ring-2 ring-gold-400/60 ring-offset-2 ring-offset-cream-100 dark:ring-offset-brand-950"
                   >
-                    <div className="w-full h-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold text-sm">{initial}</div>
+                    {initial}
                   </motion.button>
 
                   <AnimatePresence>
@@ -218,50 +227,28 @@ export function Navbar() {
                         initial="hidden"
                         animate="visible"
                         exit="exit"
-                        className="absolute right-0 mt-2 w-56 bg-white/95 dark:bg-slate-800/95 backdrop-blur-xl border border-gray-200/60 dark:border-slate-700/60 rounded-2xl shadow-2xl z-50 overflow-hidden"
+                        className="absolute right-0 mt-3 w-60 rounded-2xl surface-card overflow-hidden z-50"
                       >
-                        <div className="px-4 py-3.5 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-slate-800 dark:to-slate-700 border-b border-gray-100 dark:border-slate-700">
-                          <p className="text-sm font-bold text-gray-900 dark:text-white truncate">
+                        <div className="px-4 py-3.5 bg-cream-100 dark:bg-brand-900 border-b border-border dark:border-brand-200/10">
+                          <p className="text-[13.5px] font-semibold text-brand-900 dark:text-cream-100 truncate">
                             {currentUser.name || currentUser.email}
                           </p>
-                          <p className="text-xs text-blue-500 capitalize font-semibold mt-0.5">{role ?? 'User'}</p>
+                          <p className="text-[11px] font-bold uppercase tracking-widest text-gold-600 dark:text-gold-400 mt-1">
+                            {role ?? 'User'}
+                          </p>
                         </div>
-
-                        <div className="p-1.5">
-                          <Link to={homePath} onClick={() => setAvatarOpen(false)} className="flex items-center gap-2 px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-xl transition-colors font-medium">
-                            📊 My Dashboard
+                        <div className="p-2">
+                          <Link to={homePath} onClick={() => setAvatarOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13.5px] font-medium text-text-secondary dark:text-brand-200 hover:bg-cream-100 dark:hover:bg-brand-800 transition-colors">
+                            <Stethoscope className="w-4 h-4 text-brand-600 dark:text-gold-400" /> My Dashboard
                           </Link>
-                          {role === 'patient' && (
-                            <>
-                              <Link to="/patient/appointments" onClick={() => setAvatarOpen(false)} className="flex items-center gap-2 px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-xl transition-colors font-medium">
-                                📅 Appointments
-                              </Link>
-                              <Link to="/medical-records" onClick={() => setAvatarOpen(false)} className="flex items-center gap-2 px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-xl transition-colors font-medium">
-                                🩺 Medical Records
-                              </Link>
-                              <Link to="/patient/calendar-connect" onClick={() => setAvatarOpen(false)} className="flex items-center gap-2 px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-xl transition-colors font-medium">
-                                🗓️ Calendar
-                              </Link>
-                            </>
-                          )}
-                          {role === 'doctor' && (
-                            <>
-                              <Link to="/doctor/profile" onClick={() => setAvatarOpen(false)} className="flex items-center gap-2 px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-xl transition-colors font-medium">
-                                ⚙️ Profile
-                              </Link>
-                              <Link to="/doctor/calendar-connect" onClick={() => setAvatarOpen(false)} className="flex items-center gap-2 px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-xl transition-colors font-medium">
-                                🗓️ Calendar
-                              </Link>
-                            </>
-                          )}
-                          {role !== 'admin' && TOOLS.map(t => (
-                            <Link key={t.to} to={t.to} onClick={() => setAvatarOpen(false)} className="flex items-center gap-2 px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-xl transition-colors font-medium">
-                              {t.label}
+                          {TOOLS.slice(0, 3).map((t) => (
+                            <Link key={t.to} to={t.to} onClick={() => setAvatarOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13.5px] font-medium text-text-secondary dark:text-brand-200 hover:bg-cream-100 dark:hover:bg-brand-800 transition-colors">
+                              <t.icon className="w-4 h-4 text-brand-600 dark:text-gold-400" /> {t.label}
                             </Link>
                           ))}
-                          <div className="mt-1 pt-1 border-t border-gray-100 dark:border-slate-700">
-                            <button onClick={handleLogout} className="w-full text-left px-3 py-2 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl transition-colors font-medium">
-                              🚪 Sign Out
+                          <div className="mt-1 pt-1 border-t border-border dark:border-brand-200/10">
+                            <button onClick={handleLogout} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13.5px] font-medium text-danger hover:bg-danger-bg dark:hover:bg-red-900/20 transition-colors">
+                              <LogOut className="w-4 h-4" /> Sign out
                             </button>
                           </div>
                         </div>
@@ -272,108 +259,114 @@ export function Navbar() {
               </>
             ) : (
               <>
-                <Link to="/login" className="px-4 py-2 text-sm font-semibold text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors rounded-xl hover:bg-gray-100 dark:hover:bg-slate-800">
+                <Link
+                  to="/login"
+                  className="px-4 h-10 inline-flex items-center text-[13px] font-semibold uppercase tracking-[0.09em] text-brand-900/75 dark:text-cream-100/75 hover:text-brand-900 dark:hover:text-cream-100 transition-colors"
+                >
                   Log in
                 </Link>
                 <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
-                  <Link to="/register" className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-sm font-bold px-5 py-2.5 rounded-xl transition-all shadow-lg shadow-blue-200/50 dark:shadow-none">
-                    Get Started
+                  <Link
+                    to="/doctors"
+                    className="shine inline-flex items-center gap-2 h-11 px-5 rounded-full bg-brand-700 hover:bg-brand-800 text-cream-100 text-[13px] font-bold uppercase tracking-[0.07em] transition-colors shadow-soft"
+                  >
+                    <CalendarCheck className="w-4 h-4" />
+                    Book Appointment
                   </Link>
                 </motion.div>
               </>
             )}
           </div>
 
-          {/* ── Mobile hamburger ── */}
-          <div className="md:hidden flex items-center gap-1.5">
-            <button onClick={toggleDark} className="p-2 text-gray-500 dark:text-gray-400 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-800">
-              {dark ? <Sun className="w-5 h-5 text-yellow-400" /> : <Moon className="w-5 h-5" />}
+          {/* ── Mobile controls ── */}
+          <div className="lg:hidden flex items-center gap-1">
+            <button onClick={toggleDark} className="w-10 h-10 rounded-full flex items-center justify-center text-brand-900/70 dark:text-cream-100/70" aria-label="Toggle dark mode">
+              {dark ? <Sun className="w-[18px] h-[18px] text-gold-400" /> : <Moon className="w-[18px] h-[18px]" />}
             </button>
             {currentUser && <NotificationCenter />}
             <button
-              onClick={() => setMobileOpen(v => !v)}
-              className="p-2 text-gray-600 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors"
+              onClick={() => setMobileOpen((v) => !v)}
+              className="w-10 h-10 rounded-full flex items-center justify-center text-brand-900 dark:text-cream-100"
+              aria-label="Open menu"
             >
-              <AnimatePresence mode="wait">
-                {mobileOpen
-                  ? <motion.div key="x" initial={{ rotate: -90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: 90, opacity: 0 }} transition={{ duration: 0.15 }}><FiX className="w-6 h-6" /></motion.div>
-                  : <motion.div key="menu" initial={{ rotate: 90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: -90, opacity: 0 }} transition={{ duration: 0.15 }}><FiMenu className="w-6 h-6" /></motion.div>
-                }
+              <AnimatePresence mode="wait" initial={false}>
+                {mobileOpen ? (
+                  <motion.span key="x" initial={{ rotate: -90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: 90, opacity: 0 }} transition={{ duration: 0.16 }}>
+                    <X className="w-6 h-6" />
+                  </motion.span>
+                ) : (
+                  <motion.span key="menu" initial={{ rotate: 90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: -90, opacity: 0 }} transition={{ duration: 0.16 }}>
+                    <Menu className="w-6 h-6" />
+                  </motion.span>
+                )}
               </AnimatePresence>
             </button>
           </div>
         </div>
-
-        {/* ── Mobile menu ── */}
-        <AnimatePresence>
-          {mobileOpen && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              transition={{ duration: 0.25, ease: 'easeInOut' }}
-              className="md:hidden overflow-hidden border-t border-gray-100 dark:border-slate-700"
-            >
-              <div className="py-3 space-y-0.5">
-                {[
-                  { to: '/', label: '🏠 Home', end: true },
-                  ...(role === 'patient' ? [{ to: '/patient/doctors', label: '🔍 Find Doctors' }] : []),
-                  { to: '/emergency', label: '🚨 Emergency' },
-                  ...TOOLS,
-                  { to: '/about', label: 'ℹ️ About' },
-                  ...(role === 'patient' ? [
-                    { to: '/patient/appointments', label: '📅 Appointments'    },
-                    { to: '/medical-records',      label: '🩺 Medical Records' },
-                  ] : []),
-                  ...(role === 'doctor' ? [
-                    { to: '/doctor/dashboard', label: '📊 Dashboard' },
-                    { to: '/doctor/profile',   label: '⚙️ Profile'   },
-                  ] : []),
-                  ...(role === 'admin' ? [
-                    { to: '/admin/dashboard', label: '📊 Dashboard' },
-                    { to: '/admin/doctors',   label: '🩺 Doctors'   },
-                  ] : []),
-                ].map(({ to, label, end }, i) => (
-                  <motion.div
-                    key={to}
-                    initial={{ opacity: 0, x: -16 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: i * 0.03 }}
-                  >
-                    <NavLink
-                      to={to}
-                      end={end}
-                      onClick={() => setMobileOpen(false)}
-                      className={({ isActive }) =>
-                        `block px-3 py-2.5 rounded-xl text-sm font-semibold transition-all ${
-                          isActive
-                            ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400'
-                            : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-800'
-                        }`
-                      }
-                    >{label}</NavLink>
-                  </motion.div>
-                ))}
-
-                {currentUser ? (
-                  <button onClick={handleLogout} className="w-full text-left px-3 py-2.5 rounded-xl text-sm font-semibold text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors">
-                    🚪 Sign Out
-                  </button>
-                ) : (
-                  <div className="flex gap-2 pt-2 px-1 pb-1">
-                    <Link to="/login" onClick={() => setMobileOpen(false)} className="flex-1 text-center py-2.5 border border-gray-200 dark:border-slate-600 rounded-xl text-sm font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-slate-800 transition-colors">
-                      Log in
-                    </Link>
-                    <Link to="/register" onClick={() => setMobileOpen(false)} className="flex-1 text-center py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl text-sm font-bold shadow-lg shadow-blue-200/50">
-                      Get Started
-                    </Link>
-                  </div>
-                )}
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
       </div>
-    </nav>
+
+      {/* ── Mobile sheet ── */}
+      <AnimatePresence>
+        {mobileOpen && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
+            className="lg:hidden overflow-hidden bg-cream-50 dark:bg-brand-950 border-t border-border dark:border-brand-200/10"
+          >
+            <div className="px-5 py-5 max-h-[calc(100vh-84px)] overflow-y-auto">
+              {[...primaryLinks, ...TOOLS.map((t) => ({ to: t.to, label: t.label }))].map(({ to, label, end }, i) => (
+                <motion.div
+                  key={to}
+                  initial={{ opacity: 0, x: -18 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: i * 0.035 }}
+                >
+                  <NavLink
+                    to={to}
+                    end={end}
+                    onClick={() => setMobileOpen(false)}
+                    className={({ isActive }) =>
+                      `flex items-center py-3 border-b border-border/60 dark:border-brand-200/10 font-display text-[19px] font-semibold transition-colors ${
+                        isActive ? 'text-gold-600 dark:text-gold-300' : 'text-brand-900 dark:text-cream-100'
+                      }`
+                    }
+                  >
+                    {label}
+                  </NavLink>
+                </motion.div>
+              ))}
+
+              {currentUser ? (
+                <button
+                  onClick={handleLogout}
+                  className="mt-5 w-full h-12 rounded-full border border-danger/30 text-danger text-sm font-bold uppercase tracking-wider"
+                >
+                  Sign out
+                </button>
+              ) : (
+                <div className="mt-6 flex flex-col gap-3">
+                  <Link
+                    to="/doctors"
+                    onClick={() => setMobileOpen(false)}
+                    className="h-12 rounded-full bg-brand-700 text-cream-100 text-[13px] font-bold uppercase tracking-[0.07em] flex items-center justify-center gap-2"
+                  >
+                    <CalendarCheck className="w-4 h-4" /> Book Appointment
+                  </Link>
+                  <Link
+                    to="/login"
+                    onClick={() => setMobileOpen(false)}
+                    className="h-12 rounded-full border border-brand-700/25 dark:border-brand-200/25 text-brand-900 dark:text-cream-100 text-[13px] font-bold uppercase tracking-[0.07em] flex items-center justify-center"
+                  >
+                    Log in
+                  </Link>
+                </div>
+              )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.nav>
   );
 }

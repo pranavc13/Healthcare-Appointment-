@@ -19,14 +19,14 @@ export function TimeSelect({ value, onChange, label, interval = 30 }) {
   return (
     <div className="flex flex-col">
       {label && (
-        <label className="mb-1 text-sm font-medium text-gray-700">
+        <label className="mb-1 text-sm font-medium text-sand-700">
           {label}
         </label>
       )}
       <select
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+        className="block w-full px-3 py-2 bg-white border border-sand-300 rounded-md shadow-sm focus:outline-none focus:ring-brand-600 focus:border-brand-600 sm:text-sm"
         aria-label={label || 'Select time'}
       >
         <option value="" disabled>

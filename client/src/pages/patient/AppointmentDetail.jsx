@@ -9,10 +9,10 @@ import { Card, Badge, Table } from '../../components/ui';
 
 const STATUS_BANNER = {
   confirmed: { className: 'bg-emerald-50 border-emerald-200 text-emerald-800 dark:bg-emerald-900/20 dark:border-emerald-900/40 dark:text-emerald-300', icon: CheckCircle2, text: 'Your appointment is confirmed.' },
-  completed: { className: 'bg-blue-50 border-blue-200 text-blue-800 dark:bg-blue-900/20 dark:border-blue-900/40 dark:text-blue-300', icon: CheckCircle2, text: 'Visit completed.' },
+  completed: { className: 'bg-brand-50 border-brand-200 text-brand-800 dark:bg-brand-900/20 dark:border-brand-900/40 dark:text-brand-300', icon: CheckCircle2, text: 'Visit completed.' },
   cancelled: { className: 'bg-red-50 border-red-200 text-red-800 dark:bg-red-900/20 dark:border-red-900/40 dark:text-red-300', icon: XCircle, text: 'This appointment was cancelled.' },
   pending: { className: 'bg-amber-50 border-amber-200 text-amber-800 dark:bg-amber-900/20 dark:border-amber-900/40 dark:text-amber-300', icon: RefreshCw, text: 'Awaiting confirmation.' },
-  rescheduled: { className: 'bg-gray-100 border-gray-200 text-gray-700 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-300', icon: RefreshCw, text: 'This appointment was rescheduled.' },
+  rescheduled: { className: 'bg-sand-100 border-sand-200 text-sand-700 dark:bg-brand-900 dark:border-brand-800 dark:text-brand-200', icon: RefreshCw, text: 'This appointment was rescheduled.' },
 };
 
 function AISummaryPending() {
@@ -107,7 +107,7 @@ export default function PatientAppointmentDetail() {
 
   return (
     <div className="space-y-6">
-      <Link to="/patient/appointments" className="inline-flex items-center gap-1.5 text-sm text-text-secondary dark:text-slate-400 hover:text-primary transition-colors">
+      <Link to="/patient/appointments" className="inline-flex items-center gap-1.5 text-sm text-text-secondary dark:text-brand-300 hover:text-primary transition-colors">
         <ArrowLeft className="w-4 h-4" /> Back to appointments
       </Link>
 
@@ -127,12 +127,12 @@ export default function PatientAppointmentDetail() {
               </div>
               <Badge variant={appointment.status}>{appointment.status}</Badge>
             </div>
-            <p className="text-sm text-text-secondary dark:text-slate-400">
+            <p className="text-sm text-text-secondary dark:text-brand-300">
               {new Date(appointment.date).toLocaleDateString('en-IN', { weekday: 'long', month: 'long', day: 'numeric' })} · {appointment.startTime} – {appointment.endTime}
             </p>
 
             {['pending', 'confirmed'].includes(appointment.status) && (
-              <div className="flex gap-4 mt-4 pt-4 border-t border-border dark:border-slate-700">
+              <div className="flex gap-4 mt-4 pt-4 border-t border-border dark:border-brand-800">
                 <button onClick={() => setRescheduling((v) => !v)} className="text-sm font-medium text-primary hover:underline">
                   Reschedule
                 </button>
@@ -143,13 +143,13 @@ export default function PatientAppointmentDetail() {
             )}
 
             {rescheduling && (
-              <div className="mt-4 pt-4 border-t border-border dark:border-slate-700">
+              <div className="mt-4 pt-4 border-t border-border dark:border-brand-800">
                 <input
                   type="date"
                   min={new Date().toISOString().slice(0, 10)}
                   value={newDate}
                   onChange={(e) => loadNewSlots(e.target.value)}
-                  className="w-full mb-3 h-10 px-3 rounded-lg border border-border dark:border-slate-700 bg-white dark:bg-slate-900 text-sm text-text-primary dark:text-white"
+                  className="w-full mb-3 h-10 px-3 rounded-lg border border-border dark:border-brand-800 bg-white dark:bg-brand-950 text-sm text-text-primary dark:text-white"
                 />
                 {newSlots.length > 0 && (
                   <div className="grid grid-cols-4 gap-2">
@@ -158,7 +158,7 @@ export default function PatientAppointmentDetail() {
                         key={s}
                         disabled={savingReschedule}
                         onClick={() => handleReschedule(s)}
-                        className="text-xs font-medium py-2 rounded-lg border border-border dark:border-slate-700 hover:border-primary hover:text-primary transition-colors"
+                        className="text-xs font-medium py-2 rounded-lg border border-border dark:border-brand-800 hover:border-primary hover:text-primary transition-colors"
                       >
                         {s}
                       </button>
@@ -172,7 +172,7 @@ export default function PatientAppointmentDetail() {
           {appointment.symptoms && (
             <Card>
               <h3 className="text-base font-semibold text-text-primary dark:text-white mb-2">Your symptoms</h3>
-              <p className="text-sm text-text-secondary dark:text-slate-300 border-l-4 border-blue-200 dark:border-blue-800 bg-gray-50 dark:bg-slate-900 rounded-r-lg p-4">
+              <p className="text-sm text-text-secondary dark:text-brand-200 border-l-4 border-brand-200 dark:border-brand-800 bg-sand-50 dark:bg-brand-950 rounded-r-lg p-4">
                 {appointment.symptoms}
               </p>
             </Card>
@@ -189,11 +189,11 @@ export default function PatientAppointmentDetail() {
               {pre?.chiefComplaint ? (
                 <div>
                   <Badge variant={(pre.urgencyLevel || '').toLowerCase()} className="mb-3">{pre.urgencyLevel} urgency</Badge>
-                  <p className="text-sm text-text-secondary dark:text-slate-300 mb-3">{pre.chiefComplaint}</p>
+                  <p className="text-sm text-text-secondary dark:text-brand-200 mb-3">{pre.chiefComplaint}</p>
                   {pre.suggestedQuestions?.length > 0 && (
                     <>
                       <p className="text-xs font-medium text-text-muted uppercase tracking-wide mb-1.5">Suggested questions for doctor</p>
-                      <ol className="list-decimal list-inside text-sm text-text-secondary dark:text-slate-300 space-y-1">
+                      <ol className="list-decimal list-inside text-sm text-text-secondary dark:text-brand-200 space-y-1">
                         {pre.suggestedQuestions.map((q, i) => <li key={i}>{q}</li>)}
                       </ol>
                     </>
@@ -211,7 +211,7 @@ export default function PatientAppointmentDetail() {
                 <ListChecks className="w-4 h-4 text-success" /> Your Visit Summary
               </h3>
               {post?.patientFriendlySummary ? (
-                <p className="text-sm text-text-secondary dark:text-slate-300 leading-relaxed whitespace-pre-wrap mb-4">{post.patientFriendlySummary}</p>
+                <p className="text-sm text-text-secondary dark:text-brand-200 leading-relaxed whitespace-pre-wrap mb-4">{post.patientFriendlySummary}</p>
               ) : (
                 <AISummaryPending />
               )}
@@ -228,7 +228,7 @@ export default function PatientAppointmentDetail() {
               {post?.followUpSteps && (
                 <>
                   <p className="text-xs font-medium text-text-muted uppercase tracking-wide mb-1.5">Follow-up steps</p>
-                  <p className="text-sm text-text-secondary dark:text-slate-300 whitespace-pre-wrap">{post.followUpSteps}</p>
+                  <p className="text-sm text-text-secondary dark:text-brand-200 whitespace-pre-wrap">{post.followUpSteps}</p>
                 </>
               )}
             </Card>

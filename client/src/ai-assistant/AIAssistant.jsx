@@ -20,15 +20,15 @@ function formatTime(date) {
 function TypingIndicator() {
   return (
     <div className="flex items-end gap-2">
-      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center shrink-0">
+      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-brand-600 to-cyan-500 flex items-center justify-center shrink-0">
         <Bot className="w-4 h-4 text-white" />
       </div>
-      <div className="bg-white dark:bg-slate-700 border border-gray-100 dark:border-slate-600 rounded-2xl rounded-bl-sm px-4 py-3">
+      <div className="bg-white dark:bg-brand-800 border border-sand-100 dark:border-brand-700 rounded-2xl rounded-bl-sm px-4 py-3">
         <div className="flex gap-1">
           {[0, 1, 2].map(i => (
             <span
               key={i}
-              className="w-2 h-2 bg-blue-400 rounded-full animate-bounce"
+              className="w-2 h-2 bg-gold-300 rounded-full animate-bounce"
               style={{ animationDelay: `${i * 0.15}s` }}
             />
           ))}
@@ -42,7 +42,7 @@ function renderMarkdown(text) {
   return text
     .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
     .replace(/\*(.*?)\*/g, '<em>$1</em>')
-    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" class="text-blue-500 underline hover:text-blue-700">$1</a>')
+    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" class="text-brand-600 underline hover:text-brand-800">$1</a>')
     .replace(/\n/g, '<br/>');
 }
 
@@ -54,7 +54,7 @@ function MessageBubble({ msg }) {
       {/* Avatar */}
       <div className={`w-8 h-8 rounded-full shrink-0 flex items-center justify-center ${
         isBot
-          ? 'bg-gradient-to-br from-blue-500 to-cyan-500'
+          ? 'bg-gradient-to-br from-brand-600 to-cyan-500'
           : 'bg-gradient-to-br from-violet-500 to-purple-600'
       }`}>
         {isBot ? <Bot className="w-4 h-4 text-white" /> : <User className="w-4 h-4 text-white" />}
@@ -63,14 +63,14 @@ function MessageBubble({ msg }) {
       <div className={`max-w-[75%] ${isBot ? '' : 'items-end flex flex-col'}`}>
         <div className={`rounded-2xl px-4 py-3 text-sm leading-relaxed ${
           isBot
-            ? 'bg-white dark:bg-slate-700 border border-gray-100 dark:border-slate-600 text-gray-800 dark:text-gray-100 rounded-bl-sm'
-            : 'bg-blue-600 text-white rounded-br-sm'
+            ? 'bg-white dark:bg-brand-800 border border-sand-100 dark:border-brand-700 text-sand-800 dark:text-sand-100 rounded-bl-sm'
+            : 'bg-brand-700 text-white rounded-br-sm'
         }`}>
           <span
             dangerouslySetInnerHTML={{ __html: renderMarkdown(msg.text) }}
           />
         </div>
-        <p className="text-xs text-gray-400 mt-1 px-1">{formatTime(msg.time)}</p>
+        <p className="text-xs text-sand-400 mt-1 px-1">{formatTime(msg.time)}</p>
 
         {/* Suggestion chips */}
         {isBot && msg.suggestions?.length > 0 && (
@@ -79,7 +79,7 @@ function MessageBubble({ msg }) {
               <button
                 key={i}
                 data-suggestion={s}
-                className="text-xs bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-300 border border-blue-200 dark:border-blue-800 px-3 py-1.5 rounded-full hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors"
+                className="text-xs bg-brand-50 dark:bg-brand-900/30 text-brand-700 dark:text-brand-300 border border-brand-200 dark:border-brand-800 px-3 py-1.5 rounded-full hover:bg-brand-100 dark:hover:bg-brand-900/50 transition-colors"
               >
                 {s}
               </button>
@@ -156,17 +156,17 @@ export default function AIAssistant() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-slate-900 pt-16">
+    <div className="min-h-screen bg-sand-50 dark:bg-brand-950 pt-16">
       <div className="max-w-3xl mx-auto px-4 pt-4 pb-20 md:py-8 md:pb-8 flex flex-col" style={{ height: 'calc(100dvh - 4rem)' }}>
 
         {/* Header */}
         <div className="flex items-center justify-between mb-4 shrink-0">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center shadow-lg">
+            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-brand-600 to-cyan-500 flex items-center justify-center shadow-lg">
               <Sparkles className="w-6 h-6 text-white" />
             </div>
             <div>
-              <h1 className="text-xl font-bold text-gray-900 dark:text-white">Aarohi AI Assistant</h1>
+              <h1 className="text-xl font-bold text-sand-900 dark:text-white">Aarohi AI Assistant</h1>
               <p className="text-xs text-green-500 font-medium flex items-center gap-1">
                 <span className="w-1.5 h-1.5 bg-green-500 rounded-full inline-block animate-pulse" />
                 Online · General health guidance
@@ -176,7 +176,7 @@ export default function AIAssistant() {
           <div className="flex items-center gap-2">
             <button
               onClick={clearHistory}
-              className="flex items-center gap-1.5 text-xs text-gray-500 dark:text-gray-400 hover:text-red-500 dark:hover:text-red-400 px-3 py-2 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+              className="flex items-center gap-1.5 text-xs text-sand-500 dark:text-sand-400 hover:text-red-500 dark:hover:text-red-400 px-3 py-2 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
             >
               <Trash2 className="w-3.5 h-3.5" /> Clear
             </button>
@@ -205,7 +205,7 @@ export default function AIAssistant() {
               <button
                 key={i}
                 onClick={() => sendMessage(q)}
-                className="shrink-0 text-xs bg-white dark:bg-slate-800 text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-slate-600 px-3 py-2 rounded-full hover:border-blue-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                className="shrink-0 text-xs bg-white dark:bg-brand-900 text-sand-600 dark:text-sand-300 border border-sand-200 dark:border-brand-700 px-3 py-2 rounded-full hover:border-gold-300 hover:text-brand-700 dark:hover:text-gold-300 transition-colors"
               >
                 {q}
               </button>
@@ -220,21 +220,21 @@ export default function AIAssistant() {
             value={input}
             onChange={e => setInput(e.target.value)}
             placeholder="Ask Aarohi anything about your health..."
-            className="flex-1 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-600 rounded-2xl px-4 py-3 text-sm text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+            className="flex-1 bg-white dark:bg-brand-900 border border-sand-200 dark:border-brand-700 rounded-2xl px-4 py-3 text-sm text-sand-900 dark:text-white placeholder-sand-400 focus:outline-none focus:ring-2 focus:ring-brand-600 focus:border-transparent transition-all"
             disabled={typing}
           />
           <button
             type="submit"
             disabled={!input.trim() || typing}
-            className="w-12 h-12 bg-blue-600 hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed text-white rounded-2xl flex items-center justify-center transition-colors shrink-0"
+            className="w-12 h-12 bg-brand-700 hover:bg-brand-800 disabled:opacity-40 disabled:cursor-not-allowed text-white rounded-2xl flex items-center justify-center transition-colors shrink-0"
           >
             {typing ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
           </button>
         </form>
 
-        <p className="text-center text-xs text-gray-400 mt-3 shrink-0">
+        <p className="text-center text-xs text-sand-400 mt-3 shrink-0">
           Powered by DocConnect AI · Not a substitute for professional medical advice ·{' '}
-          <Link to="/emergency" className="text-blue-500 hover:underline">Emergency Help</Link>
+          <Link to="/emergency" className="text-brand-600 hover:underline">Emergency Help</Link>
         </p>
       </div>
     </div>

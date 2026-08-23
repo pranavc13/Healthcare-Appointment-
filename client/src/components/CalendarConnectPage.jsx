@@ -34,11 +34,11 @@ export default function CalendarConnectPage() {
   return (
     <div className="max-w-md mx-auto">
       <Card className="text-center">
-        <div className="w-14 h-14 rounded-xl bg-primary-light dark:bg-blue-900/20 text-primary flex items-center justify-center mx-auto mb-5">
+        <div className="w-14 h-14 rounded-xl bg-primary-light dark:bg-brand-900/20 text-primary flex items-center justify-center mx-auto mb-5">
           <CalendarCheck2 className="w-7 h-7" />
         </div>
         <h1 className="text-lg font-semibold text-text-primary dark:text-white mb-2">Connect Google Calendar</h1>
-        <p className="text-sm text-text-secondary dark:text-slate-400 mb-6">
+        <p className="text-sm text-text-secondary dark:text-brand-300 mb-6">
           {user?.googleCalendarConnected
             ? 'Your Google Calendar is connected. Appointments sync automatically as events.'
             : 'Appointments will automatically sync to your Google Calendar, and cancellations are removed.'}

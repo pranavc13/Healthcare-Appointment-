@@ -85,7 +85,7 @@ export default function DoctorAppointmentDetail() {
 
   return (
     <div className="space-y-6">
-      <Link to="/doctor/dashboard" className="inline-flex items-center gap-1.5 text-sm text-text-secondary dark:text-slate-400 hover:text-primary transition-colors">
+      <Link to="/doctor/dashboard" className="inline-flex items-center gap-1.5 text-sm text-text-secondary dark:text-brand-300 hover:text-primary transition-colors">
         <ArrowLeft className="w-4 h-4" /> Back to dashboard
       </Link>
 
@@ -97,7 +97,7 @@ export default function DoctorAppointmentDetail() {
               <p className="font-semibold text-text-primary dark:text-white text-lg">{appointment.patientId?.name}</p>
               <Badge variant={appointment.status}>{appointment.status}</Badge>
             </div>
-            <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-text-secondary dark:text-slate-400">
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-text-secondary dark:text-brand-300">
               {appointment.patientId?.email && (
                 <span className="inline-flex items-center gap-1.5"><Mail className="w-3.5 h-3.5" /> {appointment.patientId.email}</span>
               )}
@@ -105,7 +105,7 @@ export default function DoctorAppointmentDetail() {
                 <span className="inline-flex items-center gap-1.5"><Phone className="w-3.5 h-3.5" /> {appointment.patientId.phone}</span>
               )}
             </div>
-            <p className="text-sm text-text-secondary dark:text-slate-400 mt-2">
+            <p className="text-sm text-text-secondary dark:text-brand-300 mt-2">
               {new Date(appointment.date).toLocaleDateString('en-IN', { weekday: 'long', month: 'long', day: 'numeric' })} · {appointment.startTime}
             </p>
           </Card>
@@ -113,7 +113,7 @@ export default function DoctorAppointmentDetail() {
           {appointment.symptoms && (
             <Card>
               <h3 className="text-base font-semibold text-text-primary dark:text-white mb-2">Reported Symptoms</h3>
-              <p className="text-sm text-text-secondary dark:text-slate-300 border-l-4 border-blue-200 dark:border-blue-800 bg-gray-50 dark:bg-slate-900 rounded-r-lg p-4 mb-4">
+              <p className="text-sm text-text-secondary dark:text-brand-200 border-l-4 border-brand-200 dark:border-brand-800 bg-sand-50 dark:bg-brand-950 rounded-r-lg p-4 mb-4">
                 {appointment.symptoms}
               </p>
 
@@ -123,11 +123,11 @@ export default function DoctorAppointmentDetail() {
               {pre?.chiefComplaint ? (
                 <div>
                   <Badge variant={(pre.urgencyLevel || '').toLowerCase()} className="mb-3">{pre.urgencyLevel} urgency</Badge>
-                  <p className="text-sm text-text-secondary dark:text-slate-300 mb-3">{pre.chiefComplaint}</p>
+                  <p className="text-sm text-text-secondary dark:text-brand-200 mb-3">{pre.chiefComplaint}</p>
                   {pre.suggestedQuestions?.length > 0 && (
                     <>
                       <p className="text-xs font-medium text-text-muted uppercase tracking-wide mb-1.5">Suggested questions to ask</p>
-                      <ol className="list-decimal list-inside text-sm text-text-secondary dark:text-slate-300 space-y-1">
+                      <ol className="list-decimal list-inside text-sm text-text-secondary dark:text-brand-200 space-y-1">
                         {pre.suggestedQuestions.map((q, i) => <li key={i}>{q}</li>)}
                       </ol>
                     </>
@@ -145,7 +145,7 @@ export default function DoctorAppointmentDetail() {
           {appointment.status === 'completed' ? (
             <Card>
               <h3 className="text-base font-semibold text-text-primary dark:text-white mb-2">Visit Notes</h3>
-              <p className="text-sm text-text-secondary dark:text-slate-300 mb-5">{appointment.doctorNotes}</p>
+              <p className="text-sm text-text-secondary dark:text-brand-200 mb-5">{appointment.doctorNotes}</p>
               {appointment.prescription?.length > 0 && (
                 <>
                   <p className="text-xs font-medium text-text-muted uppercase tracking-wide mb-2">Prescription</p>
@@ -166,13 +166,13 @@ export default function DoctorAppointmentDetail() {
                   onChange={(e) => setNotes(e.target.value)}
                   rows={8}
                   placeholder="Diagnosis, observations, treatment plan..."
-                  className="w-full mb-5 px-3 py-2.5 rounded-lg border border-border dark:border-slate-700 bg-white dark:bg-slate-900 text-sm text-text-primary dark:text-white resize-none focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-primary transition"
+                  className="w-full mb-5 px-3 py-2.5 rounded-lg border border-border dark:border-brand-800 bg-white dark:bg-brand-950 text-sm text-text-primary dark:text-white resize-none focus:outline-none focus:ring-2 focus:ring-brand-100 focus:border-primary transition"
                 />
 
                 <p className="text-sm font-semibold text-text-primary dark:text-white mb-2">Prescription</p>
                 <div className="space-y-3 mb-3">
                   {prescription.map((row, i) => (
-                    <div key={i} className="border border-border dark:border-slate-700 rounded-lg p-4 bg-gray-50 dark:bg-slate-900 space-y-2 relative">
+                    <div key={i} className="border border-border dark:border-brand-800 rounded-lg p-4 bg-sand-50 dark:bg-brand-950 space-y-2 relative">
                       {prescription.length > 1 && (
                         <button
                           type="button"
@@ -198,7 +198,7 @@ export default function DoctorAppointmentDetail() {
                         value={row.instructions}
                         onChange={(e) => updateRow(i, 'instructions', e.target.value)}
                         rows={1}
-                        className="w-full px-3 py-2 rounded-lg border border-border dark:border-slate-700 bg-white dark:bg-slate-800 text-sm text-text-primary dark:text-white resize-none focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-primary transition"
+                        className="w-full px-3 py-2 rounded-lg border border-border dark:border-brand-800 bg-white dark:bg-brand-900 text-sm text-text-primary dark:text-white resize-none focus:outline-none focus:ring-2 focus:ring-brand-100 focus:border-primary transition"
                       />
                     </div>
                   ))}

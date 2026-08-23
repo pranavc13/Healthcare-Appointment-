@@ -9,7 +9,7 @@ export default function VerifiedBadge({ size = 'md', showLabel = true }) {
   };
 
   return (
-    <span className="inline-flex items-center gap-1 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-700 px-2 py-0.5 rounded-full text-xs font-semibold">
+    <span className="inline-flex items-center gap-1 bg-brand-50 dark:bg-brand-900/30 text-brand-700 dark:text-gold-300 border border-brand-200 dark:border-brand-800 px-2 py-0.5 rounded-full text-xs font-semibold">
       <ShieldCheck className={`${sizes[size]} shrink-0`} />
       {showLabel && 'Verified'}
     </span>

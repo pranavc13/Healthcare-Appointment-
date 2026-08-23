@@ -22,7 +22,7 @@ function getActiveIndex(status) {
 export default function AppointmentTimeline({ status }) {
   if (status === 'cancelled') {
     return (
-      <div className="flex items-center gap-2 text-xs text-red-500 font-medium mt-3 pt-3 border-t border-gray-100 dark:border-slate-700">
+      <div className="flex items-center gap-2 text-xs text-red-500 font-medium mt-3 pt-3 border-t border-sand-100 dark:border-brand-800">
         <span className="w-5 h-5 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center text-red-500 text-xs">✕</span>
         Appointment cancelled
       </div>
@@ -32,7 +32,7 @@ export default function AppointmentTimeline({ status }) {
   const activeIdx = getActiveIndex(status);
 
   return (
-    <div className="mt-3 pt-3 border-t border-gray-100 dark:border-slate-700">
+    <div className="mt-3 pt-3 border-t border-sand-100 dark:border-brand-800">
       <div className="flex items-center">
         {STEPS.map((step, i) => {
           const Icon = step.icon;
@@ -48,22 +48,22 @@ export default function AppointmentTimeline({ status }) {
                   done
                     ? 'bg-green-500 text-white'
                     : current
-                    ? 'bg-blue-600 text-white ring-4 ring-blue-100 dark:ring-blue-900/30'
-                    : 'bg-gray-100 dark:bg-slate-700 text-gray-400 dark:text-gray-500'
+                    ? 'bg-brand-700 text-white ring-4 ring-brand-100 dark:ring-brand-900/30'
+                    : 'bg-sand-100 dark:bg-brand-800 text-sand-400 dark:text-sand-500'
                 }`}>
                   <Icon className="w-3.5 h-3.5" />
                 </div>
                 <span className={`text-[9px] font-medium whitespace-nowrap ${
                   done    ? 'text-green-600 dark:text-green-400' :
-                  current ? 'text-blue-600 dark:text-blue-400' :
-                  'text-gray-400 dark:text-gray-500'
+                  current ? 'text-brand-700 dark:text-gold-300' :
+                  'text-sand-400 dark:text-sand-500'
                 }`}>
                   {step.label}
                 </span>
               </div>
               {!isLast && (
                 <div className={`flex-1 h-0.5 mx-1 transition-all duration-700 ${
-                  i < activeIdx ? 'bg-green-400' : 'bg-gray-200 dark:bg-slate-600'
+                  i < activeIdx ? 'bg-green-400' : 'bg-sand-200 dark:bg-brand-700'
                 }`} />
               )}
             </React.Fragment>

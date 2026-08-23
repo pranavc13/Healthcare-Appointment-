@@ -119,19 +119,19 @@ const FAQS = [
 
 function AccordionItem({ item, isOpen, onToggle }) {
   return (
-    <div className="border border-gray-100 dark:border-slate-700 rounded-2xl overflow-hidden">
+    <div className="border border-sand-100 dark:border-brand-800 rounded-2xl overflow-hidden">
       <button
         onClick={onToggle}
-        className="w-full flex items-center justify-between px-5 py-4 text-left bg-white dark:bg-slate-800 hover:bg-gray-50 dark:hover:bg-slate-750 transition-colors gap-4"
+        className="w-full flex items-center justify-between px-5 py-4 text-left bg-white dark:bg-brand-900 hover:bg-sand-50 dark:hover:bg-slate-750 transition-colors gap-4"
         aria-expanded={isOpen}
       >
-        <span className="font-medium text-gray-900 dark:text-white text-sm leading-snug">{item.q}</span>
+        <span className="font-medium text-sand-900 dark:text-white text-sm leading-snug">{item.q}</span>
         <motion.div
           animate={{ rotate: isOpen ? 180 : 0 }}
           transition={{ duration: 0.2 }}
           className="shrink-0"
         >
-          <ChevronDown className="w-4 h-4 text-gray-400" />
+          <ChevronDown className="w-4 h-4 text-sand-400" />
         </motion.div>
       </button>
       <AnimatePresence initial={false}>
@@ -143,8 +143,8 @@ function AccordionItem({ item, isOpen, onToggle }) {
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.22, ease: 'easeInOut' }}
           >
-            <div className="px-5 pb-5 pt-1 bg-white dark:bg-slate-800 border-t border-gray-50 dark:border-slate-700">
-              <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">{item.a}</p>
+            <div className="px-5 pb-5 pt-1 bg-white dark:bg-brand-900 border-t border-sand-50 dark:border-brand-800">
+              <p className="text-sm text-sand-600 dark:text-sand-300 leading-relaxed">{item.a}</p>
             </div>
           </motion.div>
         )}
@@ -177,10 +177,10 @@ export default function FAQ() {
 
   return (
     <PageTransition>
-      <div className="min-h-screen bg-gray-50 dark:bg-slate-900 pt-16 pb-24 md:pb-8">
+      <div className="min-h-screen bg-sand-50 dark:bg-brand-950 pt-16 pb-24 md:pb-8">
 
         {/* Hero */}
-        <div className="bg-gradient-to-br from-blue-600 to-indigo-700 py-16 px-4">
+        <div className="bg-gradient-to-br from-brand-700 to-brand-800 py-16 px-4">
           <div className="max-w-3xl mx-auto text-center">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -201,7 +201,7 @@ export default function FAQ() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
-              className="text-blue-100 mb-8"
+              className="text-brand-100 mb-8"
             >
               Find answers to common questions about DocConnect
             </motion.p>
@@ -213,13 +213,13 @@ export default function FAQ() {
               transition={{ delay: 0.15 }}
               className="relative max-w-xl mx-auto"
             >
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-sand-400" />
               <input
                 type="text"
                 placeholder="Search questions..."
                 value={search}
                 onChange={e => setSearch(e.target.value)}
-                className="w-full pl-12 pr-4 py-4 rounded-2xl bg-white dark:bg-slate-800 text-gray-900 dark:text-white placeholder-gray-400 shadow-lg focus:outline-none focus:ring-2 focus:ring-white/50 text-sm"
+                className="w-full pl-12 pr-4 py-4 rounded-2xl bg-white dark:bg-brand-900 text-sand-900 dark:text-white placeholder-sand-400 shadow-lg focus:outline-none focus:ring-2 focus:ring-white/50 text-sm"
               />
             </motion.div>
           </div>
@@ -235,8 +235,8 @@ export default function FAQ() {
                 onClick={() => setActiveCategory(cat)}
                 className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${
                   activeCategory === cat
-                    ? 'bg-blue-600 text-white shadow-md shadow-blue-200 dark:shadow-none'
-                    : 'bg-white dark:bg-slate-800 text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-slate-700 hover:border-blue-400'
+                    ? 'bg-brand-700 text-white shadow-md shadow-brand-200 dark:shadow-none'
+                    : 'bg-white dark:bg-brand-900 text-sand-600 dark:text-sand-300 border border-sand-200 dark:border-brand-800 hover:border-gold-300'
                 }`}
               >
                 {cat}
@@ -245,7 +245,7 @@ export default function FAQ() {
           </div>
 
           {search && (
-            <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
+            <p className="text-sm text-sand-500 dark:text-sand-400 mb-4">
               {totalResults} result{totalResults !== 1 ? 's' : ''} for "{search}"
             </p>
           )}
@@ -253,9 +253,9 @@ export default function FAQ() {
           {/* FAQ sections */}
           {filtered.length === 0 ? (
             <div className="text-center py-16">
-              <HelpCircle className="w-12 h-12 text-gray-200 dark:text-slate-600 mx-auto mb-3" />
-              <p className="font-medium text-gray-500 dark:text-gray-400">No results found</p>
-              <p className="text-sm text-gray-400 dark:text-gray-500 mt-1">Try a different search term</p>
+              <HelpCircle className="w-12 h-12 text-sand-200 dark:text-brand-700 mx-auto mb-3" />
+              <p className="font-medium text-sand-500 dark:text-sand-400">No results found</p>
+              <p className="text-sm text-sand-400 dark:text-sand-500 mt-1">Try a different search term</p>
             </div>
           ) : (
             <div className="space-y-8">
@@ -265,7 +265,7 @@ export default function FAQ() {
                   initial={{ opacity: 0, y: 16 }}
                   animate={{ opacity: 1, y: 0 }}
                 >
-                  <h2 className="text-xs font-bold text-gray-400 dark:text-slate-500 uppercase tracking-widest mb-3">
+                  <h2 className="text-xs font-bold text-sand-400 dark:text-brand-600 uppercase tracking-widest mb-3">
                     {section.category}
                   </h2>
                   <div className="space-y-2">
@@ -291,16 +291,16 @@ export default function FAQ() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.3 }}
-            className="mt-12 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-3xl p-8 text-center text-white"
+            className="mt-12 bg-gradient-to-r from-brand-700 to-brand-700 rounded-3xl p-8 text-center text-white"
           >
             <MessageCircle className="w-10 h-10 mx-auto mb-3 opacity-80" />
             <h3 className="text-xl font-bold mb-2">Still have questions?</h3>
-            <p className="text-blue-100 text-sm mb-5">
+            <p className="text-brand-100 text-sm mb-5">
               Our AI health assistant Aarohi can answer healthcare questions anytime.
             </p>
             <Link
               to="/ai-assistant"
-              className="inline-flex items-center gap-2 bg-white text-blue-600 font-semibold px-6 py-3 rounded-xl hover:bg-blue-50 transition-colors text-sm"
+              className="inline-flex items-center gap-2 bg-white text-brand-700 font-semibold px-6 py-3 rounded-xl hover:bg-brand-50 transition-colors text-sm"
             >
               Chat with Aarohi →
             </Link>
