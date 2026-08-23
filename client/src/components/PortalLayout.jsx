@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import { Outlet, useLocation, matchPath } from 'react-router-dom';
 import { LayoutDashboard, Stethoscope, Calendar, CalendarDays, User } from 'lucide-react';
+import { motion } from 'framer-motion';
 import Sidebar from './Sidebar';
 import TopBar from './TopBar';
+import BottomNav from './BottomNav';
 import ChatWidget from './ChatWidget';
 import useAuth from '../hooks/useAuth';
 
@@ -42,7 +44,7 @@ const TITLES = [
 
 function resolveTitle(pathname) {
   const match = TITLES.find((t) => matchPath({ path: t.pattern, end: true }, pathname));
-  return match?.title || 'DocConnect';
+  return match?.title || 'Jeevan Chakra';
 }
 
 export default function PortalLayout() {
@@ -57,10 +59,19 @@ export default function PortalLayout() {
       <Sidebar items={items} mobileOpen={mobileOpen} onCloseMobile={() => setMobileOpen(false)} />
       <div className="lg:pl-64">
         <TopBar title={resolveTitle(pathname)} onOpenMobile={() => setMobileOpen(true)} />
-        <main className="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
-          <Outlet />
+        <main className="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-8 pb-safe-or-24 lg:pb-8">
+          {/* Keyed on the path so each portal page fades in on navigation. */}
+          <motion.div
+            key={pathname}
+            initial={{ opacity: 0, y: 14 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <Outlet />
+          </motion.div>
         </main>
       </div>
+      <BottomNav />
       <ChatWidget />
     </div>
   );

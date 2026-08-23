@@ -71,6 +71,16 @@ a:not([class*="h-"]):not([class*="w-"]) {
   letter-spacing: -0.015em;
 }
 
+/* Headings default to the display serif so pages that predate the redesign
+   pick up the new typography without touching every heading by hand.
+   Opt out with `font-sans` on the element. */
+h1:not(.font-sans),
+h2:not(.font-sans) {
+  font-family: 'Fraunces', Georgia, Cambria, 'Times New Roman', serif;
+  letter-spacing: -0.015em;
+  font-weight: 600;
+}
+
 .eyebrow {
   font-size: 0.6875rem;
   font-weight: 700;

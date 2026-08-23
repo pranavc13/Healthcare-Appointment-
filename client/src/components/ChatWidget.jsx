@@ -64,7 +64,7 @@ export default function ChatWidget() {
         <div className="w-[min(20rem,calc(100vw-2rem))] h-[min(440px,calc(100dvh-10rem))] bg-white dark:bg-brand-900 rounded-2xl shadow-2xl border border-sand-200 dark:border-brand-800 flex flex-col overflow-hidden animate-slide-up">
 
           {/* Header */}
-          <div className="bg-gradient-to-r from-brand-700 to-cyan-600 px-4 py-3 flex items-center justify-between shrink-0">
+          <div className="bg-brand-800 px-4 py-3 flex items-center justify-between shrink-0">
             <div className="flex items-center gap-2">
               <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
                 <Bot className="w-4 h-4 text-white" />
@@ -72,7 +72,7 @@ export default function ChatWidget() {
               <div>
                 <p className="text-white font-semibold text-sm">Aarohi</p>
                 <p className="text-brand-100 text-xs flex items-center gap-1">
-                  <span className="w-1.5 h-1.5 bg-green-300 rounded-full inline-block animate-pulse" />
+                  <span className="w-1.5 h-1.5 bg-emerald-300 rounded-full inline-block animate-pulse" />
                   AI Health Assistant
                 </p>
               </div>
@@ -183,7 +183,7 @@ export default function ChatWidget() {
       {/* FAB button */}
       <button
         onClick={() => setOpen(v => !v)}
-        className="relative w-14 h-14 bg-gradient-to-br from-brand-700 to-cyan-600 rounded-full shadow-lg flex items-center justify-center hover:shadow-xl hover:scale-105 transition-all duration-200"
+        className="relative w-14 h-14 bg-brand-700 hover:bg-brand-800 ring-2 ring-gold-400/40 rounded-full shadow-lg flex items-center justify-center hover:shadow-xl hover:scale-105 transition-all duration-200"
         aria-label="Open AI Health Assistant"
       >
         {open ? (

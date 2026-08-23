@@ -1,15 +1,14 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { User, Mail, Phone, Lock, AlertCircle, ShieldCheck } from 'lucide-react';
+import { AlertCircle, ArrowRight, Loader2, Lock, Mail, Phone, User } from 'lucide-react';
 import { InputField } from './InputField';
+import AuthShell from '../components/AuthShell';
 import useAuth from '../hooks/useAuth';
 import { apiErrorMessage } from '../services/api';
 
-const EASE = [0.22, 1, 0.36, 1];
-
-// Public self-registration is patient-only — doctor and admin accounts are created
-// by an admin (see /admin/doctors) and the seed script, respectively.
+// Public self-registration is patient-only — doctor accounts are created by an
+// admin (see /admin/doctors) and the admin account by the seed script.
 export default function SignupPage() {
   const [formData, setFormData] = useState({ firstName: '', lastName: '', email: '', password: '', phone: '' });
   const [error, setError] = useState('');
@@ -38,196 +37,121 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="min-h-screen flex text-left bg-white dark:bg-brand-950">
-      {/* Left Side — Form */}
-      <div className="relative w-full lg:w-1/2 px-5 py-8 sm:p-8 flex flex-col justify-center overflow-hidden">
-        {/* Ambient gradient orbs, matching the rest of the app */}
-        <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden>
+    <AuthShell
+      eyebrow="Join Jeevan Chakra"
+      title="Create your free account"
+      subtitle="Book appointments, share symptoms ahead of the visit, and keep every summary in one place."
+      quote="Search 17,000 specialists. Hold a real slot in seconds."
+      footer={
+        <>
+          Already have an account?{' '}
+          <Link to="/login" className="font-semibold text-brand-700 dark:text-gold-300 hover:underline">
+            Log in
+          </Link>
+        </>
+      }
+    >
+      <AnimatePresence>
+        {error && (
           <motion.div
-            animate={{ scale: [1, 1.15, 1], opacity: [0.12, 0.2, 0.12] }}
-            transition={{ duration: 9, repeat: Infinity, ease: 'easeInOut' }}
-            className="absolute -top-32 -left-32 w-[420px] h-[420px] bg-green-400/20 dark:bg-green-500/10 rounded-full blur-3xl"
-          />
-          <motion.div
-            animate={{ scale: [1, 1.2, 1], opacity: [0.08, 0.15, 0.08] }}
-            transition={{ duration: 11, repeat: Infinity, ease: 'easeInOut', delay: 2 }}
-            className="absolute bottom-0 -right-24 w-[360px] h-[360px] bg-gold-300/15 dark:bg-brand-600/8 rounded-full blur-3xl"
-          />
-        </div>
-
-        <div className="relative max-w-md mx-auto w-full">
-
-          {/* Mobile brand header */}
-          <motion.div
-            initial={{ opacity: 0, y: -8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, ease: EASE }}
-            className="lg:hidden flex items-center gap-3 mb-6"
+            initial={{ opacity: 0, height: 0, marginBottom: 0 }}
+            animate={{ opacity: 1, height: 'auto', marginBottom: 20 }}
+            exit={{ opacity: 0, height: 0, marginBottom: 0 }}
+            transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+            className="flex items-start gap-2.5 bg-danger-bg dark:bg-red-900/20 border border-danger/25 dark:border-red-900/40 text-danger dark:text-red-300 text-[13px] rounded-xl px-4 py-3 overflow-hidden"
           >
-            <img src="/logo.png" alt="DocConnect" className="w-10 h-10 object-contain" />
-            <div>
-              <p className="font-black text-lg bg-gradient-to-r from-green-600 via-brand-700 to-orange-500 bg-clip-text text-transparent leading-none">DocConnect</p>
-              <p className="text-[10px] text-sand-400 dark:text-brand-600 uppercase tracking-widest">Healthcare Platform</p>
-            </div>
+            <AlertCircle className="w-4 h-4 mt-0.5 shrink-0" />
+            <span>{error}</span>
           </motion.div>
+        )}
+      </AnimatePresence>
 
-          <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, ease: EASE }}>
-            <h1 className="text-2xl sm:text-3xl font-black text-sand-900 dark:text-white mb-2">Create a free account</h1>
-            <p className="text-sand-500 dark:text-sand-400 mb-6 text-sm">
-              Sign up as a patient to book appointments. Are you a doctor?{' '}
-              <span className="text-sand-600 dark:text-sand-300">Ask your clinic admin to add you.</span>
-            </p>
-          </motion.div>
-
-          <AnimatePresence>
-            {error && (
-              <motion.div
-                initial={{ opacity: 0, height: 0, marginBottom: 0 }}
-                animate={{ opacity: 1, height: 'auto', marginBottom: 16 }}
-                exit={{ opacity: 0, height: 0, marginBottom: 0 }}
-                transition={{ duration: 0.25, ease: EASE }}
-                className="flex items-start gap-2 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-900/40 text-red-700 dark:text-red-300 text-sm rounded-xl px-4 py-3 overflow-hidden"
-              >
-                <AlertCircle className="w-4 h-4 mt-0.5 shrink-0" />
-                <span>{error}</span>
-              </motion.div>
-            )}
-          </AnimatePresence>
-
-          <motion.form
-            initial={{ opacity: 0, y: 14 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.45, delay: 0.1, ease: EASE }}
-            onSubmit={handleSubmit}
-          >
-            <div className="grid grid-cols-2 gap-3">
-              <InputField
-                label="First Name"
-                icon={User}
-                placeholder="Alexa"
-                name="firstName"
-                value={formData.firstName}
-                onChange={handleChange}
-                required
-                disabled={submitting}
-              />
-
-              <InputField
-                label="Last Name"
-                icon={User}
-                placeholder="Mathew"
-                name="lastName"
-                value={formData.lastName}
-                onChange={handleChange}
-                required
-                disabled={submitting}
-              />
-            </div>
-
-            <InputField
-              label="Email Address"
-              type="email"
-              icon={Mail}
-              placeholder="abc@example.com"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              required
-              disabled={submitting}
-            />
-
-            <InputField
-              label="Phone Number"
-              type="tel"
-              icon={Phone}
-              placeholder="+91 98765 43210"
-              name="phone"
-              value={formData.phone}
-              onChange={handleChange}
-              disabled={submitting}
-            />
-
-            <InputField
-              label="Password"
-              type="password"
-              icon={Lock}
-              placeholder="Min. 6 characters"
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              required
-              minLength={6}
-              disabled={submitting}
-            />
-
-            <motion.button
-              whileHover={{ scale: 1.01 }}
-              whileTap={{ scale: 0.98 }}
-              type="submit"
-              disabled={submitting}
-              className="w-full bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white py-3 rounded-xl font-bold transition-colors disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2 mb-4 shadow-lg shadow-green-200/50 dark:shadow-none"
-            >
-              {submitting && (
-                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-              )}
-              {submitting ? 'Creating account...' : 'Sign up as Patient'}
-            </motion.button>
-          </motion.form>
-
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.4, delay: 0.25 }}
-            className="text-center text-sand-600 dark:text-sand-400 text-sm"
-          >
-            Already have an account?{' '}
-            <Link to="/login" className="text-brand-700 dark:text-gold-300 font-semibold hover:underline">
-              Log in
-            </Link>
-          </motion.p>
-        </div>
-      </div>
-
-      {/* Right Side — Branding */}
-      <div className="hidden lg:flex relative w-1/2 bg-gradient-to-br from-green-50 via-brand-50 to-white dark:from-brand-950 dark:via-brand-900/60 dark:to-brand-950 p-8 flex-col items-center justify-center overflow-hidden">
-        <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden>
-          <motion.div
-            animate={{ scale: [1, 1.18, 1], opacity: [0.14, 0.22, 0.14] }}
-            transition={{ duration: 10, repeat: Infinity, ease: 'easeInOut' }}
-            className="absolute -top-24 right-1/4 w-[420px] h-[420px] bg-green-400/20 dark:bg-green-500/10 rounded-full blur-3xl"
+      <form onSubmit={handleSubmit}>
+        <div className="grid grid-cols-2 gap-3">
+          <InputField
+            label="First name"
+            icon={User}
+            placeholder="Ananya"
+            name="firstName"
+            value={formData.firstName}
+            onChange={handleChange}
+            required
+            disabled={submitting}
           />
-          <motion.div
-            animate={{ scale: [1, 1.15, 1], opacity: [0.1, 0.18, 0.1] }}
-            transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut', delay: 3 }}
-            className="absolute -bottom-16 left-1/4 w-[360px] h-[360px] bg-gold-300/15 dark:bg-brand-600/8 rounded-full blur-3xl"
+          <InputField
+            label="Last name"
+            icon={User}
+            placeholder="Rao"
+            name="lastName"
+            value={formData.lastName}
+            onChange={handleChange}
+            required
+            disabled={submitting}
           />
         </div>
 
-        <motion.div
-          initial={{ scale: 0.85, opacity: 0, rotate: 8 }}
-          animate={{ scale: 1, opacity: 1, rotate: 0 }}
-          transition={{ type: 'spring', stiffness: 200, damping: 16, delay: 0.1 }}
-          className="relative w-32 h-32 bg-gradient-to-br from-green-400 to-brand-600 rounded-full mb-8 flex items-center justify-center shadow-xl shadow-green-200/50 dark:shadow-none"
+        <InputField
+          label="Email address"
+          type="email"
+          icon={Mail}
+          placeholder="you@example.com"
+          name="email"
+          autoComplete="email"
+          value={formData.email}
+          onChange={handleChange}
+          required
+          disabled={submitting}
+        />
+
+        <InputField
+          label="Phone number"
+          type="tel"
+          icon={Phone}
+          placeholder="+91 98765 43210"
+          name="phone"
+          autoComplete="tel"
+          value={formData.phone}
+          onChange={handleChange}
+          disabled={submitting}
+        />
+
+        <InputField
+          label="Password"
+          type="password"
+          icon={Lock}
+          placeholder="Minimum 6 characters"
+          name="password"
+          autoComplete="new-password"
+          value={formData.password}
+          onChange={handleChange}
+          required
+          minLength={6}
+          disabled={submitting}
+        />
+
+        <motion.button
+          whileHover={{ scale: submitting ? 1 : 1.015 }}
+          whileTap={{ scale: 0.985 }}
+          type="submit"
+          disabled={submitting}
+          className="shine group mt-2 w-full h-[52px] rounded-full bg-brand-700 hover:bg-brand-800 text-cream-100 text-[14.5px] font-bold transition-colors disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2.5"
         >
-          <ShieldCheck className="w-16 h-16 text-white" strokeWidth={1.5} />
-        </motion.div>
-        <motion.h2
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, delay: 0.25 }}
-          className="relative text-3xl font-black mb-4 text-sand-800 dark:text-white"
-        >
-          Welcome to DocConnect
-        </motion.h2>
-        <motion.p
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, delay: 0.35 }}
-          className="relative text-sand-600 dark:text-sand-400 text-center max-w-md leading-relaxed"
-        >
-          "Your health, your control — DocConnect simplifies care, secures your records, and connects you to better healthcare anytime, anywhere."
-        </motion.p>
-      </div>
-    </div>
+          {submitting ? (
+            <>
+              <Loader2 className="w-4 h-4 animate-spin" /> Creating account…
+            </>
+          ) : (
+            <>
+              Create account
+              <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
+            </>
+          )}
+        </motion.button>
+
+        <p className="mt-4 text-center text-[11.5px] leading-relaxed text-text-muted">
+          Are you a doctor? Ask your clinic admin to create your account.
+        </p>
+      </form>
+    </AuthShell>
   );
 }

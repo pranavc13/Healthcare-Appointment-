@@ -1,12 +1,13 @@
-# DocConnect — Healthcare Appointment & Follow-up Manager
+# Jeevan Chakra — Healthcare Appointment & Follow-up Manager
 
-DocConnect is a full-stack healthcare platform for booking and managing doctor appointments, with AI-assisted pre-visit triage and post-visit summaries, automated email notifications, Google Calendar sync, and role-based portals for patients, doctors, and admins.
+Jeevan Chakra is a full-stack healthcare platform for booking and managing doctor appointments, with AI-assisted pre-visit triage and post-visit summaries, automated email notifications, Google Calendar sync, and role-based portals for patients, doctors, and admins.
 
 ## What it does
 
 - **Patients** search doctors by specialisation, pick an open slot, describe their symptoms, and get a confirmed appointment with an AI-generated pre-visit triage summary (urgency level, chief complaint, questions for the doctor).
 - **Doctors** see their schedule with urgency indicators, review the AI pre-visit summary and reported symptoms, and complete a visit with clinical notes and a prescription — which is automatically turned into a patient-friendly post-visit summary and emailed out.
 - **Admins** manage the doctor roster (create/update/deactivate, set working hours and slot duration) and mark leave days, which automatically cancels affected bookings and notifies patients.
+- The public directory is backed by a **17,636-row practitioner dataset** (`server/data/doctors.jsonl`) imported as real, bookable doctors — searchable by speciality, city, fee and experience.
 - Behind the scenes: atomic slot-holding prevents double-booking, email delivery retries with backoff, failed AI generations retry on a schedule, and confirmed appointments sync to both parties' Google Calendars.
 
 ## Tech stack
@@ -35,6 +36,8 @@ docconnect/
 │       ├── services/     Thin axios wrappers per API domain
 │       └── utils/        Helpers (date formatting, localStorage persistence)
 ├── server/           Express API
+│   ├── data/             doctors.jsonl — practitioner dataset (17,636 rows, JSON Lines)
+│   ├── scripts/          importDoctors.js, normaliseSpecialities.js
 │   ├── models/           User, DoctorProfile, Appointment, Notification
 │   ├── routes/            /controllers/     Route handlers by domain
 │   ├── middleware/        auth.js (JWT verify), roleGuard.js, errorHandler.js
@@ -82,6 +85,30 @@ npm run seed
 
 This creates (or promotes) the admin user from `ADMIN_EMAIL` / `ADMIN_PASSWORD` in `server/.env`. Log in with these credentials to reach `/admin/dashboard` and start adding doctors.
 
+### 3b. Import the practitioner directory (optional but recommended)
+
+The repo ships with `server/data/doctors.jsonl` — 17,636 real practitioner records (name, degree,
+speciality, city, locality, consultation fee, years of experience, recommendation score). The import
+script turns each row into a `User` (role `doctor`) plus a `DoctorProfile` with a generated working
+schedule, so every imported doctor is genuinely bookable.
+
+```bash
+cd server
+npm run import:doctors              # import all 17,636 rows (~2 minutes)
+node scripts/importDoctors.js --limit 500   # or just a sample
+node scripts/importDoctors.js --fresh       # wipe previously imported rows first
+```
+
+Re-running is safe: rows already present (matched on their generated email) are skipped. Imported
+doctors sign in with their generated `…@doctors.jeevanchakra.health` address and the password in
+`DATASET_DOCTOR_PASSWORD` (default `Doctor@123`).
+
+If you imported before the speciality-normalisation fix, repair the stored labels in place with:
+
+```bash
+node scripts/normaliseSpecialities.js
+```
+
 ### 4. Run the app
 
 ```bash
@@ -116,9 +143,13 @@ All routes are mounted under `/api`. Protected routes require `Authorization: Be
 
 | Method | Path | Auth | Request | Response |
 |---|---|---|---|---|
-| GET | `/` | Public | query: `specialisation?`, `search?` | `200` array of active `DoctorProfile` (populated with user name/email/phone) |
+| GET | `/` | Public | query: `specialisation?`, `city?`, `search?`, `minFee?`, `maxFee?`, `minExperience?`, `sort?`, `page?`, `limit?` | `200` `{ doctors: [...], page, limit, total, totalPages }` |
+| GET | `/facets` | Public | — | `200` `{ cities: [{name,count}], specialities: [{name,count}], stats: { totalDoctors, totalCities, avgRating, maxFee } }` |
 | GET | `/:id` | Public | — | `200` `DoctorProfile` or `404` |
 | GET | `/:id/slots` | Public | query: `date=YYYY-MM-DD` | `200` `{ date, slotDuration, slots: ["09:00", ...] }` |
+
+`sort` accepts `rating` (default), `experience`, `fee_asc`, `fee_desc`. `limit` is capped at 60.
+The listing endpoint is paginated because the directory holds ~17.6k profiles after import.
 
 ### Appointments — patient portal (`/api/appointments`, role: `patient`)
 
@@ -180,7 +211,8 @@ createdAt: Date
 **DoctorProfile**
 ```
 userId: ObjectId → User
-specialisation: String
+specialisation: String            display label, e.g. "Cardiologist, Interventional Cardiologist"
+specialities: [String]            individually searchable tags split out of the above
 qualifications: String
 workingHours: [{ day, startTime, endTime }]
 slotDuration: Number (minutes, default 30)
@@ -188,7 +220,17 @@ leaveDays: [Date]
 bio: String
 profileImage: String
 isActive: Boolean
+city: String                      indexed — directory filter
+locality: String
+consultationFee: Number           indexed — ₹, directory filter
+experienceYears: Number           indexed — directory filter
+rating: Number                    0–5, derived from the dataset recommendation %
+reviewCount: Number
+source: 'manual' | 'dataset'      'dataset' rows are the ones importDoctors.js created
 ```
+
+Indexes: text index on `specialisation/qualifications/city/locality` for free-text search, and a
+compound `{ isActive, rating, experienceYears }` index backing the default directory sort.
 
 **Appointment**
 ```

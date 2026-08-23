@@ -2,14 +2,14 @@ import React, { useState } from 'react';
 import { Phone, AlertTriangle, Heart, Droplets, Users, MapPin, ChevronDown, ChevronUp, ExternalLink } from 'lucide-react';
 
 const EMERGENCY_NUMBERS = [
-  { name: 'Ambulance (National)', number: '108', color: 'red', desc: 'Free emergency medical service across India' },
-  { name: 'Ambulance (CATS)', number: '102', color: 'red', desc: 'Centralised Accident & Trauma Service' },
-  { name: 'Police', number: '100', color: 'blue', desc: 'Law enforcement emergency' },
-  { name: 'Fire Brigade', number: '101', color: 'orange', desc: 'Fire and rescue services' },
-  { name: 'Disaster Management', number: '1066', color: 'purple', desc: 'National Disaster Response Force' },
-  { name: 'Women Helpline', number: '1091', color: 'pink', desc: '24/7 women distress helpline' },
-  { name: 'Senior Citizen', number: '14567', color: 'green', desc: 'Elder helpline - Elders in distress' },
-  { name: 'Child Helpline', number: '1098', color: 'yellow', desc: 'CHILDLINE for children in need' },
+  { name: 'Ambulance (National)', number: '108', color: 'critical', desc: 'Free emergency medical service across India' },
+  { name: 'Ambulance (CATS)', number: '102', color: 'critical', desc: 'Centralised Accident & Trauma Service' },
+  { name: 'Police', number: '100', color: 'alert', desc: 'Law enforcement emergency' },
+  { name: 'Fire Brigade', number: '101', color: 'alert', desc: 'Fire and rescue services' },
+  { name: 'Disaster Management', number: '1066', color: 'alert', desc: 'National Disaster Response Force' },
+  { name: 'Women Helpline', number: '1091', color: 'support', desc: '24/7 women distress helpline' },
+  { name: 'Senior Citizen', number: '14567', color: 'support', desc: 'Elder helpline - Elders in distress' },
+  { name: 'Child Helpline', number: '1098', color: 'support', desc: 'CHILDLINE for children in need' },
 ];
 
 const BLOOD_BANKS = [
@@ -41,7 +41,7 @@ const FIRST_AID_TIPS = [
       'Begin CPR if person is unconscious and not breathing',
       'Stay with them until help arrives',
     ],
-    color: 'red',
+    color: 'critical',
   },
   {
     title: 'Stroke (FAST)',
@@ -53,7 +53,7 @@ const FIRST_AID_TIPS = [
       'Keep person calm and comfortable',
       'Do NOT give food or water',
     ],
-    color: 'orange',
+    color: 'critical',
   },
   {
     title: 'Choking',
@@ -65,7 +65,7 @@ const FIRST_AID_TIPS = [
       'If unconscious, begin CPR',
       'Call 108 if obstruction is not cleared',
     ],
-    color: 'yellow',
+    color: 'alert',
   },
   {
     title: 'Severe Bleeding',
@@ -77,29 +77,26 @@ const FIRST_AID_TIPS = [
       'Keep the person still and warm',
       'Call 108 for deep or arterial bleeding',
     ],
-    color: 'blue',
+    color: 'alert',
   },
 ];
 
 const COLOR_MAP = {
-  red: 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800 text-red-700 dark:text-red-300',
-  blue: 'bg-brand-50 dark:bg-brand-900/20 border-brand-200 dark:border-brand-800 text-brand-800 dark:text-brand-300',
-  orange: 'bg-orange-50 dark:bg-orange-900/20 border-orange-200 dark:border-orange-800 text-orange-700 dark:text-orange-300',
-  purple: 'bg-purple-50 dark:bg-purple-900/20 border-purple-200 dark:border-purple-800 text-purple-700 dark:text-purple-300',
-  pink: 'bg-pink-50 dark:bg-pink-900/20 border-pink-200 dark:border-pink-800 text-pink-700 dark:text-pink-300',
-  green: 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800 text-green-700 dark:text-green-300',
-  yellow: 'bg-yellow-50 dark:bg-yellow-900/20 border-yellow-200 dark:border-yellow-800 text-yellow-700 dark:text-yellow-300',
+  critical: 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-900/50 text-red-700 dark:text-red-300',
+  alert: 'bg-gold-50 dark:bg-gold-900/20 border-gold-200 dark:border-gold-700/40 text-gold-700 dark:text-gold-300',
+  support: 'bg-white dark:bg-brand-900 border-border dark:border-brand-200/15 text-brand-800 dark:text-brand-200',
 };
 
 function AccordionItem({ tip }) {
   const [open, setOpen] = useState(false);
   const borderColor = {
-    red: 'border-l-red-500', orange: 'border-l-orange-500',
-    yellow: 'border-l-yellow-500', blue: 'border-l-brand-600',
-  }[tip.color];
+    critical: 'border-l-red-500',
+    alert: 'border-l-gold-500',
+    support: 'border-l-brand-600',
+  }[tip.color] || 'border-l-brand-600';
 
   return (
-    <div className={`border-l-4 ${borderColor} bg-white dark:bg-brand-900 border border-sand-100 dark:border-brand-800 rounded-r-xl overflow-hidden`}>
+    <div className={`border-l-4 ${borderColor} bg-white dark:bg-brand-900 border border-border dark:border-brand-200/15 rounded-r-xl overflow-hidden`}>
       <button
         onClick={() => setOpen(v => !v)}
         className="w-full flex items-center justify-between px-5 py-4 text-left"
@@ -125,7 +122,7 @@ function AccordionItem({ tip }) {
 
 export default function Emergency() {
   return (
-    <div className="min-h-screen bg-sand-50 dark:bg-brand-950 pt-16 pb-24 md:pb-8">
+    <div className="min-h-screen bg-cream-100 dark:bg-brand-950 pt-8 pb-24 lg:pb-16">
       <div className="max-w-5xl mx-auto px-4 py-8 animate-fade-in">
 
         {/* Hero */}
@@ -164,7 +161,7 @@ export default function Emergency() {
               <a
                 key={n.number}
                 href={`tel:${n.number}`}
-                className={`border rounded-2xl p-4 hover:shadow-md transition-shadow cursor-pointer block ${COLOR_MAP[n.color] || COLOR_MAP.blue}`}
+                className={`border rounded-2xl p-4 hover:shadow-md transition-shadow cursor-pointer block ${COLOR_MAP[n.color] || COLOR_MAP.support}`}
               >
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-2xl font-bold">{n.number}</span>
@@ -196,7 +193,7 @@ export default function Emergency() {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {BLOOD_BANKS.map(b => (
-              <div key={b.name} className="bg-white dark:bg-brand-900 border border-sand-100 dark:border-brand-800 rounded-2xl p-5 hover:shadow-md transition-shadow">
+              <div key={b.name} className="surface-card rounded-2xl p-5 transition-all duration-300 hover:-translate-y-1 hover:shadow-lift">
                 <div className="flex items-start justify-between gap-3">
                   <div>
                     <h3 className="font-bold text-sand-900 dark:text-white">{b.name}</h3>
@@ -205,10 +202,9 @@ export default function Emergency() {
                     </div>
                   </div>
                   <span className={`text-xs px-2.5 py-1 rounded-full font-medium shrink-0 ${
-                    b.type === 'Govt' ? 'bg-brand-100 text-brand-800 dark:bg-brand-900/30 dark:text-brand-300' :
-                    b.type === 'NGO'  ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300' :
-                    b.type === 'Hospital' ? 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300' :
-                    'bg-sand-100 text-sand-700 dark:bg-brand-800 dark:text-sand-300'
+                    b.type === 'Govt' ? 'bg-brand-100 text-brand-800 dark:bg-brand-800 dark:text-brand-200' :
+                    b.type === 'NGO'  ? 'bg-gold-100 text-gold-700 dark:bg-gold-900/30 dark:text-gold-300' :
+                    'bg-cream-200 text-text-secondary dark:bg-brand-800 dark:text-brand-200'
                   }`}>{b.type}</span>
                 </div>
                 <a href={`tel:${b.phone.replace(/[-\s]/g, '')}`}
@@ -228,7 +224,7 @@ export default function Emergency() {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {NGOS.map(n => (
-              <div key={n.name} className="bg-white dark:bg-brand-900 border border-sand-100 dark:border-brand-800 rounded-2xl p-5 hover:shadow-md transition-shadow">
+              <div key={n.name} className="surface-card rounded-2xl p-5 transition-all duration-300 hover:-translate-y-1 hover:shadow-lift">
                 <div className="flex items-start justify-between gap-3 mb-2">
                   <h3 className="font-bold text-sand-900 dark:text-white">{n.name}</h3>
                   <span className="text-xs px-2.5 py-1 bg-brand-50 dark:bg-brand-900/30 text-brand-700 dark:text-brand-300 rounded-full font-medium shrink-0">{n.focus}</span>

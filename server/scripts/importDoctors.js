@@ -70,19 +70,9 @@ const parseRating = (raw, seed) => {
   return Math.round((4.1 + ((seed >>> 3) % 6) / 10) * 10) / 10;
 };
 
-// The source packs multiple specialities into one string, sometimes glued
-// together without a separator ("AYUSHHomoeopath", "TherapistPhysiotherapist").
-const parseSpecialities = (raw) => {
-  const cleaned = String(raw || '')
-    .replace(/\bAYUSH([A-Z])/g, 'AYUSH, $1')
-    .replace(/\bTherapist([A-Z])/g, 'Therapist, $1')
-    .replace(/\//g, ', ');
-  const tags = cleaned
-    .split(',')
-    .map((s) => s.trim())
-    .filter((s) => s.length > 2);
-  return [...new Set(tags)];
-};
+// Display name + searchable tags both come from the shared normaliser, which
+// also un-glues run-together source values like "AYUSHHomoeopath".
+const { displaySpeciality, specialityTags } = require('../utils/specialityText');
 
 /* ── Derived doctor attributes ─────────────────────────────────────── */
 
@@ -119,7 +109,7 @@ function toRecords(row, index, passwordHash) {
   const name = String(row.Name || '').trim();
   if (!name) return null;
 
-  const speciality = String(row.Speciality || '').trim() || 'General Physician';
+  const speciality = displaySpeciality(row.Speciality);
   const seed = seedOf(`${name}|${row.City}|${row.Location}|${index}`);
   const email = `${slug(name)}.${index}@${EMAIL_DOMAIN}`;
   const years = parseYears(row['Years of Experience']);
@@ -139,7 +129,7 @@ function toRecords(row, index, passwordHash) {
     profile: {
       userId,
       specialisation: speciality,
-      specialities: parseSpecialities(speciality),
+      specialities: specialityTags(row.Speciality),
       qualifications: String(row.Degree || '').trim(),
       city: String(row.City || '').trim(),
       locality: String(row.Location || '').trim(),

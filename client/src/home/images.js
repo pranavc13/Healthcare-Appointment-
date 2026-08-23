@@ -1,22 +1,26 @@
 const u = (id, w = 1200) => `https://images.unsplash.com/${id}?auto=format&fit=crop&w=${w}&q=80`;
 
 export const IMAGES = {
-  heroClinic: u('photo-1666214280391-8ff5bd3c0bf0', 1400),
-  reception: u('photo-1586773860418-d37222d8fce3', 1200),
-  consult: u('photo-1579684385127-1ef15d508118', 1200),
-  team: u('photo-1631217868264-e5b90bb7e133', 1200),
-  corridor: u('photo-1519494026892-80bbd2d6fd0d', 1200),
-  equipment: u('photo-1576091160550-2173dba999ef', 1000),
-  lab: u('photo-1584982751601-97dcc096659c', 1000),
+  /* A calm, empty treatment room — the hero's focal image. */
+  heroClinic: u('photo-1629909613654-28e377c37b09', 1400),
+  reception: u('photo-1519494026892-80bbd2d6fd0d', 1200),
+  consult: u('photo-1631217868264-e5b90bb7e133', 1200),
+  team: u('photo-1666214280391-8ff5bd3c0bf0', 1200),
+  corridor: u('photo-1538108149393-fbbd81895907', 1200),
 };
 
+/** Portrait pool used for doctor cards and the hero's trust row. */
 export const FACES = [
-  u('photo-1559839734-2b71ea197ec2', 200),
-  u('photo-1622253692010-333f2da6031d', 200),
-  u('photo-1612349317150-e413f6a5b16d', 200),
-  u('photo-1594824476967-48c8b964273f', 200),
-  u('photo-1538108149393-fbbd81895907', 200),
-  u('photo-1551190822-a9333d879b1f', 200),
+  u('photo-1559839734-2b71ea197ec2', 400),
+  u('photo-1612349317150-e413f6a5b16d', 400),
+  u('photo-1622253692010-333f2da6031d', 400),
+  u('photo-1594824476967-48c8b964273f', 400),
+  u('photo-1591604021695-0c69b7c05981', 400),
+  u('photo-1622902046580-2b47f47f5471', 400),
+  u('photo-1643297654416-05795d62e39c', 400),
+  u('photo-1651008376811-b90baee60c1f', 400),
+  u('photo-1666887360742-974c8fce8e6b', 400),
+  u('photo-1631217868264-e5b90bb7e133', 400),
 ];
 
 /** Stable portrait per doctor id, so the same doctor keeps the same face. */

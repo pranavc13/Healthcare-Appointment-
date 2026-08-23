@@ -1,293 +1,312 @@
-import React from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import {
-  Brain, ShieldCheck, Calendar, Activity, Bell, Star,
-  Database, Code, Globe, Smartphone, Zap, Heart,
-  Users, FileText, Phone, BarChart2, MessageCircle,
-  ChevronRight, ExternalLink,
+  ArrowRight, BellRing, Brain, CalendarSync, HeartHandshake,
+  Lock, ShieldCheck, Stethoscope, UserCog, Users,
 } from 'lucide-react';
+import * as doctorsService from '../services/doctorsService';
+import SmartImage from '../components/SmartImage';
+import { CountUp, EASE, Parallax, Reveal, RevealGroup, RevealItem } from '../components/motion';
+import { IMAGES } from '../home/images';
 
-const TECH_STACK = [
-  { name: 'React 18', desc: 'Frontend UI with hooks, context, and real-time state', color: '#61dafb', icon: '⚛️' },
-  { name: 'JWT + bcrypt', desc: 'Role-based authentication for patients, doctors and admins', color: '#ffa000', icon: '🔐' },
-  { name: 'MongoDB + Mongoose', desc: 'Document database with atomic slot-booking guarantees', color: '#47A248', icon: '🍃' },
-  { name: 'React Router v7', desc: 'Client-side routing with protected routes', color: '#ca4245', icon: '🧭' },
-  { name: 'Tailwind CSS', desc: 'Utility-first styling with dark mode support', color: '#06b6d4', icon: '🎨' },
-  { name: 'Vite 6', desc: 'Lightning-fast build tool and dev server', color: '#646cff', icon: '⚡' },
-  { name: 'date-fns', desc: 'Date formatting and calculation library', color: '#e91e63', icon: '📅' },
-  { name: 'lucide-react', desc: 'Modern SVG icon library', color: '#8b5cf6', icon: '✨' },
-];
-
-const FEATURES = [
+const VALUES = [
   {
-    icon: Brain, title: 'AI Health Assistant', color: 'blue',
-    desc: 'Aarohi AI chatbot with symptom guidance, appointment help, and healthcare FAQs with keyword-based response engine.',
-    tag: 'AI',
+    icon: HeartHandshake,
+    title: 'Human first',
+    body: 'Software should absorb the admin so the consultation can stay a conversation between two people.',
   },
   {
-    icon: Calendar, title: 'Smart Appointment Booking', color: 'green',
-    desc: 'React Calendar integration with real-time slot availability, doctor scheduling, and instant confirmation.',
-    tag: 'Core',
+    icon: ShieldCheck,
+    title: 'Never lose a booking',
+    body: 'Slots are held atomically and leave days cascade into cancellations, notifications and calendar cleanup.',
   },
   {
-    icon: Activity, title: 'Health Analytics Dashboard', color: 'purple',
-    desc: 'SVG-based charts showing appointment trends, consultation stats, and health profile completeness.',
-    tag: 'Analytics',
+    icon: Lock,
+    title: 'Careful with data',
+    body: 'Role-scoped access, hashed credentials and encrypted calendar tokens at rest. Nothing shared sideways.',
   },
   {
-    icon: Bell, title: 'Real-Time Notifications', color: 'orange',
-    desc: 'Firestore onSnapshot listeners for instant appointment confirmations, completions, and reviews.',
-    tag: 'Real-time',
-  },
-  {
-    icon: Star, title: 'Review & Rating System', color: 'yellow',
-    desc: 'Patients can rate and review doctors after completed appointments. Ratings update doctor profiles in real-time.',
-    tag: 'Social',
-  },
-  {
-    icon: FileText, title: 'Patient Medical Records', color: 'red',
-    desc: 'Comprehensive health records: allergies, medications, conditions, family history, and emergency contacts.',
-    tag: 'Records',
-  },
-  {
-    icon: ShieldCheck, title: 'Doctor Verification', color: 'blue',
-    desc: 'License number verification system with verified badge display on doctor profiles.',
-    tag: 'Trust',
-  },
-  {
-    icon: Phone, title: 'Emergency Help Center', color: 'red',
-    desc: 'Quick access to emergency numbers (108, 100), blood banks, NGOs, and first-aid guides.',
-    tag: 'Safety',
-  },
-  {
-    icon: MessageCircle, title: 'Chat Widget', color: 'cyan',
-    desc: 'Floating chatbot widget accessible on all pages with typing animation and chat history.',
-    tag: 'UX',
-  },
-  {
-    icon: Smartphone, title: 'Mobile-First Design', color: 'green',
-    desc: 'Bottom navigation, responsive layouts, and touch-friendly interactions for mobile users.',
-    tag: 'Mobile',
+    icon: BellRing,
+    title: 'Follow-up is the job',
+    body: 'A visit is not finished at the door — summaries, prescriptions and medication reminders keep going.',
   },
 ];
 
-const ARCHITECTURE = [
-  { layer: 'Frontend', stack: 'React 18 + Vite + React Router v7', color: 'blue' },
-  { layer: 'Styling', stack: 'Tailwind CSS (dark mode, animations, responsive)', color: 'cyan' },
-  { layer: 'Backend', stack: 'Node.js + Express REST API', color: 'orange' },
-  { layer: 'Database', stack: 'MongoDB + Mongoose', color: 'yellow' },
-  { layer: 'State', stack: 'React Context API + JWT session', color: 'purple' },
-  { layer: 'AI Layer', stack: 'Gemini API — pre/post-visit summaries', color: 'green' },
-  { layer: 'Charts', stack: 'Pure SVG (no external chart library)', color: 'red' },
-  { layer: 'Icons', stack: 'lucide-react + react-icons', color: 'gray' },
+const PORTALS = [
+  {
+    icon: Users,
+    role: 'Patients',
+    body: 'Search the directory, hold a slot, describe symptoms, and keep every visit summary in one timeline.',
+    points: ['Live slot availability', 'AI symptom brief', 'Email + calendar sync'],
+  },
+  {
+    icon: Stethoscope,
+    role: 'Doctors',
+    body: 'Arrive at each appointment already briefed, then turn consultation notes into a patient-friendly plan.',
+    points: ['Urgency-rated pre-visit brief', 'Post-visit summary generation', 'Working hours and leave'],
+  },
+  {
+    icon: UserCog,
+    role: 'Clinic admins',
+    body: 'Create and manage practitioner profiles, set slot durations, and mark leave days safely.',
+    points: ['Profile management', 'Leave-day conflict handling', 'Directory oversight'],
+  },
 ];
 
-const FIRESTORE_COLLECTIONS = [
-  { name: 'patients', fields: 'uid, firstName, lastName, email, age, bloodGroup, allergies, conditions, medications, height, weight, emergencyContact...' },
-  { name: 'doctors', fields: 'uid, firstName, lastName, specialty, experience, licenseNumber, verified, avgRating, totalRatings, availability...' },
-  { name: 'appointments', fields: 'patientId, doctorId, date, timeSlot, status, rating, patientName, doctorName, createdAt...' },
-  { name: 'notifications', fields: 'userId, message, type, appointmentId, read, createdAt' },
-  { name: 'reviews', fields: 'doctorId, patientId, rating, comment, patientName, createdAt' },
+const PIPELINE = [
+  { icon: Brain, label: 'Symptoms in', detail: 'Patient describes what is wrong, in their own words.' },
+  { icon: ShieldCheck, label: 'Structured brief', detail: 'Urgency level, chief complaint and three questions to ask.' },
+  { icon: Stethoscope, label: 'Consultation', detail: 'The doctor opens the appointment already knowing the context.' },
+  { icon: CalendarSync, label: 'Plan out', detail: 'Plain-language summary, medication schedule and reminders.' },
 ];
-
-const COLOR_MAP = {
-  blue: 'bg-brand-100 dark:bg-brand-900/30 text-brand-700 dark:text-gold-300',
-  green: 'bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400',
-  purple: 'bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400',
-  orange: 'bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400',
-  yellow: 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-600 dark:text-yellow-400',
-  red: 'bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400',
-  cyan: 'bg-cyan-100 dark:bg-cyan-900/30 text-cyan-600 dark:text-cyan-400',
-  gray: 'bg-sand-100 dark:bg-brand-800 text-sand-600 dark:text-sand-400',
-};
 
 export default function About() {
+  const [stats, setStats] = useState(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    doctorsService
+      .getFacets()
+      .then((d) => { if (!cancelled) setStats(d.stats); })
+      .catch(() => {});
+    return () => { cancelled = true; };
+  }, []);
+
   return (
-    <div className="min-h-screen bg-sand-50 dark:bg-brand-950 pt-16 pb-24 md:pb-8">
-      <div className="max-w-5xl mx-auto px-4 py-8 animate-fade-in">
+    <div className="bg-cream-100 dark:bg-brand-950">
+      {/* ── Hero ── */}
+      <section className="relative overflow-hidden bg-brand-900 dark:bg-brand-950 text-cream-100 grain-overlay">
+        <div className="absolute -right-40 -top-40 w-[600px] h-[600px] rounded-full bg-brand-700/40 blur-3xl animate-float-slow" aria-hidden />
+        <div className="absolute -left-32 bottom-0 w-[420px] h-[420px] rounded-full bg-gold-700/15 blur-3xl animate-float" aria-hidden />
 
-        {/* Hero */}
-        <div className="bg-gradient-to-r from-brand-700 via-brand-800 to-brand-800 rounded-3xl p-6 sm:p-10 mb-10 text-white relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-80 h-80 bg-white/5 rounded-full translate-x-24 -translate-y-24" />
-          <div className="absolute bottom-0 left-0 w-60 h-60 bg-white/5 rounded-full -translate-x-16 translate-y-20" />
-          <div className="relative">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-12 h-12 sm:w-14 sm:h-14 bg-white rounded-2xl flex items-center justify-center shadow-lg shrink-0">
-                <Heart className="w-7 h-7 sm:w-8 sm:h-8 text-brand-700" />
-              </div>
-              <div>
-                <h1 className="text-3xl sm:text-4xl font-black">DocConnect</h1>
-                <p className="text-brand-200 text-sm sm:text-base">Healthcare Platform · DocConnect Project</p>
-              </div>
-            </div>
-            <p className="text-sm sm:text-lg text-brand-100 max-w-2xl leading-relaxed mb-6">
-              A full-stack, portfolio-grade healthcare platform connecting patients with doctors.
-              Features AI health assistance, real-time appointment management, advanced analytics,
-              and a complete patient health records system.
-            </p>
-            <div className="flex flex-wrap gap-3">
-              <Link to="/search"
-                className="flex items-center gap-2 bg-white text-brand-800 font-bold px-5 py-2.5 rounded-xl hover:bg-brand-50 transition-colors">
-                <Users className="w-4 h-4" /> Find Doctors
+        <div className="relative max-w-7xl mx-auto px-5 sm:px-8 py-20 sm:py-28 grid lg:grid-cols-2 gap-14 items-center">
+          <div>
+            <Reveal>
+              <p className="eyebrow !text-gold-300">About Jeevan Chakra</p>
+              <h1 className="mt-4 font-display text-[2.6rem] sm:text-[3.4rem] leading-[1.06] font-semibold">
+                Appointments that
+                <br />
+                <span className="text-gold-gradient italic">look after themselves</span>
+              </h1>
+              <p className="mt-6 text-[16px] leading-relaxed text-brand-200 max-w-lg">
+                Jeevan Chakra is a healthcare appointment and follow-up manager. It gives patients,
+                doctors and clinic admins their own portal over one shared source of truth — then wires
+                AI briefs, email and Google Calendar into the parts everyone usually forgets.
+              </p>
+            </Reveal>
+
+            <Reveal delay={0.2} className="mt-10 flex flex-wrap gap-3">
+              <Link
+                to="/doctors"
+                className="shine group inline-flex items-center gap-2.5 h-[52px] px-7 rounded-full bg-gold-400 hover:bg-gold-300 text-brand-900 text-[14.5px] font-bold transition-colors"
+              >
+                Find a doctor
+                <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
               </Link>
-              <Link to="/ai-assistant"
-                className="flex items-center gap-2 bg-white/20 text-white font-semibold px-5 py-2.5 rounded-xl hover:bg-white/30 transition-colors">
-                <Brain className="w-4 h-4" /> AI Assistant
+              <Link
+                to="/ai-assistant"
+                className="inline-flex items-center gap-2.5 h-[52px] px-6 rounded-full border border-cream-100/25 text-cream-100 text-[14.5px] font-semibold hover:bg-cream-100/10 transition-colors"
+              >
+                Symptom checker
               </Link>
-            </div>
+            </Reveal>
           </div>
-        </div>
 
-        {/* Stats */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-10">
+          <Parallax distance={28}>
+            <motion.div
+              initial={{ opacity: 0, scale: 0.94 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.9, delay: 0.2, ease: EASE }}
+            >
+              <SmartImage
+                src={IMAGES.consult}
+                alt="A doctor talking with a patient"
+                priority
+                className="rounded-[2rem] aspect-[4/3.2] shadow-lift ring-1 ring-cream-100/10"
+              />
+            </motion.div>
+          </Parallax>
+        </div>
+      </section>
+
+      {/* ── Live numbers ── */}
+      <section className="px-5 sm:px-8 -mt-12 relative z-10">
+        <RevealGroup className="max-w-7xl mx-auto surface-card rounded-[1.75rem] p-6 sm:p-8 grid grid-cols-2 lg:grid-cols-4 gap-2">
           {[
-            { label: 'Features Built', value: '11', icon: '⚡' },
-            { label: 'Firestore Collections', value: '5', icon: '🔥' },
-            { label: 'React Components', value: '40+', icon: '⚛️' },
-            { label: 'Lines of Code', value: '5,000+', icon: '💻' },
-          ].map(s => (
-            <div key={s.label} className="bg-white dark:bg-brand-900 border border-sand-100 dark:border-brand-800 rounded-2xl p-5 text-center shadow-sm">
-              <p className="text-2xl mb-1">{s.icon}</p>
-              <p className="text-2xl font-black text-sand-900 dark:text-white">{s.value}</p>
-              <p className="text-xs text-sand-500 dark:text-sand-400 mt-0.5">{s.label}</p>
-            </div>
+            { value: stats?.totalDoctors ?? 17607, suffix: '+', label: 'Practitioners listed' },
+            { value: stats?.totalCities ?? 30, suffix: '', label: 'Cities covered' },
+            { value: stats?.avgRating ?? 4.6, decimals: 1, suffix: '/5', label: 'Average rating' },
+            { value: 3, suffix: '', label: 'Dedicated portals' },
+          ].map((s, i) => (
+            <RevealItem
+              key={s.label}
+              className={`px-4 sm:px-6 py-4 text-center ${
+                i < 3 ? 'lg:border-r lg:border-border dark:lg:border-brand-200/10' : ''
+              }`}
+            >
+              <p className="font-display text-[30px] sm:text-[34px] leading-none font-semibold text-brand-900 dark:text-cream-100">
+                <CountUp value={s.value} decimals={s.decimals || 0} suffix={s.suffix} />
+              </p>
+              <p className="mt-2.5 text-[12px] text-text-secondary dark:text-brand-200">{s.label}</p>
+            </RevealItem>
           ))}
-        </div>
+        </RevealGroup>
+      </section>
 
-        {/* Features */}
-        <section className="mb-10">
-          <h2 className="text-2xl font-bold text-sand-900 dark:text-white mb-6 flex items-center gap-2">
-            <Zap className="w-6 h-6 text-yellow-500" /> Key Features
+      {/* ── Story ── */}
+      <section className="max-w-7xl mx-auto px-5 sm:px-8 py-24 lg:py-28 grid lg:grid-cols-[1fr_1.1fr] gap-12 lg:gap-16 items-center">
+        <Parallax distance={30}>
+          <SmartImage
+            src={IMAGES.reception}
+            alt="Clinic reception"
+            className="rounded-[1.75rem] aspect-[4/3.4] shadow-lift"
+          />
+        </Parallax>
+
+        <Reveal direction="left">
+          <p className="eyebrow">Why we built it</p>
+          <h2 className="mt-4 font-display text-[2.2rem] sm:text-[2.7rem] leading-[1.1] font-semibold text-brand-900 dark:text-cream-100">
+            A booking form was never
+            <br />
+            the <span className="text-gold-gradient italic">hard part</span>
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {FEATURES.map(f => {
-              const Icon = f.icon;
-              return (
-                <div key={f.title} className="bg-white dark:bg-brand-900 border border-sand-100 dark:border-brand-800 rounded-2xl p-5 hover:shadow-md transition-shadow">
-                  <div className="flex items-start gap-3">
-                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${COLOR_MAP[f.color]}`}>
-                      <Icon className="w-5 h-5" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-1">
-                        <h3 className="font-bold text-sand-900 dark:text-white text-sm">{f.title}</h3>
-                        <span className="text-xs bg-sand-100 dark:bg-brand-800 text-sand-500 dark:text-sand-400 px-2 py-0.5 rounded-full">{f.tag}</span>
-                      </div>
-                      <p className="text-sm text-sand-600 dark:text-sand-300 leading-relaxed">{f.desc}</p>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
+          <div className="mt-6 space-y-4 text-[15px] leading-relaxed text-text-secondary dark:text-brand-200">
+            <p>
+              Clinics rarely lose patients at the moment of booking. They lose them in the gaps — the
+              double-booked slot nobody caught, the doctor who went on leave without the front desk
+              knowing, the discharge instructions that got read once and forgotten.
+            </p>
+            <p>
+              So we started at the gaps. Two people cannot claim the same slot, because a booking is
+              held before it is confirmed. Marking a doctor on leave cancels the affected appointments,
+              emails everyone involved and deletes their calendar events in the same action.
+            </p>
+            <p>
+              And when the model that writes summaries is slow or unavailable, the appointment still
+              goes through — the summary retries quietly in the background instead of blocking care.
+            </p>
           </div>
-        </section>
+        </Reveal>
+      </section>
 
-        {/* Tech Stack */}
-        <section className="mb-10">
-          <h2 className="text-2xl font-bold text-sand-900 dark:text-white mb-6 flex items-center gap-2">
-            <Code className="w-6 h-6 text-brand-600" /> Tech Stack
+      {/* ── The AI pipeline ── */}
+      <section className="bg-cream-50 dark:bg-brand-900/40 py-24 lg:py-28 px-5 sm:px-8">
+        <div className="max-w-7xl mx-auto">
+          <Reveal className="max-w-2xl">
+            <p className="eyebrow">From symptoms to a plan</p>
+            <h2 className="mt-4 font-display text-[2.2rem] sm:text-[2.7rem] leading-[1.1] font-semibold text-brand-900 dark:text-cream-100">
+              What the <span className="text-gold-gradient italic">AI</span> actually does
+            </h2>
+          </Reveal>
+
+          <RevealGroup className="mt-12 grid sm:grid-cols-2 lg:grid-cols-4 gap-5" stagger={0.11}>
+            {PIPELINE.map(({ icon: Icon, label, detail }, i) => (
+              <RevealItem key={label} className="relative group">
+                <div className="surface-card rounded-2xl p-6 h-full transition-all duration-400 group-hover:-translate-y-2 group-hover:shadow-lift">
+                  <span className="w-11 h-11 rounded-full bg-brand-700 text-cream-100 flex items-center justify-center transition-transform duration-500 group-hover:scale-110 group-hover:rotate-6">
+                    <Icon className="w-[18px] h-[18px]" strokeWidth={1.75} />
+                  </span>
+                  <p className="mt-5 text-[11px] font-bold uppercase tracking-[0.15em] text-gold-600 dark:text-gold-400">
+                    Step {i + 1}
+                  </p>
+                  <h3 className="mt-2 font-semibold text-[15.5px] text-brand-900 dark:text-cream-100">{label}</h3>
+                  <p className="mt-2 text-[13px] leading-relaxed text-text-secondary dark:text-brand-200">{detail}</p>
+                </div>
+              </RevealItem>
+            ))}
+          </RevealGroup>
+        </div>
+      </section>
+
+      {/* ── Portals ── */}
+      <section className="max-w-7xl mx-auto px-5 sm:px-8 py-24 lg:py-28">
+        <Reveal className="max-w-2xl">
+          <p className="eyebrow">Three portals, one record</p>
+          <h2 className="mt-4 font-display text-[2.2rem] sm:text-[2.7rem] leading-[1.1] font-semibold text-brand-900 dark:text-cream-100">
+            Everyone sees the <span className="text-gold-gradient italic">same truth</span>
           </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {TECH_STACK.map(t => (
-              <div key={t.name} className="flex items-center gap-4 bg-white dark:bg-brand-900 border border-sand-100 dark:border-brand-800 rounded-2xl p-4 hover:shadow-sm transition-shadow">
-                <span className="text-2xl shrink-0">{t.icon}</span>
+        </Reveal>
+
+        <RevealGroup className="mt-12 grid md:grid-cols-3 gap-5" stagger={0.12}>
+          {PORTALS.map(({ icon: Icon, role, body, points }) => (
+            <RevealItem
+              key={role}
+              className="group surface-card rounded-2xl p-7 flex flex-col transition-all duration-400 hover:-translate-y-2 hover:shadow-lift"
+            >
+              <span className="w-12 h-12 rounded-full bg-cream-200 dark:bg-brand-800 text-brand-700 dark:text-gold-300 flex items-center justify-center transition-all duration-500 group-hover:bg-brand-700 group-hover:text-cream-100 group-hover:rotate-[8deg]">
+                <Icon className="w-5 h-5" strokeWidth={1.75} />
+              </span>
+              <h3 className="mt-5 font-display text-[21px] font-semibold text-brand-900 dark:text-cream-100">{role}</h3>
+              <p className="mt-2.5 text-[13.5px] leading-relaxed text-text-secondary dark:text-brand-200">{body}</p>
+              <ul className="mt-5 pt-5 border-t border-border dark:border-brand-200/10 space-y-2.5">
+                {points.map((p) => (
+                  <li key={p} className="flex items-start gap-2.5 text-[13px] text-text-secondary dark:text-brand-200">
+                    <span className="mt-[7px] w-1.5 h-1.5 rounded-full bg-gold-400 shrink-0" />
+                    {p}
+                  </li>
+                ))}
+              </ul>
+            </RevealItem>
+          ))}
+        </RevealGroup>
+      </section>
+
+      {/* ── Values ── */}
+      <section className="bg-brand-900 dark:bg-brand-950 text-cream-100 py-24 lg:py-28 px-5 sm:px-8 grain-overlay relative overflow-hidden">
+        <div className="absolute -left-40 top-0 w-[520px] h-[520px] rounded-full bg-brand-700/35 blur-3xl animate-float-slow" aria-hidden />
+
+        <div className="relative max-w-7xl mx-auto">
+          <Reveal className="max-w-2xl">
+            <p className="eyebrow !text-gold-300">What we hold to</p>
+            <h2 className="mt-4 font-display text-[2.2rem] sm:text-[2.7rem] leading-[1.1] font-semibold">
+              Principles, not <span className="text-gold-gradient italic">slogans</span>
+            </h2>
+          </Reveal>
+
+          <RevealGroup className="mt-12 grid sm:grid-cols-2 gap-x-10 gap-y-9" stagger={0.1}>
+            {VALUES.map(({ icon: Icon, title, body }) => (
+              <RevealItem key={title} className="flex gap-5 group">
+                <span className="w-12 h-12 shrink-0 rounded-full bg-brand-800 border border-brand-200/15 flex items-center justify-center text-gold-300 transition-all duration-400 group-hover:bg-gold-400 group-hover:text-brand-900 group-hover:scale-110">
+                  <Icon className="w-5 h-5" strokeWidth={1.75} />
+                </span>
                 <div>
-                  <p className="font-bold text-sand-900 dark:text-white text-sm">{t.name}</p>
-                  <p className="text-xs text-sand-500 dark:text-sand-400">{t.desc}</p>
+                  <h3 className="font-semibold text-[16px]">{title}</h3>
+                  <p className="mt-2 text-[13.5px] leading-relaxed text-brand-200">{body}</p>
                 </div>
-              </div>
+              </RevealItem>
             ))}
-          </div>
-        </section>
-
-        {/* Architecture */}
-        <section className="mb-10">
-          <h2 className="text-2xl font-bold text-sand-900 dark:text-white mb-6 flex items-center gap-2">
-            <Globe className="w-6 h-6 text-green-500" /> Architecture
-          </h2>
-          <div className="bg-white dark:bg-brand-900 border border-sand-100 dark:border-brand-800 rounded-2xl overflow-hidden">
-            {ARCHITECTURE.map((a, i) => (
-              <div key={a.layer} className={`flex items-center gap-4 px-6 py-4 ${i < ARCHITECTURE.length - 1 ? 'border-b border-sand-100 dark:border-brand-800' : ''}`}>
-                <span className={`text-xs font-bold px-3 py-1.5 rounded-lg w-28 text-center shrink-0 ${COLOR_MAP[a.color]}`}>{a.layer}</span>
-                <ChevronRight className="w-3 h-3 text-sand-300 shrink-0" />
-                <span className="text-sm text-sand-700 dark:text-sand-300">{a.stack}</span>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* Firestore */}
-        <section className="mb-10">
-          <h2 className="text-2xl font-bold text-sand-900 dark:text-white mb-6 flex items-center gap-2">
-            <Database className="w-6 h-6 text-orange-500" /> Firestore Collections
-          </h2>
-          <div className="space-y-3">
-            {FIRESTORE_COLLECTIONS.map(c => (
-              <div key={c.name} className="bg-white dark:bg-brand-900 border border-sand-100 dark:border-brand-800 rounded-2xl px-5 py-4">
-                <div className="flex items-start gap-3">
-                  <code className="text-sm font-bold text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-900/20 px-3 py-1 rounded-lg shrink-0">{c.name}</code>
-                  <p className="text-sm text-sand-500 dark:text-sand-400 mt-0.5 leading-relaxed">{c.fields}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* Route Map */}
-        <section className="mb-10">
-          <h2 className="text-2xl font-bold text-sand-900 dark:text-white mb-6 flex items-center gap-2">
-            <Globe className="w-6 h-6 text-purple-500" /> Route Map
-          </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-            {[
-              { route: '/', desc: 'Landing page / Patient Dashboard (auth-aware)' },
-              { route: '/login', desc: 'Login with email or Google OAuth' },
-              { route: '/signup', desc: 'Registration for patients and doctors' },
-              { route: '/search', desc: 'Doctor search with advanced filters' },
-              { route: '/view', desc: 'Doctor profile, reviews, and booking' },
-              { route: '/appointments', desc: 'My appointments with timeline view' },
-              { route: '/settings', desc: 'Profile settings and preferences' },
-              { route: '/medical-records', desc: 'Comprehensive health records' },
-              { route: '/dashboard', desc: 'Doctor dashboard with schedule and analytics' },
-              { route: '/dashboard/start', desc: 'Doctor availability management' },
-              { route: '/ai-assistant', desc: 'Full-page AI health chatbot (Aarohi)' },
-              { route: '/emergency', desc: 'Emergency contacts, blood banks, NGOs' },
-              { route: '/help', desc: 'Healthcare NGOs and support organizations' },
-              { route: '/about', desc: 'Project portfolio page (this page)' },
-            ].map(r => (
-              <div key={r.route} className="flex items-center gap-3 bg-white dark:bg-brand-900 border border-sand-100 dark:border-brand-800 rounded-xl px-4 py-3">
-                <code className="text-xs font-bold text-brand-700 dark:text-gold-300 bg-brand-50 dark:bg-brand-900/20 px-2 py-1 rounded shrink-0">{r.route}</code>
-                <span className="text-xs text-sand-600 dark:text-sand-300">{r.desc}</span>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* Developer */}
-        <div className="bg-gradient-to-r from-brand-50 to-brand-50 dark:from-brand-900 dark:to-brand-900 border border-brand-100 dark:border-brand-800 rounded-3xl p-8 text-center">
-          <div className="w-16 h-16 bg-gradient-to-br from-brand-600 to-brand-700 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
-            <Code className="w-8 h-8 text-white" />
-          </div>
-          <h3 className="text-xl font-bold text-sand-900 dark:text-white mb-2">DocConnect / DocConnect</h3>
-          <p className="text-sand-600 dark:text-sand-400 text-sm max-w-lg mx-auto leading-relaxed mb-6">
-            A full-stack healthcare platform built as a portfolio project.
-            Features a JWT-secured Node/MongoDB backend, AI-assisted health guidance,
-            analytics dashboards, and a complete patient-doctor ecosystem.
-          </p>
-          <div className="flex justify-center gap-3 flex-wrap">
-            <Link to="/search" className="flex items-center gap-2 bg-brand-700 hover:bg-brand-800 text-white px-5 py-2.5 rounded-xl font-medium transition-colors">
-              <Users className="w-4 h-4" /> Browse Doctors
-            </Link>
-            <Link to="/ai-assistant" className="flex items-center gap-2 bg-white dark:bg-brand-800 text-sand-700 dark:text-sand-200 border border-sand-200 dark:border-brand-700 px-5 py-2.5 rounded-xl font-medium hover:shadow-sm transition-all">
-              <Brain className="w-4 h-4" /> Try AI Assistant
-            </Link>
-            <Link to="/emergency" className="flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white px-5 py-2.5 rounded-xl font-medium transition-colors">
-              <Phone className="w-4 h-4" /> Emergency Help
-            </Link>
-          </div>
+          </RevealGroup>
         </div>
+      </section>
 
-      </div>
+      {/* ── CTA ── */}
+      <section className="px-5 sm:px-8 py-20">
+        <Reveal className="max-w-4xl mx-auto text-center">
+          <h2 className="font-display text-[2.2rem] sm:text-[2.8rem] leading-[1.1] font-semibold text-brand-900 dark:text-cream-100">
+            Ready when you are
+          </h2>
+          <p className="mt-4 text-[15px] text-text-secondary dark:text-brand-200 max-w-lg mx-auto">
+            Browse the directory, or create an account and keep every appointment, summary and reminder
+            in one place.
+          </p>
+          <div className="mt-8 flex flex-wrap justify-center gap-3">
+            <Link
+              to="/doctors"
+              className="shine group inline-flex items-center gap-2.5 h-[52px] px-7 rounded-full bg-brand-700 hover:bg-brand-800 text-cream-100 text-[14.5px] font-bold transition-colors"
+            >
+              Browse doctors
+              <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
+            </Link>
+            <Link
+              to="/register"
+              className="inline-flex items-center h-[52px] px-7 rounded-full border border-brand-700/25 dark:border-brand-200/25 text-brand-900 dark:text-cream-100 text-[14.5px] font-semibold hover:bg-white/70 dark:hover:bg-brand-800/50 transition-colors"
+            >
+              Create an account
+            </Link>
+          </div>
+        </Reveal>
+      </section>
     </div>
   );
 }

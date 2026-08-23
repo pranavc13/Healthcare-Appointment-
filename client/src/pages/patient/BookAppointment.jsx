@@ -41,6 +41,27 @@ export default function BookAppointment() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [doctorId]);
 
+  // Land on the first day this doctor actually works rather than on today,
+  // which is often a non-clinic day and reads as "nothing available".
+  useEffect(() => {
+    if (!doctor) return;
+    const today = toDateOnly(new Date());
+    for (let i = 0; i < 60; i += 1) {
+      const candidate = new Date(today);
+      candidate.setDate(today.getDate() + i);
+      const dayName = DAY_NAMES[candidate.getDay()];
+      const works = (doctor.workingHours || []).some((wh) => wh.day === dayName);
+      const onLeave = (doctor.leaveDays || []).some(
+        (l) => toDateOnly(new Date(l)).getTime() === candidate.getTime()
+      );
+      if (works && !onLeave) {
+        setDate(candidate);
+        return;
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [doctor]);
+
   useEffect(() => {
     setSlotsLoading(true);
     setSelectedSlot(null);

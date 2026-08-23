@@ -84,7 +84,8 @@ export function Navbar() {
   const primaryLinks = [
     { to: '/', label: 'Home', end: true },
     { to: '/about', label: 'About' },
-    { to: '/doctors', label: 'Find Doctors' },
+    // Signed-in patients get the in-portal directory, which books directly.
+    { to: role === 'patient' ? '/patient/doctors' : '/doctors', label: 'Find Doctors' },
     ...(role === 'patient' ? [{ to: '/patient/appointments', label: 'Appointments' }] : []),
     ...(role === 'doctor' ? [{ to: '/doctor/dashboard', label: 'Dashboard' }] : []),
     ...(role === 'admin' ? [{ to: '/admin/doctors', label: 'Manage Doctors' }] : []),
@@ -111,7 +112,7 @@ export function Navbar() {
               alt=""
               whileHover={{ scale: 1.08, rotate: -4 }}
               transition={{ type: 'spring', stiffness: 320, damping: 16 }}
-              className="w-10 h-10 object-contain"
+              className="w-10 h-10 rounded-full bg-white object-cover ring-1 ring-brand-900/10 shadow-sm"
             />
             <span className="flex flex-col leading-none">
               <span className="font-display text-[20px] font-semibold tracking-tight text-brand-900 dark:text-cream-100">

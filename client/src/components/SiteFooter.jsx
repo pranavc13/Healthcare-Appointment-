@@ -40,7 +40,7 @@ export default function SiteFooter() {
         <div className="grid lg:grid-cols-[1.4fr_repeat(3,0.8fr)] gap-12 lg:gap-10">
           <Reveal>
             <Link to="/" className="flex items-center gap-3 w-fit">
-              <img src="/logo.png" alt="" className="w-10 h-10 object-contain" />
+              <img src="/logo.png" alt="" className="w-10 h-10 rounded-full bg-white object-cover ring-1 ring-white/20" />
               <span className="font-display text-[22px] font-semibold tracking-tight">Jeevan Chakra</span>
             </Link>
             <p className="mt-5 text-[13.5px] leading-relaxed text-brand-200 max-w-sm">

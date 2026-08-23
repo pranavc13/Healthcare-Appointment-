@@ -9,16 +9,16 @@ const FAQS = [
     category: 'Getting Started',
     items: [
       {
-        q: 'How do I create an account on DocConnect?',
+        q: 'How do I create an account on Jeevan Chakra?',
         a: 'Click "Sign Up" in the top navigation. You can register with your email and password, or sign in instantly with your Google account. Choose between Patient or Doctor during registration.',
       },
       {
-        q: 'Is DocConnect free to use?',
+        q: 'Is Jeevan Chakra free to use?',
         a: 'Yes! Creating an account and searching for doctors is completely free. You can browse doctor profiles, read reviews, and book appointments at no charge.',
       },
       {
-        q: 'Can I use DocConnect on my phone?',
-        a: 'Absolutely. DocConnect is fully responsive and works on all devices. The mobile experience includes a bottom navigation bar for quick access to all features.',
+        q: 'Can I use Jeevan Chakra on my phone?',
+        a: 'Absolutely. Jeevan Chakra is fully responsive and works on all devices. The mobile experience includes a bottom navigation bar for quick access to all features.',
       },
     ],
   },
@@ -90,7 +90,7 @@ const FAQS = [
       },
       {
         q: 'How do I get the Verified badge?',
-        a: 'Contact the DocConnect team with your medical license number and credentials. After verification, the badge will be added to your profile to build patient trust.',
+        a: 'Contact the Jeevan Chakra team with your medical license number and credentials. After verification, the badge will be added to your profile to build patient trust.',
       },
       {
         q: 'Can patients leave reviews?',
@@ -203,7 +203,7 @@ export default function FAQ() {
               transition={{ delay: 0.1 }}
               className="text-brand-100 mb-8"
             >
-              Find answers to common questions about DocConnect
+              Find answers to common questions about Jeevan Chakra
             </motion.p>
 
             {/* Search */}

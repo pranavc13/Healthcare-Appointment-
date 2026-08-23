@@ -1,4 +1,4 @@
-# System Design — DocConnect Healthcare Appointment & Follow-up Manager
+# System Design — Jeevan Chakra Healthcare Appointment & Follow-up Manager
 
 ## Double-booking prevention
 
