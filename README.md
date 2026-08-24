@@ -24,8 +24,6 @@
 
 DocConnect is a role-based appointment platform for a dental clinic: **patients** book a slot and describe their symptoms, **dentists** walk into each visit already briefed by an AI-generated triage summary, and an **admin** manages the roster, schedules, and leave days — all backed by the same source of truth. Booking confirmations, reminders, and post-visit summaries go out over email; confirmed appointments sync to both parties' Google Calendars.
 
-It's currently configured for a real two-dentist clinic (see [screenshots](#screenshots) below), but the data model doesn't assume that — a **17,636-row Indian practitioner dataset** ships in the repo and can repopulate the directory at multi-city scale in a couple of commands (see [Scaling beyond one clinic](#scaling-beyond-one-clinic)).
-
 This was built against a specific assignment brief (linked in [`SYSTEM_DESIGN.md`](SYSTEM_DESIGN.md)) that graded on four things in particular: **double-booking prevention under concurrent requests**, **doctor leave-day conflict handling**, **the slot-hold mechanism**, and **notification failure handling** — each has its own writeup there, with the actual atomic Mongo query used.
 
 ## Features
