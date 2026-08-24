@@ -8,7 +8,7 @@ function getModel() {
   if (!client) {
     client = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
   }
-  return client.getGenerativeModel({ model: process.env.GEMINI_MODEL || 'gemini-1.5-flash' });
+  return client.getGenerativeModel({ model: process.env.GEMINI_MODEL || 'gemini-3.6-flash' });
 }
 
 // Gemini sometimes wraps JSON in ```json ... ``` fences despite instructions not to.

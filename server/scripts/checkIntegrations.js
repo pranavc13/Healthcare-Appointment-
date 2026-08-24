@@ -29,35 +29,12 @@ async function checkGemini() {
     return record('Gemini', 'skip', 'GEMINI_API_KEY is empty');
   }
 
-  // Ask the live API which models this key can actually use, so a retired model
-  // id in GEMINI_MODEL is reported as a config problem rather than a 404 later.
-  let usable = [];
-  try {
-    const res = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models?key=${process.env.GEMINI_API_KEY}`
-    );
-    const body = await res.json();
-    if (!res.ok) {
-      return record('Gemini', 'fail', `models list ${res.status}: ${body?.error?.message || 'unknown'}`);
-    }
-    usable = (body.models || [])
-      .filter((m) => (m.supportedGenerationMethods || []).includes('generateContent'))
-      .map((m) => m.name.replace(/^models\//, ''));
-  } catch (err) {
-    return record('Gemini', 'fail', `could not reach the API: ${err.message}`);
-  }
-
+  // The v1beta models-list endpoint is not a reliable predictor of what a given
+  // key can actually call — it has listed models as generateContent-capable that
+  // then 404 at call time as "no longer available to new users". So skip the
+  // list-based pre-check entirely and just attempt the real round-trip; Google's
+  // 404 message itself usually names the model to switch to, which we surface.
   const configured = process.env.GEMINI_MODEL || 'gemini-1.5-flash';
-  if (!usable.includes(configured)) {
-    const suggestion = usable.find((m) => /flash/.test(m) && !/thinking|live/.test(m)) || usable[0];
-    return record(
-      'Gemini',
-      'fail',
-      `GEMINI_MODEL="${configured}" is not available to this key. Try GEMINI_MODEL=${suggestion}`
-    );
-  }
-
-  // Round-trip the real pre-visit prompt so JSON parsing is exercised too.
   try {
     const { generatePreVisitSummary } = require('../services/llm');
     const summary = await generatePreVisitSummary(
@@ -65,7 +42,12 @@ async function checkGemini() {
     );
     record('Gemini', 'ok', `${configured} → urgency "${summary.urgencyLevel}", ${summary.suggestedQuestions.length} questions`);
   } catch (err) {
-    record('Gemini', 'fail', err.message);
+    const suggestion = /models\/([\w.-]+)/.exec(err.message)?.[1];
+    record(
+      'Gemini',
+      'fail',
+      suggestion ? `${err.message} — try GEMINI_MODEL=${suggestion}` : err.message
+    );
   }
 }
 
@@ -179,5 +161,7 @@ function checkSecrets() {
   const failed = results.filter((r) => r.status === 'fail');
   const skipped = results.filter((r) => r.status === 'skip');
   console.log(`\n${results.length - failed.length - skipped.length} passed, ${failed.length} failed, ${skipped.length} skipped.`);
-  process.exit(failed.length ? 1 : 0);
+  // Setting exitCode (rather than calling exit()) lets Node finish tearing down
+  // any pending sockets on its own instead of racing a hard exit against them.
+  process.exitCode = failed.length ? 1 : 0;
 })();
