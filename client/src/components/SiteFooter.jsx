@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { ArrowUpRight, Mail, MapPin, Phone } from 'lucide-react';
 import { Reveal } from './motion';
+import { CLINIC_ADDRESS, CLINIC_EMAIL, CLINIC_PHONE_DISPLAY, CLINIC_PHONE_TEL } from '../clinicInfo';
 
 const COLUMNS = [
   {
@@ -41,22 +42,22 @@ export default function SiteFooter() {
           <Reveal>
             <Link to="/" className="flex items-center gap-3 w-fit">
               <img src="/logo.png" alt="" className="w-10 h-10 rounded-full bg-white object-cover ring-1 ring-white/20" />
-              <span className="font-display text-[22px] font-semibold tracking-tight">Jeevan Chakra</span>
+              <span className="font-display text-[22px] font-semibold tracking-tight">DocConnect</span>
             </Link>
             <p className="mt-5 text-[13.5px] leading-relaxed text-brand-200 max-w-sm">
-              A healthcare appointment and follow-up manager built around three portals — patients,
-              doctors and clinic admins — with AI briefs, email and calendar sync wired in.
+              A dental clinic appointment and follow-up manager for our two dentists and the patients
+              who trust them, with AI briefs, email and calendar sync wired in.
             </p>
 
             <div className="mt-7 space-y-3 text-[13.5px] text-brand-200">
-              <a href="tel:+911800123456" className="flex items-center gap-3 hover:text-gold-300 transition-colors w-fit">
-                <Phone className="w-4 h-4 text-gold-400 shrink-0" /> 1800 123 456
+              <a href={`tel:${CLINIC_PHONE_TEL}`} className="flex items-center gap-3 hover:text-gold-300 transition-colors w-fit">
+                <Phone className="w-4 h-4 text-gold-400 shrink-0" /> {CLINIC_PHONE_DISPLAY}
               </a>
-              <a href="mailto:care@jeevanchakra.health" className="flex items-center gap-3 hover:text-gold-300 transition-colors w-fit">
-                <Mail className="w-4 h-4 text-gold-400 shrink-0" /> care@jeevanchakra.health
+              <a href={`mailto:${CLINIC_EMAIL}`} className="flex items-center gap-3 hover:text-gold-300 transition-colors w-fit">
+                <Mail className="w-4 h-4 text-gold-400 shrink-0" /> {CLINIC_EMAIL}
               </a>
               <p className="flex items-center gap-3">
-                <MapPin className="w-4 h-4 text-gold-400 shrink-0" /> 31 cities across India
+                <MapPin className="w-4 h-4 text-gold-400 shrink-0" /> {CLINIC_ADDRESS}
               </p>
             </div>
           </Reveal>
@@ -82,7 +83,7 @@ export default function SiteFooter() {
         </div>
 
         <div className="mt-14 pt-7 border-t border-cream-100/10 flex flex-col sm:flex-row items-center justify-between gap-3 text-[12.5px] text-brand-200">
-          <p>© {new Date().getFullYear()} Jeevan Chakra. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} DocConnect. All rights reserved.</p>
           <p>Not a substitute for emergency medical care. In a crisis, call your local emergency number.</p>
         </div>
       </div>

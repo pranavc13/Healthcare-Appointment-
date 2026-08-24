@@ -1,13 +1,25 @@
-# Jeevan Chakra — Healthcare Appointment & Follow-up Manager
+# DocConnect — Healthcare Appointment & Follow-up Manager
 
-Jeevan Chakra is a full-stack healthcare platform for booking and managing doctor appointments, with AI-assisted pre-visit triage and post-visit summaries, automated email notifications, Google Calendar sync, and role-based portals for patients, doctors, and admins.
+DocConnect is a full-stack appointment and follow-up manager, currently configured for a
+two-dentist clinic, with AI-assisted pre-visit triage and post-visit summaries, automated email
+notifications, Google Calendar sync, and role-based portals for patients, doctors, and admins.
 
 ## What it does
 
-- **Patients** search doctors by specialisation, pick an open slot, describe their symptoms, and get a confirmed appointment with an AI-generated pre-visit triage summary (urgency level, chief complaint, questions for the doctor).
-- **Doctors** see their schedule with urgency indicators, review the AI pre-visit summary and reported symptoms, and complete a visit with clinical notes and a prescription — which is automatically turned into a patient-friendly post-visit summary and emailed out.
-- **Admins** manage the doctor roster (create/update/deactivate, set working hours and slot duration) and mark leave days, which automatically cancels affected bookings and notifies patients.
-- The public directory is backed by a **17,636-row practitioner dataset** (`server/data/doctors.jsonl`) imported as real, bookable doctors — searchable by speciality, city, fee and experience.
+- **Patients** browse the two dentists, pick an open slot, describe their symptoms, and get a
+  confirmed appointment with an AI-generated pre-visit triage summary (urgency level, chief
+  complaint, questions for the doctor).
+- **Doctors** see their schedule with urgency indicators, review the AI pre-visit summary and
+  reported symptoms, and complete a visit with clinical notes and a prescription — which is
+  automatically turned into a patient-friendly post-visit summary and emailed out.
+- **Admins** manage the doctor roster (create/update/deactivate, set working hours and slot
+  duration) and mark leave days, which automatically cancels affected bookings and notifies
+  patients.
+- The directory is backed by `DoctorProfile`/`User` documents with speciality, city, fee and
+  experience fields — searchable and sortable via `GET /api/doctors`, though with just two
+  doctors configured today there's little to filter. A **17,636-row Indian practitioner
+  dataset** (`server/data/doctors.jsonl`) ships in the repo and can populate the directory at
+  scale if the project grows beyond a single clinic — see [Scaling beyond one clinic](#scaling-beyond-one-clinic-optional).
 - Behind the scenes: atomic slot-holding prevents double-booking, email delivery retries with backoff, failed AI generations retry on a schedule, and confirmed appointments sync to both parties' Google Calendars.
 
 ## Tech stack
@@ -85,11 +97,25 @@ npm run seed
 
 This creates (or promotes) the admin user from `ADMIN_EMAIL` / `ADMIN_PASSWORD` in `server/.env`. Log in with these credentials to reach `/admin/dashboard` and start adding doctors.
 
-### 3b. Import the practitioner directory (optional but recommended)
+### 3b. The two doctors already in the database
 
-The repo ships with `server/data/doctors.jsonl` — 17,636 real practitioner records (name, degree,
-speciality, city, locality, consultation fee, years of experience, recommendation score). The import
-script turns each row into a `User` (role `doctor`) plus a `DoctorProfile` with a generated working
+This deployment is configured for a single dental clinic with two dentists:
+
+| Doctor | Speciality | Experience |
+|---|---|---|
+| Dr. Rohith Rajashekhar | Dentist, Cosmetic/Aesthetic Dentist | 6 years |
+| Dr. Shanmukha B S | Dentist | 18 years |
+
+Both were picked from the dataset below and share one clinic address. Their login emails end in
+`@doctors.docconnect.health`; ask whoever set up this instance for the exact addresses and the
+password in `DATASET_DOCTOR_PASSWORD` (default `Doctor@123`).
+
+### Scaling beyond one clinic (optional)
+
+The repo ships with `server/data/doctors.jsonl` — 17,636 real practitioner records across India
+(name, degree, speciality, city, locality, consultation fee, years of experience, recommendation
+score) — in case this ever grows from one clinic into a multi-doctor directory. The import script
+turns each row into a `User` (role `doctor`) plus a `DoctorProfile` with a generated working
 schedule, so every imported doctor is genuinely bookable.
 
 ```bash
@@ -100,8 +126,11 @@ node scripts/importDoctors.js --fresh       # wipe previously imported rows firs
 ```
 
 Re-running is safe: rows already present (matched on their generated email) are skipped. Imported
-doctors sign in with their generated `…@doctors.jeevanchakra.health` address and the password in
-`DATASET_DOCTOR_PASSWORD` (default `Doctor@123`).
+doctors sign in with their generated `…@doctors.docconnect.health` address and the password in
+`DATASET_DOCTOR_PASSWORD`. Running this will bring back a large multi-city directory — the landing
+page copy, `/doctors` page and `clinicInfo.js` constants were all written for the two-doctor
+clinic and would need revisiting first (see `server/scripts/trimToClinic.js` for the reverse
+operation, trimming back down to a curated set of doctors).
 
 If you imported before the speciality-normalisation fix, repair the stored labels in place with:
 

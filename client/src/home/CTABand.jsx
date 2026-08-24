@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { CalendarCheck, Phone } from 'lucide-react';
 import { Reveal } from '../components/motion';
+import { CLINIC_PHONE_DISPLAY, CLINIC_PHONE_TEL } from '../clinicInfo';
 
 export default function CTABand() {
   return (
@@ -22,7 +23,7 @@ export default function CTABand() {
                 <CalendarCheck className="w-6 h-6 text-gold-300" strokeWidth={1.75} />
               </div>
               <h2 className="mt-6 font-display text-[2rem] sm:text-[2.6rem] leading-[1.1] font-semibold">
-                Your health deserves
+                Your smile deserves
                 <br />
                 the <span className="text-gold-gradient italic">best care</span>.
               </h2>
@@ -41,11 +42,11 @@ export default function CTABand() {
                 Book Appointment
               </Link>
               <a
-                href="tel:+911800123456"
+                href={`tel:${CLINIC_PHONE_TEL}`}
                 className="inline-flex items-center justify-center gap-2.5 h-[54px] px-8 rounded-full border border-cream-100/25 text-cream-100 text-[15px] font-semibold hover:bg-cream-100/10 transition-colors"
               >
                 <Phone className="w-[18px] h-[18px]" />
-                1800 123 456
+                {CLINIC_PHONE_DISPLAY}
               </a>
             </div>
           </div>

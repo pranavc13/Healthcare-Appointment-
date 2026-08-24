@@ -4,9 +4,9 @@ import { ArrowRight, FileHeart, Pill, Siren, Sparkles } from 'lucide-react';
 import { EASE, Reveal, RevealGroup, RevealItem } from '../components/motion';
 
 const QUESTIONS = [
-  'How long should the chest tightness last before I worry?',
-  'Should I stop my current blood pressure medication?',
-  'What warning signs mean I should come back sooner?',
+  'How long has the sensitivity to cold been going on?',
+  'Have you noticed any swelling near the gum line?',
+  'Is the pain worse when biting down?',
 ];
 
 const OUTPUTS = [
@@ -26,7 +26,7 @@ export default function AIShowcase() {
           <Reveal>
             <p className="eyebrow !text-gold-300">Powered by Gemini</p>
             <h2 className="mt-4 font-display text-4xl sm:text-[2.9rem] leading-[1.1] font-semibold">
-              Your doctor reads the
+              Your dentist reads the
               <br />
               <span className="text-gold-gradient italic">brief before you speak</span>
             </h2>
@@ -88,7 +88,7 @@ export default function AIShowcase() {
 
             <p className="mt-5 text-[11px] font-bold uppercase tracking-[0.16em] text-text-muted">Chief complaint</p>
             <p className="mt-2 font-display text-[19px] leading-snug font-semibold">
-              Intermittent chest tightness on exertion, four days, with mild breathlessness.
+              Persistent pain in the lower right molar with sensitivity to cold, three days.
             </p>
 
             <p className="mt-6 text-[11px] font-bold uppercase tracking-[0.16em] text-text-muted">

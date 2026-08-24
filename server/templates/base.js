@@ -14,7 +14,7 @@ function renderEmail({ heading, bodyHtml, ctaLabel, ctaUrl }) {
       <table role="presentation" width="560" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:20px;overflow:hidden;box-shadow:0 4px 24px rgba(15,23,42,0.08);">
         <tr>
           <td style="background:linear-gradient(90deg,#2563eb,#4f46e5,#7c3aed);padding:22px 32px;">
-            <span style="color:#ffffff;font-weight:900;font-size:18px;letter-spacing:-0.02em;">Jeevan Chakra</span>
+            <span style="color:#ffffff;font-weight:900;font-size:18px;letter-spacing:-0.02em;">DocConnect</span>
           </td>
         </tr>
         <tr>
@@ -26,7 +26,7 @@ function renderEmail({ heading, bodyHtml, ctaLabel, ctaUrl }) {
         ${cta}
         <tr>
           <td style="padding:24px 32px 28px 32px;">
-            <p style="margin:0;font-size:12px;color:#94a3b8;">This is an automated message from Jeevan Chakra. Please do not reply to this email.</p>
+            <p style="margin:0;font-size:12px;color:#94a3b8;">This is an automated message from DocConnect. Please do not reply to this email.</p>
           </td>
         </tr>
       </table>

@@ -18,6 +18,8 @@ const ROLE_HOME = { patient: '/patient/dashboard', doctor: '/doctor/dashboard', 
 export default function App() {
   const { currentUser, role } = useContext(AuthContext);
   const [facets, setFacets] = useState(null);
+  const [doctors, setDoctors] = useState([]);
+  const [doctorsLoading, setDoctorsLoading] = useState(true);
 
   useEffect(() => {
     let cancelled = false;
@@ -25,6 +27,11 @@ export default function App() {
       .getFacets()
       .then((data) => { if (!cancelled) setFacets(data); })
       .catch(() => {});
+    doctorsService
+      .listDoctors({ limit: 2, sort: 'rating' })
+      .then((res) => { if (!cancelled) setDoctors(res.doctors || []); })
+      .catch(() => {})
+      .finally(() => { if (!cancelled) setDoctorsLoading(false); });
     return () => { cancelled = true; };
   }, []);
 
@@ -35,12 +42,12 @@ export default function App() {
   return (
     <div className="bg-cream-100 dark:bg-brand-950">
       <ScrollProgress />
-      <Hero stats={facets?.stats} />
+      <Hero stats={facets?.stats} doctors={doctors} />
       <FeatureStrip />
       <About stats={facets?.stats} />
-      <Specialities specialities={facets?.specialities} />
+      <Specialities />
       <HowItWorks />
-      <FeaturedDoctors />
+      <FeaturedDoctors doctors={doctors} loading={doctorsLoading} />
       <AIShowcase />
       <Testimonials />
       <CTABand />

@@ -42,7 +42,7 @@ export default function LoginPage() {
       eyebrow="Welcome back"
       title="Log in to your account"
       subtitle="Patients, doctors and clinic admins all sign in here."
-      quote="Your doctor reads the brief before you speak."
+      quote="Your dentist reads the brief before you speak."
       footer={
         <>
           Don't have an account?{' '}

@@ -116,7 +116,7 @@ export function Navbar() {
             />
             <span className="flex flex-col leading-none">
               <span className="font-display text-[20px] font-semibold tracking-tight text-brand-900 dark:text-cream-100">
-                Jeevan Chakra
+                DocConnect
               </span>
               <span className="text-[9px] font-bold tracking-[0.24em] text-gold-600 dark:text-gold-400 uppercase mt-0.5">
                 Health · Care · Follow-up

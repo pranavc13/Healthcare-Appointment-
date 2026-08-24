@@ -3,11 +3,11 @@ import { motion } from 'framer-motion';
 import { ArrowRight, CalendarCheck, Star, ShieldCheck, Activity } from 'lucide-react';
 import SmartImage from '../components/SmartImage';
 import { AnimatedHeading, CountUp, EASE, Parallax } from '../components/motion';
-import { IMAGES, FACES } from './images';
+import { IMAGES } from './images';
+import { CLINIC_LOCALITY, CLINIC_CITY, COMBINED_YEARS_EXPERIENCE, PATIENTS_TREATED } from '../clinicInfo';
 
-export default function Hero({ stats }) {
-  const total = stats?.totalDoctors || 17600;
-  const cities = stats?.totalCities || 30;
+export default function Hero({ stats, doctors = [] }) {
+  const faces = doctors.length ? doctors : [null, null];
 
   return (
     <section className="relative overflow-hidden bg-cream-100 dark:bg-brand-950 grain-overlay">
@@ -25,11 +25,11 @@ export default function Hero({ stats }) {
               transition={{ duration: 0.6, ease: EASE }}
               className="eyebrow"
             >
-              Modern Healthcare · Thoughtful Care
+              {CLINIC_LOCALITY}, {CLINIC_CITY} · Dental Care
             </motion.p>
 
             <h1 className="mt-5 font-display text-[2.75rem] leading-[1.04] sm:text-6xl lg:text-[4.35rem] font-semibold text-brand-900 dark:text-cream-100">
-              <AnimatedHeading text="Healthy Lives," delay={0.15} className="block" />
+              <AnimatedHeading text="Healthy Smiles," delay={0.15} className="block" />
               <AnimatedHeading
                 text="Booked in Seconds."
                 delay={0.4}
@@ -44,8 +44,8 @@ export default function Hero({ stats }) {
               transition={{ duration: 0.7, delay: 0.75, ease: EASE }}
               className="mt-7 text-[17px] leading-relaxed text-text-secondary dark:text-brand-200 max-w-lg"
             >
-              Search {total.toLocaleString('en-IN')} verified specialists across {cities} cities, hold a real
-              slot instantly, and walk in with an AI symptom brief already waiting for your doctor.
+              Book a visit with Dr. Rohith Rajashekhar or Dr. Shanmukha B S, hold your slot instantly,
+              and walk in with an AI-prepared summary already waiting for your dentist.
             </motion.p>
 
             <motion.div
@@ -82,9 +82,9 @@ export default function Hero({ stats }) {
               className="mt-10 flex flex-wrap items-center gap-5"
             >
               <div className="flex -space-x-3">
-                {FACES.slice(0, 4).map((src, i) => (
+                {faces.map((doc, i) => (
                   <motion.div
-                    key={src}
+                    key={doc?._id || i}
                     initial={{ opacity: 0, scale: 0.5, x: -10 }}
                     animate={{ opacity: 1, scale: 1, x: 0 }}
                     transition={{ delay: 1.15 + i * 0.08, type: 'spring', stiffness: 260, damping: 18 }}
@@ -92,8 +92,8 @@ export default function Hero({ stats }) {
                     className="relative"
                   >
                     <SmartImage
-                      src={src}
-                      alt=""
+                      src={doc?.profileImage || IMAGES.team}
+                      alt={doc?.userId?.name || ''}
                       className="w-11 h-11 rounded-full ring-[3px] ring-cream-100 dark:ring-brand-950"
                     />
                   </motion.div>
@@ -101,7 +101,7 @@ export default function Hero({ stats }) {
               </div>
               <div>
                 <p className="text-sm font-semibold text-brand-900 dark:text-cream-100">
-                  Trusted by <CountUp value={62000} suffix="+" /> patients
+                  Trusted by <CountUp value={PATIENTS_TREATED} suffix="+" /> patients
                 </p>
                 <div className="flex items-center gap-1.5 mt-1">
                   {[0, 1, 2, 3, 4].map((i) => (
@@ -115,7 +115,7 @@ export default function Hero({ stats }) {
                     </motion.span>
                   ))}
                   <span className="ml-1 text-xs font-semibold text-text-secondary dark:text-brand-200">
-                    {stats?.avgRating ? stats.avgRating.toFixed(1) : '4.6'}/5
+                    {stats?.avgRating ? stats.avgRating.toFixed(1) : '4.8'}/5
                   </span>
                 </div>
               </div>
@@ -131,14 +131,14 @@ export default function Hero({ stats }) {
           >
             <SmartImage
               src={IMAGES.heroClinic}
-              alt="A calm, modern consultation room"
+              alt="A calm, modern dental treatment room"
               priority
               className="rounded-[2rem] aspect-[4/5] sm:aspect-[5/5] lg:aspect-[4/4.6] shadow-lift"
             >
               <div className="absolute inset-0 bg-gradient-to-t from-brand-950/55 via-transparent to-transparent" aria-hidden />
             </SmartImage>
 
-            {/* Floating: live availability */}
+            {/* Floating: combined experience */}
             <Parallax distance={26} className="absolute -left-3 sm:-left-8 top-10 sm:top-16">
               <motion.div
                 initial={{ opacity: 0, x: -28 }}
@@ -151,16 +151,16 @@ export default function Hero({ stats }) {
                     <span className="absolute inline-flex w-full h-full rounded-full bg-emerald-400 animate-pulse-ring" />
                     <span className="relative inline-flex w-2 h-2 rounded-full bg-emerald-500" />
                   </span>
-                  <p className="text-[11px] font-bold uppercase tracking-widest text-text-muted">Live slots</p>
+                  <p className="text-[11px] font-bold uppercase tracking-widest text-text-muted">Now accepting</p>
                 </div>
                 <p className="mt-2 font-display text-2xl font-semibold text-brand-900 dark:text-cream-100">
-                  <CountUp value={1284} />
+                  <CountUp value={COMBINED_YEARS_EXPERIENCE} suffix="+" />
                 </p>
-                <p className="text-[11px] text-text-secondary dark:text-brand-200">open across today</p>
+                <p className="text-[11px] text-text-secondary dark:text-brand-200">years, both dentists combined</p>
               </motion.div>
             </Parallax>
 
-            {/* Floating: promise card, mirrors the template's dark badge */}
+            {/* Floating: promise card */}
             <Parallax distance={-24} className="absolute -right-2 sm:-right-6 bottom-8">
               <motion.div
                 initial={{ opacity: 0, y: 28 }}
@@ -173,7 +173,7 @@ export default function Hero({ stats }) {
                   Excellence in every detail.
                 </p>
                 <p className="mt-1.5 text-[11px] leading-relaxed text-brand-200">
-                  Your comfort. Your health. Our priority.
+                  Your comfort. Your smile. Our priority.
                 </p>
               </motion.div>
             </Parallax>

@@ -43,7 +43,7 @@ function SidebarBody({ items, onNavigate }) {
       <Link to="/" className="px-5 py-5 border-b border-white/10 flex items-center gap-2.5">
         <img src="/logo.png" alt="" className="w-8 h-8 rounded-full bg-white object-cover ring-1 ring-white/20" />
         <span className="flex flex-col leading-none">
-          <span className="font-display text-[17px] font-semibold text-cream-50 tracking-tight">Jeevan Chakra</span>
+          <span className="font-display text-[17px] font-semibold text-cream-50 tracking-tight">DocConnect</span>
           <span className="text-[8.5px] font-bold tracking-[0.22em] text-gold-400 uppercase mt-1">
             {ROLE_LABEL[user?.role] || 'Portal'}
           </span>

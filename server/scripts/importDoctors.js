@@ -20,7 +20,7 @@ const User = require('../models/User');
 const DoctorProfile = require('../models/DoctorProfile');
 
 const DATA_FILE = path.join(__dirname, '..', 'data', 'doctors.jsonl');
-const EMAIL_DOMAIN = 'doctors.jeevanchakra.health';
+const EMAIL_DOMAIN = 'doctors.docconnect.health';
 const BATCH_SIZE = 500;
 
 const args = process.argv.slice(2);

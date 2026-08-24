@@ -97,7 +97,7 @@ async function checkSmtp() {
     await transporter.sendMail({
       from: process.env.SMTP_FROM || process.env.SMTP_USER,
       to: emailTarget,
-      subject: 'Jeevan Chakra — integration test',
+      subject: 'DocConnect — integration test',
       html: '<p>If you are reading this, Nodemailer is wired up correctly.</p>',
     });
     record('SMTP', 'ok', `test email delivered to ${emailTarget}`);

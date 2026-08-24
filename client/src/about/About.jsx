@@ -9,6 +9,7 @@ import * as doctorsService from '../services/doctorsService';
 import SmartImage from '../components/SmartImage';
 import { CountUp, EASE, Parallax, Reveal, RevealGroup, RevealItem } from '../components/motion';
 import { IMAGES } from '../home/images';
+import { COMBINED_YEARS_EXPERIENCE } from '../clinicInfo';
 
 const VALUES = [
   {
@@ -37,20 +38,20 @@ const PORTALS = [
   {
     icon: Users,
     role: 'Patients',
-    body: 'Search the directory, hold a slot, describe symptoms, and keep every visit summary in one timeline.',
+    body: 'Choose Dr. Rohith or Dr. Shanmukha, hold a slot, describe symptoms, and keep every visit summary in one timeline.',
     points: ['Live slot availability', 'AI symptom brief', 'Email + calendar sync'],
   },
   {
     icon: Stethoscope,
-    role: 'Doctors',
+    role: 'Dentists',
     body: 'Arrive at each appointment already briefed, then turn consultation notes into a patient-friendly plan.',
     points: ['Urgency-rated pre-visit brief', 'Post-visit summary generation', 'Working hours and leave'],
   },
   {
     icon: UserCog,
-    role: 'Clinic admins',
-    body: 'Create and manage practitioner profiles, set slot durations, and mark leave days safely.',
-    points: ['Profile management', 'Leave-day conflict handling', 'Directory oversight'],
+    role: 'Clinic admin',
+    body: 'Manage both dentist profiles, set slot durations, and mark leave days safely.',
+    points: ['Profile management', 'Leave-day conflict handling', 'Schedule oversight'],
   },
 ];
 
@@ -83,15 +84,15 @@ export default function About() {
         <div className="relative max-w-7xl mx-auto px-5 sm:px-8 py-20 sm:py-28 grid lg:grid-cols-2 gap-14 items-center">
           <div>
             <Reveal>
-              <p className="eyebrow !text-gold-300">About Jeevan Chakra</p>
+              <p className="eyebrow !text-gold-300">About DocConnect</p>
               <h1 className="mt-4 font-display text-[2.6rem] sm:text-[3.4rem] leading-[1.06] font-semibold">
                 Appointments that
                 <br />
                 <span className="text-gold-gradient italic">look after themselves</span>
               </h1>
               <p className="mt-6 text-[16px] leading-relaxed text-brand-200 max-w-lg">
-                Jeevan Chakra is a healthcare appointment and follow-up manager. It gives patients,
-                doctors and clinic admins their own portal over one shared source of truth — then wires
+                DocConnect is our dental clinic's appointment and follow-up manager. It gives patients
+                and our two dentists their own portal over one shared source of truth — then wires
                 AI briefs, email and Google Calendar into the parts everyone usually forgets.
               </p>
             </Reveal>
@@ -134,9 +135,9 @@ export default function About() {
       <section className="px-5 sm:px-8 -mt-12 relative z-10">
         <RevealGroup className="max-w-7xl mx-auto surface-card rounded-[1.75rem] p-6 sm:p-8 grid grid-cols-2 lg:grid-cols-4 gap-2">
           {[
-            { value: stats?.totalDoctors ?? 17607, suffix: '+', label: 'Practitioners listed' },
-            { value: stats?.totalCities ?? 30, suffix: '', label: 'Cities covered' },
-            { value: stats?.avgRating ?? 4.6, decimals: 1, suffix: '/5', label: 'Average rating' },
+            { value: stats?.totalDoctors ?? 2, suffix: '', label: 'Specialist dentists' },
+            { value: COMBINED_YEARS_EXPERIENCE, suffix: '+', label: 'Years combined experience' },
+            { value: stats?.avgRating ?? 4.8, decimals: 1, suffix: '/5', label: 'Average rating' },
             { value: 3, suffix: '', label: 'Dedicated portals' },
           ].map((s, i) => (
             <RevealItem
@@ -287,7 +288,7 @@ export default function About() {
             Ready when you are
           </h2>
           <p className="mt-4 text-[15px] text-text-secondary dark:text-brand-200 max-w-lg mx-auto">
-            Browse the directory, or create an account and keep every appointment, summary and reminder
+            Meet our dentists, or create an account and keep every appointment, summary and reminder
             in one place.
           </p>
           <div className="mt-8 flex flex-wrap justify-center gap-3">
@@ -295,7 +296,7 @@ export default function About() {
               to="/doctors"
               className="shine group inline-flex items-center gap-2.5 h-[52px] px-7 rounded-full bg-brand-700 hover:bg-brand-800 text-cream-100 text-[14.5px] font-bold transition-colors"
             >
-              Browse doctors
+              Meet our dentists
               <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
             </Link>
             <Link

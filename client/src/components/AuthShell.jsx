@@ -4,6 +4,7 @@ import { ArrowLeft, Quote, Star } from 'lucide-react';
 import SmartImage from './SmartImage';
 import { CountUp, EASE } from './motion';
 import { IMAGES } from '../home/images';
+import { COMBINED_YEARS_EXPERIENCE } from '../clinicInfo';
 
 /**
  * Split-screen frame shared by the login and register pages: form on the left,
@@ -26,7 +27,7 @@ export default function AuthShell({ eyebrow, title, subtitle, children, footer, 
           >
             <img src="/logo.png" alt="" className="w-9 h-9 rounded-full bg-white object-cover ring-1 ring-brand-900/10 shadow-sm" />
             <span className="font-display text-[19px] font-semibold tracking-tight text-brand-900 dark:text-cream-100">
-              Jeevan Chakra
+              DocConnect
             </span>
           </Link>
         </div>
@@ -103,20 +104,20 @@ export default function AuthShell({ eyebrow, title, subtitle, children, footer, 
 
               <div className="mt-8 flex items-center gap-8">
                 <div>
-                  <p className="font-display text-[26px] font-semibold leading-none">
-                    <CountUp value={17607} suffix="+" />
-                  </p>
-                  <p className="mt-1.5 text-[11.5px] uppercase tracking-[0.16em] text-brand-200">Specialists</p>
+                  <p className="font-display text-[26px] font-semibold leading-none">2</p>
+                  <p className="mt-1.5 text-[11.5px] uppercase tracking-[0.16em] text-brand-200">Dentists</p>
                 </div>
                 <div className="w-px h-10 bg-cream-100/20" />
                 <div>
-                  <p className="font-display text-[26px] font-semibold leading-none">30</p>
-                  <p className="mt-1.5 text-[11.5px] uppercase tracking-[0.16em] text-brand-200">Cities</p>
+                  <p className="font-display text-[26px] font-semibold leading-none">
+                    <CountUp value={COMBINED_YEARS_EXPERIENCE} suffix="+" />
+                  </p>
+                  <p className="mt-1.5 text-[11.5px] uppercase tracking-[0.16em] text-brand-200">Years exp.</p>
                 </div>
                 <div className="w-px h-10 bg-cream-100/20" />
                 <div>
                   <p className="flex items-center gap-1.5 font-display text-[26px] font-semibold leading-none">
-                    4.6 <Star className="w-4 h-4 fill-gold-400 text-gold-400" />
+                    4.8 <Star className="w-4 h-4 fill-gold-400 text-gold-400" />
                   </p>
                   <p className="mt-1.5 text-[11.5px] uppercase tracking-[0.16em] text-brand-200">Rating</p>
                 </div>

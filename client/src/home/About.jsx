@@ -1,15 +1,16 @@
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowRight, Award, Building2, Users } from 'lucide-react';
+import { ArrowRight, Award, Clock, Users } from 'lucide-react';
 import SmartImage from '../components/SmartImage';
 import { CountUp, Parallax, Reveal, RevealGroup, RevealItem } from '../components/motion';
 import { IMAGES } from './images';
+import { COMBINED_YEARS_EXPERIENCE } from '../clinicInfo';
 
 export default function About({ stats }) {
   const cards = [
-    { icon: Award, value: stats?.avgRating || 4.6, decimals: 1, suffix: '/5', label: 'Average patient rating' },
-    { icon: Users, value: stats?.totalDoctors || 17607, suffix: '+', label: 'Verified practitioners' },
-    { icon: Building2, value: stats?.totalCities || 31, suffix: '', label: 'Cities covered' },
+    { icon: Award, value: stats?.avgRating || 4.8, decimals: 1, suffix: '/5', label: 'Average patient rating' },
+    { icon: Users, value: stats?.totalDoctors || 2, suffix: '', label: 'Specialist dentists' },
+    { icon: Clock, value: COMBINED_YEARS_EXPERIENCE, suffix: '+', label: 'Years combined experience' },
   ];
 
   return (
@@ -17,20 +18,20 @@ export default function About({ stats }) {
       <div className="max-w-7xl mx-auto grid lg:grid-cols-[0.85fr_1fr_0.75fr] gap-10 lg:gap-12 items-center">
         {/* Copy */}
         <Reveal direction="right">
-          <p className="eyebrow">About Jeevan Chakra</p>
+          <p className="eyebrow">About DocConnect</p>
           <h2 className="mt-4 font-display text-4xl sm:text-[2.9rem] leading-[1.1] font-semibold text-brand-900 dark:text-cream-100">
             Where Expertise
             <br />
             Meets <span className="text-gold-gradient italic">Empathy</span>
           </h2>
           <p className="mt-6 text-[15px] leading-relaxed text-text-secondary dark:text-brand-200">
-            Booking a doctor should not feel like paperwork. We pair a nationwide directory of
-            practitioners with tooling that does the tedious part — holding the slot, briefing the
-            doctor, chasing the follow-up — so the appointment itself can stay human.
+            Booking a dentist should not feel like paperwork. We pair two experienced dentists with
+            tooling that does the tedious part — holding the slot, briefing the doctor, chasing the
+            follow-up — so the appointment itself can stay human.
           </p>
           <p className="mt-4 text-[15px] leading-relaxed text-text-secondary dark:text-brand-200">
-            Patients, doctors and clinic admins each get their own portal, and every one of them sees
-            the same source of truth.
+            Patients and our dentists each get their own portal, and everyone sees the same source of
+            truth — one clinic, no confusion.
           </p>
           <Link
             to="/about"
@@ -64,10 +65,10 @@ export default function About({ stats }) {
             >
               <svg viewBox="0 0 100 100" className="w-full h-full">
                 <defs>
-                  <path id="jc-circle" d="M50,50 m-36,0 a36,36 0 1,1 72,0 a36,36 0 1,1 -72,0" />
+                  <path id="dc-circle" d="M50,50 m-36,0 a36,36 0 1,1 72,0 a36,36 0 1,1 -72,0" />
                 </defs>
                 <text className="fill-brand-700 dark:fill-gold-300" style={{ fontSize: 11.5, letterSpacing: 3.1, fontWeight: 600 }}>
-                  <textPath href="#jc-circle">JEEVAN CHAKRA · CARE IN MOTION · </textPath>
+                  <textPath href="#dc-circle">DOCCONNECT · HEALTHY SMILES · </textPath>
                 </text>
               </svg>
             </motion.div>

@@ -44,7 +44,7 @@ const TITLES = [
 
 function resolveTitle(pathname) {
   const match = TITLES.find((t) => matchPath({ path: t.pattern, end: true }, pathname));
-  return match?.title || 'Jeevan Chakra';
+  return match?.title || 'DocConnect';
 }
 
 export default function PortalLayout() {

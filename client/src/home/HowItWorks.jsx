@@ -3,7 +3,7 @@ import { CalendarCheck, ClipboardList, MessageSquareText, Search } from 'lucide-
 import { Reveal, RevealGroup, RevealItem } from '../components/motion';
 
 const STEPS = [
-  { icon: Search, title: 'Find your specialist', body: 'Filter by speciality, city, fee and experience across the full directory.' },
+  { icon: Search, title: 'Choose your dentist', body: 'Compare Dr. Rohith and Dr. Shanmukha\'s profiles and pick who is right for you.' },
   { icon: CalendarCheck, title: 'Hold a real slot', body: 'Live availability with a short reservation window while you finish booking.' },
   { icon: ClipboardList, title: 'Describe your symptoms', body: 'Your answers become an urgency-rated brief your doctor reads beforehand.' },
   { icon: MessageSquareText, title: 'Leave with a plan', body: 'A plain-language summary, prescription schedule and reminders, by email.' },

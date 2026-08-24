@@ -38,10 +38,10 @@ export default function SignupPage() {
 
   return (
     <AuthShell
-      eyebrow="Join Jeevan Chakra"
+      eyebrow="Join DocConnect"
       title="Create your free account"
       subtitle="Book appointments, share symptoms ahead of the visit, and keep every summary in one place."
-      quote="Search 17,000 specialists. Hold a real slot in seconds."
+      quote="Two dentists, one clinic. Hold a real slot in seconds."
       footer={
         <>
           Already have an account?{' '}
